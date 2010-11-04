@@ -30,12 +30,15 @@ File = exports.File = function(properties) {
   this.content = '';
   this.url = '';
   this.extname;
+  this.basename;
   this.name = '';  
 
   /* Adding the properties */
   this.addProperties(properties);
 
 };
+
+File.resourceExtensions = ['.png', '.jpg', '.gif', '.svg'];
 
 /**
  * Add the properties for File.
@@ -55,15 +58,20 @@ File.prototype.addProperties = function(properties){
  * Getting the name of the File without the file extension.
  */
 File.prototype.getBaseName = function(){
-    
-     return this.name.split('.')[0];
+
+  if (this.basename === undefined) {
+    this.basename = _l.path.basename(this.path,_l.path.extname(this.path));
+  }
+
+  return this.basename;
+
 
 };
 
 /**
  * Getting the file extension.
  */
-File.prototype.getFileExtensionType = function() {
+File.prototype.getFileExtension = function() {
 
   if (this.extname === undefined) {
     this.extname = _l.path.extname(this.path);

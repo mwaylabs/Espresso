@@ -76,8 +76,6 @@ Framework.prototype.addProperties = function(properties){
  * Browse throw all files containing in the Framework.
  */
 Framework.prototype.browseFiles = function() {
-
-
     var files = _l.fs.readdirSync(this.path);
     return files;
 };
@@ -90,6 +88,7 @@ Framework.prototype.loadFiles = function() {
  var files = this.browseFiles();
 
      files.forEach(function (file){
+       //  _l.sys.puts(file);
          var data = _l.fs.readFileSync(that.path+'/'+file, encoding='utf8');
          that.files.push(new File({ name: file, path: that.path+'/'+file, content: data}));
      });

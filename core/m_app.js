@@ -121,7 +121,7 @@ var that = this, _theMProject;
 
 
  /*
-  * Getting all T-M-Project related files
+  * Getting all The-M-Project related files
   * and generate Framework objects
   */
  _theMProject = ['datastore', 'foundation', 'utility'].map(function(module) {
@@ -198,11 +198,10 @@ var that  = this;
          var files = framework.files;
          _l.sys.puts('\n');
          _l.sys.puts('Files in '+framework.name);
-         for (var i = 0;  i<files.length; i++){
-             var file = files[i];
+         files.forEach(function (file){
             //that.checkJSLINT(file.path);
-           _l.sys.puts('File: '+file.getBaseName()+ ' extension: '+ files[i].getFileExtensionType());
-         }
+           _l.sys.puts('File: '+file.getBaseName()+ ' extension: '+ file.getFileExtension());
+         });
     });
 
  _l.sys.puts('Used BuildStep 1');
@@ -217,10 +216,10 @@ App.prototype.BuildStep2 = function(){
 
     this.frameworks.forEach(function(framework) {
          var files = framework.browseFiles();
-         for (var i = 0;  i<files.length; i++){
-          that.checkJSLINT(framework.path,files[i]);
+        files.forEach(function (file){
+          that.checkJSLINT(framework.path,file);
 
-         }
+         });
     });
 
   _l.sys.puts('Used BuildStep 2');
