@@ -16,6 +16,7 @@ var _l = {},
     File;
 
 _l.fs = require('fs');
+_l.path = require('path');
 _l.sys = require('sys');
 
 
@@ -28,7 +29,8 @@ File = exports.File = function(properties) {
   this.isHtml = false;
   this.content = '';
   this.url = '';
-  this.extname = '';
+  this.extname;
+  this.name = '';  
 
   /* Adding the properties */
   this.addProperties(properties);
@@ -36,7 +38,7 @@ File = exports.File = function(properties) {
 };
 
 /**
- * The properties for File
+ * Add the properties for File.
  * @param properties
  */
 File.prototype.addProperties = function(properties){
@@ -48,6 +50,28 @@ File.prototype.addProperties = function(properties){
     });
 
 };
+
+/**
+ * Getting the name of the File without the file extension.
+ */
+File.prototype.getBaseName = function(){
+    
+     return this.name.split('.')[0];
+
+};
+
+/**
+ * Getting the file extension.
+ */
+File.prototype.getFileExtensionType = function() {
+
+  if (this.extname === undefined) {
+    this.extname = _l.path.extname(this.path);
+  }
+
+  return this.extname;
+};
+
 
 
 

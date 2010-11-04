@@ -79,9 +79,6 @@ Framework.prototype.browseFiles = function() {
 
 
     var files = _l.fs.readdirSync(this.path);
-
- //   file = new File({ path: this.name, handler: handler, content: this.rootContent(), isHtml: true, framework: this });
-
     return files;
 };
 
@@ -90,14 +87,12 @@ Framework.prototype.loadFiles = function() {
 
  var that = this;
 
-    var files = _l.fs.readdirSync(this.path);
+ var files = this.browseFiles();
 
-     for (var i = 0;  i<files.length; i++){
-
-         this.files.push(new File({ path: that.path, content: files[i]}));
-
-     }
-
+     files.forEach(function (file){
+         var data = _l.fs.readFileSync(that.path+'/'+file, encoding='utf8');
+         that.files.push(new File({ name: file, path: that.path+'/'+file, content: data}));
+     });
 
 };
 

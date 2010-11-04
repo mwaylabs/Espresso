@@ -155,7 +155,7 @@ App.prototype.buildIndexHTML = function(htmlStylesheets, htmlScripts) {
 App.prototype.checkJSLINT = function(path,file){
 
 
-    var data = _l.fs.readFileSync(path+'/'+file, encoding='utf8');
+    var data = _l.fs.readFileSync(path, encoding='utf8');
         erg = _l.jslint(data);
         if(!erg){
 
@@ -196,8 +196,12 @@ var that  = this;
     this.frameworks.forEach(function(framework) {
          framework.loadFiles();
          var files = framework.files;
+         _l.sys.puts('\n');
+         _l.sys.puts('Files in '+framework.name);
          for (var i = 0;  i<files.length; i++){
-          that.checkJSLINT(files[i].path,files[i].content);
+             var file = files[i];
+            //that.checkJSLINT(file.path);
+           _l.sys.puts('File: '+file.getBaseName()+ ' extension: '+ files[i].getFileExtensionType());
          }
     });
 
