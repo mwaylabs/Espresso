@@ -76,16 +76,17 @@ Framework.prototype.addProperties = function(properties){
  */
 Framework.prototype.browseFiles = function() {
 
-    _l.sys.puts('\n');
-    _l.sys.puts('Files in '+this.name);
+  //  _l.sys.puts('\n');
+  //  _l.sys.puts('Files in '+this.name);
 
     var files = _l.fs.readdirSync(this.path);
-    for (var i = 0;  i<files.length; i++){
+  /*  for (var i = 0;  i<files.length; i++){
           _l.sys.puts(files[i]);
 
     }
+   */
 
-
+    return files;
 };
 
 /**

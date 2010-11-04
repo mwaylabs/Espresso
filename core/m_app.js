@@ -152,10 +152,10 @@ App.prototype.buildIndexHTML = function(htmlStylesheets, htmlScripts) {
  * alex: 3/11/2010 will soon be moved to its own file/handler.
  *
  */
-App.prototype.checkJSLINT = function(file){
+App.prototype.checkJSLINT = function(framework,file){
 
 
-    var data = _l.fs.readFileSync(this.pathName+file, encoding='utf8');
+    var data = _l.fs.readFileSync(framework.path+'/'+file, encoding='utf8');
         erg = _l.jslint(data);
         if(!erg){
 
@@ -208,9 +208,14 @@ App.prototype.BuildStep1 = function(){
    Test function 
  */
 App.prototype.BuildStep2 = function(){
+    var that  = this;
 
     this.frameworks.forEach(function(framework) {
-         framework.browseFiles();
+         var files = framework.browseFiles();
+         for (var i = 0;  i<files.length; i++){
+          that.checkJSLINT(framework,files[i]);
+
+         }
     });
 
 };
