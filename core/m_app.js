@@ -16,9 +16,9 @@
  */
 
 
-var self = this,
-    _l = {},
-    App;
+var _l = {},
+    App,
+    Framework = require('./framwork').Framework;
 
 /*
  * The required modules for App.
@@ -33,6 +33,7 @@ _l.jslint = require('../lib/jslint').JSLINT;
 _l.fs = require('fs');
 
 
+
 /**
  * Constructor function.
  * Sets the build options for the app (project) to be build.
@@ -40,8 +41,11 @@ _l.fs = require('fs');
  * @param build_options  the options to customize the build process
  */
 
-self.App = function(build_options) {
-    
+App = exports.App = function (build_options) {
+
+  /* Properties */
+
+  /* Build configuration */
   this.name = 'defaultName';
   this.server = null;
   this.buildVersion = new Date().getTime();
@@ -49,21 +53,27 @@ self.App = function(build_options) {
   this.theme = 'm-deafult';
   this.outputFolder = 'build';
   this.jslintCheck = true;
+  this.pathName = "espresso_test_case/"
 
-  this.addBuildingOptions(build_options);  
+  /* Properties used by App */
+
+  this.frameworks = [];
 
 
- 
+  if(!build_options){
+     this.loadJSONConfig();
+  } else{
+     this.addOptions(build_options);
+  }
+
 };
-
-App = self.App;
 
 /**
  * Sets the build options for the app (project) to be build.
  * 
  * @param build_options the options to customize the build process
  */
-App.prototype.addBuildingOptions = function(build_options){
+App.prototype.addOptions = function(build_options){
 
     var that = this;
 
@@ -71,12 +81,81 @@ App.prototype.addBuildingOptions = function(build_options){
          that[key] = build_options[key];
     });
   
-}
+};
 
+/**
+ * Loads the appconfig file, passed in JSON syntax.
+ * The appconfig.json should be in the root folder of the project to build.
+ * 
+ */
+App.prototype.loadJSONConfig = function() {
+
+    var config = JSON.parse(_l.fs.readFileSync(this.pathName+'/appconfig.json', 'utf8'));
+    this.addOptions(config);
+
+};
+
+
+/**
+ * Adding a Framework to the current build.
+ */
+App.prototype.addFrameworks = function(frameworks) {
+var that = this;
+
+  if (frameworks instanceof Array) {
+    frameworks.forEach(function(framework) {
+        that.frameworks.push(framework);
+    });
+  }
+
+
+};
+
+/**
+ * Called when adding The-M-Project to the current build.
+ * Loads the files for the core system.
+ * @param options
+ */
+App.prototype.loadTheMProject = function(options) {
+var that = this, _theMProject;
+
+
+ /*
+  * Getting all T-M-Project related files
+  * and generate Framework objects
+  */
+ _theMProject = ['datastore', 'foundation', 'utility'].map(function(module) {
+    var _frameworkOptions  = {};
+        _frameworkOptions.path = that.pathName+'modules/core/' + module;
+        _frameworkOptions.name = module;
+       return new Framework(_frameworkOptions);
+    });
+
+ this.addFrameworks(_theMProject); 
+
+};
+
+/**
+ * Builds the index.html page. Used for loading the application.
+ * @param htmlStylesheets
+ * @param htmlScripts
+ */
+App.prototype.buildIndexHTML = function(htmlStylesheets, htmlScripts) {
+ 
+};
+
+
+
+/**
+ *
+ * Checks a JavaScript file for correctness according to JSLINT.
+ * alex: 3/11/2010 will soon be moved to its own file/handler.
+ *
+ */
 App.prototype.checkJSLINT = function(file){
 
 
-    var data = _l.fs.readFileSync('./espresso_test_case/'+file, encoding='utf8');
+    var data = _l.fs.readFileSync(this.pathName+file, encoding='utf8');
         erg = _l.jslint(data);
         if(!erg){
 
@@ -93,8 +172,24 @@ App.prototype.checkJSLINT = function(file){
 }
     
 
-}
+};
 
+
+/**
+ * The function tat builds the application.
+ * @param callback that should be called after the build.
+ */
+App.prototype.build = function(callback){
+
+     this.BuildStep2();
+     callback(this);
+
+};
+
+
+/*
+  Test function
+ */
 App.prototype.BuildStep1 = function(){
 
 
@@ -106,29 +201,18 @@ App.prototype.BuildStep1 = function(){
     }
 
 
-}
+};
 
 
+/*
+   Test function 
+ */
 App.prototype.BuildStep2 = function(){
 
+    this.frameworks.forEach(function(framework) {
+         framework.browseFiles();
+    });
 
-    for (var x = 0; x< 100; x++ ){
-
-    }
- _l.sys.puts("Build Step 2");
-
-
-
-}
+};
 
 
-App.prototype.build = function(callback){
-
-
-     this.BuildStep1();
-   
-     _l.sys.puts(this.name);
-
-     callback(this);
-
-}

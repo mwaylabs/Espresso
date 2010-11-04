@@ -13,12 +13,23 @@
 * Each file using espresso or parts of it, should include espresso.js via 'require('./espresso');'
 *
 */
-var
-  self = this;
 
-  /*
-   * including the server.
-   */
-  self.Server = require('./server').Server;
-  self.App = require('./m_app').App;
+var Espresso
+
+/*
+ * ESPRESSO
+ */
+Espresso = exports.Espresso = function () {};
+
+Espresso.Server = require('./server').Server;
+
+Espresso.App = require('./m_app').App;
+
+
+
+
+
+
+ 
+
 

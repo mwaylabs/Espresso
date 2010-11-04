@@ -8,18 +8,15 @@
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
-var espresso  = require('./core/espresso');
+var espresso  = require('./core/espresso').Espresso;
 
 
 var server = new espresso.Server();
 
-var app = new espresso.App({
-   "name" : "demoApplication",
-   "buildLanguage" : "en",
-   "theme" : "m-deafult"
-});
+var app = new espresso.App();
 
 
+app.loadTheMProject();
 
 
 app.build(function (opt) {
