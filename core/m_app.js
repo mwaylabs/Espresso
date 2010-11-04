@@ -152,10 +152,10 @@ App.prototype.buildIndexHTML = function(htmlStylesheets, htmlScripts) {
  * alex: 3/11/2010 will soon be moved to its own file/handler.
  *
  */
-App.prototype.checkJSLINT = function(framework,file){
+App.prototype.checkJSLINT = function(path,file){
 
 
-    var data = _l.fs.readFileSync(framework.path+'/'+file, encoding='utf8');
+    var data = _l.fs.readFileSync(path+'/'+file, encoding='utf8');
         erg = _l.jslint(data);
         if(!erg){
 
@@ -181,7 +181,7 @@ App.prototype.checkJSLINT = function(framework,file){
  */
 App.prototype.build = function(callback){
 
-     this.BuildStep2();
+     this.BuildStep1();
      callback(this);
 
 };
@@ -191,16 +191,17 @@ App.prototype.build = function(callback){
   Test function
  */
 App.prototype.BuildStep1 = function(){
+var that  = this;
 
+    this.frameworks.forEach(function(framework) {
+         framework.loadFiles();
+         var files = framework.files;
+         for (var i = 0;  i<files.length; i++){
+          that.checkJSLINT(files[i].path,files[i].content);
+         }
+    });
 
-    var files = _l.fs.readdirSync('./espresso_test_case');
-
-    for (var i = 0;  i<files.length; i++){
-         this.checkJSLINT(files[i]);
-
-    }
-
-
+ _l.sys.puts('Used BuildStep 1');
 };
 
 
@@ -213,10 +214,12 @@ App.prototype.BuildStep2 = function(){
     this.frameworks.forEach(function(framework) {
          var files = framework.browseFiles();
          for (var i = 0;  i<files.length; i++){
-          that.checkJSLINT(framework,files[i]);
+          that.checkJSLINT(framework.path,files[i]);
 
          }
     });
+
+  _l.sys.puts('Used BuildStep 2');
 
 };
 

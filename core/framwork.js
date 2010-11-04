@@ -18,17 +18,17 @@
 
 
 var _l = {},
-    Framework;
+    Framework,
+    File = require('./file').File;
 
 /*
- * The required modules for App.
+ * The required modules for Framework.
  *
  * sys    = node.js system module
  * fs     = filesystem
  *
  */
 _l.fs = require('fs');
-_l.path = require('path');
 _l.sys = require('sys');
 
 
@@ -51,6 +51,7 @@ Framework = exports.Framework = function(properties) {
   this.path = '';
   this.name = '';
   this.url  = '';
+  this.files = [];  
 
   /* Adding the properties fot this Frameworks */
   this.addProperties(properties);
@@ -76,18 +77,30 @@ Framework.prototype.addProperties = function(properties){
  */
 Framework.prototype.browseFiles = function() {
 
-  //  _l.sys.puts('\n');
-  //  _l.sys.puts('Files in '+this.name);
 
     var files = _l.fs.readdirSync(this.path);
-  /*  for (var i = 0;  i<files.length; i++){
-          _l.sys.puts(files[i]);
 
-    }
-   */
+ //   file = new File({ path: this.name, handler: handler, content: this.rootContent(), isHtml: true, framework: this });
 
     return files;
 };
+
+
+Framework.prototype.loadFiles = function() {
+
+ var that = this;
+
+    var files = _l.fs.readdirSync(this.path);
+
+     for (var i = 0;  i<files.length; i++){
+
+         this.files.push(new File({ path: that.path, content: files[i]}));
+
+     }
+
+
+};
+
 
 /**
  * Override Object.toString()
