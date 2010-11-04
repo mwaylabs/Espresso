@@ -94,8 +94,8 @@ Framework.prototype.browseFiles = function() {
  */
 Framework.prototype.toString = function() {
 
-    return 'Path = '+this.path + '\n'
-          +'Name = '+this.name + '\n';
+    return 'Name = '+this.name + '\n'
+          +'Path = '+this.path + '\n';
 };
 
 
