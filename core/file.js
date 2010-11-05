@@ -31,14 +31,14 @@ File = exports.File = function(properties) {
   this.url = '';
   this.extname;
   this.basename;
-  this.name = '';  
+  this.name = '';
+  this.resourceExtensions = ['.png', '.jpg', '.gif', '.svg'];
 
   /* Adding the properties */
   this.addProperties(properties);
 
 };
 
-File.resourceExtensions = ['.png', '.jpg', '.gif', '.svg'];
 
 /**
  * Add the properties for File.

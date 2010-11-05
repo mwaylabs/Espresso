@@ -18,6 +18,7 @@
 
 var _l = {},
     App,
+    TaskManager = require('./task_manager').TaskManager,
     Framework = require('./framwork').Framework;
 
 /*
@@ -53,7 +54,8 @@ App = exports.App = function (build_options) {
   this.theme = 'm-deafult';
   this.outputFolder = 'build';
   this.jslintCheck = true;
-  this.pathName = "espresso_test_case/"
+  this.pathName = "espresso_test_case/";
+  this.taskChain = new Array(); 
 
   /* Properties used by App */
 
@@ -95,6 +97,15 @@ App.prototype.loadJSONConfig = function() {
 
 };
 
+/**
+ * Adding the task chain to the app.
+ */
+App.prototype.addTaskChain = function() {
+
+   this.taskChain = new TaskManager().getTaskChain();
+
+};
+
 
 /**
  * Adding a Framework to the current build.
@@ -119,7 +130,6 @@ var that = this;
 App.prototype.loadTheMProject = function(options) {
 var that = this, _theMProject;
 
-
  /*
   * Getting all The-M-Project related files
   * and generate Framework objects
@@ -128,6 +138,7 @@ var that = this, _theMProject;
     var _frameworkOptions  = {};
         _frameworkOptions.path = that.pathName+'modules/core/' + module;
         _frameworkOptions.name = module;
+        _frameworkOptions.taskChain = that.taskChain;
        return new Framework(_frameworkOptions);
     });
 
@@ -194,7 +205,7 @@ App.prototype.build = function(callback){
 
 
 /*
- * Function for espresso development. Has only testing duty.
+ * Function for espresso development and has only testing duty!
  * This function will NOT be in the finished version of Espresso.
  */
 App.prototype.BuildStep1 = function(){

@@ -15,8 +15,11 @@ var server = new espresso.Server();
 
 var app = new espresso.App();
 
+app.addTaskChain();
 
 app.loadTheMProject();
+
+
 
 
 app.build(function (opt) {

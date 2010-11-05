@@ -12,7 +12,7 @@
 /**
  * Definition of Framework class.
  *
- * Representation of the Framework used in the build chain.   
+ * Representation of the Framework used in the build chain.
  *
  */
 
@@ -51,8 +51,9 @@ Framework = exports.Framework = function(properties) {
   this.path = '';
   this.name = '';
   this.url  = '';
-  this.files = [];
+  this.files = new Array();
   this.filesDependencies = new Array();
+  this.taskChain = new Array();
 
   /* Adding the properties fot this Frameworks */
   this.addProperties(properties);
@@ -71,6 +72,9 @@ Framework.prototype.addProperties = function(properties){
     Object.keys(properties).forEach(function (key) {
          that[key] = properties[key];
     });
+
+     var util = require('util');
+    console.log(util.inspect(this.taskChain, true, null));
 
 };
 
@@ -103,43 +107,17 @@ Framework.prototype.loadFiles = function() {
  * Building the framework, included all files.
  */
 Framework.prototype.build = function(){
-
-     this.loadFiles();
-     this.computeDependencies();
-
-   var util = require('util');
-   console.log(util.inspect(this.filesDependencies, true, null));
-
-};
-
-/**
- *
- * computes the dependencies between files of the framework,
- * specified in the m_require function.
- * alex: 5/11/2010 will soon be moved to its own file/handler.
- *
- */
-Framework.prototype.computeDependencies = function() {
 var that = this;
+    var util = require('util');
+_l.sys.puts('\n****** Calling build for "'+this.name+'" ******');
 
-   this.files.forEach(function(file) {
-         var re, match, path;
+    this.loadFiles();
 
-         var _dependenciesObject = new Object();
-             _dependenciesObject.dependencies = [];
-
-          re = new RegExp("m_require\\([\"'](.*?)[\"']\\)", "g");
-
-          while (match = re.exec(file.content)) {
-            path = match[1];
-            if (!/\.js$/.test(path)){
-                path += '.js';
-            }
-            _dependenciesObject.dependencies.push(path);
-          }
-
-        that.filesDependencies[file.getBaseName()] = _dependenciesObject;
+    this.taskChain.forEach(function(task){
+       task.run(that);
     });
+   
+   console.log(util.inspect(this.filesDependencies, true, null));
 
 };
 
@@ -148,8 +126,8 @@ var that = this;
  */
 Framework.prototype.toString = function() {
 
-    return 'Name = '+this.name + '\n'
-          +'Path = '+this.path + '\n';
+    return 'Name: '+this.name + '\n'
+          +'Path: '+this.path + '\n';
 };
 
 
