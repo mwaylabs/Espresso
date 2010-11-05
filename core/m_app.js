@@ -90,7 +90,7 @@ App.prototype.addOptions = function(build_options){
  */
 App.prototype.loadJSONConfig = function() {
 
-    var config = JSON.parse(_l.fs.readFileSync(this.pathName+'/appconfig.json', 'utf8'));
+    var config = JSON.parse(_l.fs.readFileSync(this.pathName+'appconfig.json', 'utf8'));
     this.addOptions(config);
 
 };
@@ -181,18 +181,24 @@ App.prototype.checkJSLINT = function(path,file){
  */
 App.prototype.build = function(callback){
 
-     this.BuildStep1();
-     callback(this);
+    /* Build each Framework */
+    this.frameworks.forEach(function(framework) {
+         framework.build();
+    });
+
+
+  //   this.BuildStep1();
+       callback(this);
 
 };
 
 
 /*
-  Test function
+ * Function for espresso development. Has only testing duty.
+ * This function will NOT be in the finished version of Espresso.
  */
 App.prototype.BuildStep1 = function(){
 var that  = this;
-
     this.frameworks.forEach(function(framework) {
          framework.loadFiles();
          var files = framework.files;
@@ -208,22 +214,5 @@ var that  = this;
 };
 
 
-/*
-   Test function 
- */
-App.prototype.BuildStep2 = function(){
-    var that  = this;
-
-    this.frameworks.forEach(function(framework) {
-         var files = framework.browseFiles();
-        files.forEach(function (file){
-          that.checkJSLINT(framework.path,file);
-
-         });
-    });
-
-  _l.sys.puts('Used BuildStep 2');
-
-};
 
 

@@ -51,12 +51,14 @@ Framework = exports.Framework = function(properties) {
   this.path = '';
   this.name = '';
   this.url  = '';
-  this.files = [];  
+  this.files = [];
+  this.filesDependencies = new Array();
 
   /* Adding the properties fot this Frameworks */
   this.addProperties(properties);
 
 };
+
 
 /**
  * Sets the Properties for Framework
@@ -80,7 +82,10 @@ Framework.prototype.browseFiles = function() {
     return files;
 };
 
-
+/**
+ * load the files contained in the framework, and store them in
+ * the framework property: that.files
+ */
 Framework.prototype.loadFiles = function() {
 
  var that = this;
@@ -88,13 +93,55 @@ Framework.prototype.loadFiles = function() {
  var files = this.browseFiles();
 
      files.forEach(function (file){
-       //  _l.sys.puts(file);
          var data = _l.fs.readFileSync(that.path+'/'+file, encoding='utf8');
          that.files.push(new File({ name: file, path: that.path+'/'+file, content: data}));
      });
 
 };
 
+/**
+ * Building the framework, included all files.
+ */
+Framework.prototype.build = function(){
+
+     this.loadFiles();
+     this.computeDependencies();
+
+   var util = require('util');
+   console.log(util.inspect(this.filesDependencies, true, null));
+
+};
+
+/**
+ *
+ * computes the dependencies between files of the framework,
+ * specified in the m_require function.
+ * alex: 5/11/2010 will soon be moved to its own file/handler.
+ *
+ */
+Framework.prototype.computeDependencies = function() {
+var that = this;
+
+   this.files.forEach(function(file) {
+         var re, match, path;
+
+         var _dependenciesObject = new Object();
+             _dependenciesObject.dependencies = [];
+
+          re = new RegExp("m_require\\([\"'](.*?)[\"']\\)", "g");
+
+          while (match = re.exec(file.content)) {
+            path = match[1];
+            if (!/\.js$/.test(path)){
+                path += '.js';
+            }
+            _dependenciesObject.dependencies.push(path);
+          }
+
+        that.filesDependencies[file.getBaseName()] = _dependenciesObject;
+    });
+
+};
 
 /**
  * Override Object.toString()
@@ -105,4 +152,18 @@ Framework.prototype.toString = function() {
           +'Path = '+this.path + '\n';
 };
 
+
+/*
+ * Function for espresso development. Has only testing duty.
+ * This function will NOT be in the finished version of Espresso. 
+ */
+Framework.prototype.testFunction = function(){
+ _l.sys.puts('\n****** Calling build for "'+this.name+'" ******');
+     this.loadFiles();
+     var files = this.files;
+         files.forEach(function (file){
+           _l.sys.puts('File: '+file.getBaseName()+ ' extension: '+ file.getFileExtension());
+         });
+     _l.sys.puts('\n');
+};
 
