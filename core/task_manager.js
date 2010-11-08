@@ -17,11 +17,11 @@
 
 var _l = {},
     TaskManager,
-    Task_Dependencies = require('../tasks/dependencies').Task_Dependencies,
+    ManagedTasks = require('../tasks/managed_tasks').ManagedTasks.Tasks,
     File = require('../core/file').File;
 
 /*
- * The required modules for Task_Dependencies.
+ * The required modules for Task Manager.
  *
  * sys    = node.js system module
  * fs     = filesystem
@@ -32,30 +32,42 @@ _l.sys = require('sys');
 
 
 
-TaskManager = exports.TaskManager = function() {
+TaskManager = exports.TaskManager = function(Tasks) {
 
 
   /* Properties */
 
   /* Local properties */
   this.framework;
-  this.name = 'dependencie_task';
-  this.tasksChain = new Array();  
+  this.tasksChain = new Array();
 
-  this.loadTasks();
+  this.loadNewTaskChain(Tasks);
 
 
 };
 
+/**
+ * Load the all tasks that had been registered in managed_tasks.js.
+ */
+TaskManager.prototype.loadNewTaskChain = function (Tasks){
+var that = this;
+    
+    Tasks.forEach(function(task) {
+        if(ManagedTasks[task] === undefined){
+          _l.sys.puts("ERROR: cant found Task: '"+task+"' build stopped!");  
+          process.exit(1); /* terminated espresso process! */
+        }else{
+          that.tasksChain.push(new ManagedTasks[task]);
+        }
+    });
 
-TaskManager.prototype.loadTasks = function (){
-
-    var task = new Task_Dependencies();
-    this.tasksChain.push(task);
+  // console.log(require('util').inspect(ManagedTasks, true, null));
 
 };
 
-
+/**
+ * Return the task chain.
+ */
 TaskManager.prototype.getTaskChain = function (){
 
   return this.tasksChain;

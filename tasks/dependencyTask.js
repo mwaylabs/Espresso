@@ -10,28 +10,28 @@
 
 
 /**
- * Definition of Task_Dependencies.
+ * Definition of Task_Dependency.
  *
  */
 
 
 var _l = {},
-    Task_Dependencies,
+    Task_Dependency,
     File = require('../core/file').File;
 
 /*
- * The required modules for Task_Dependencies.
+ * The required modules for Task_Dependency.
  *
  * sys    = node.js system module
  * fs     = filesystem
  *
  */
-_l.fs = require('fs');
+_l.fs = require('fs'); 
 _l.sys = require('sys');
 
 
 
-Task_Dependencies = exports.Task_Dependencies = function() {
+Task_Dependency = exports.Task_Dependency = function() {
 
 
   /* Properties */
@@ -42,13 +42,15 @@ Task_Dependencies = exports.Task_Dependencies = function() {
   this.files = [];
   this.filesDependencies = new Array();
 
-  /* Adding the properties for Task_Dependencies */
+
+
+  /* Adding the properties for Task_Dependency */
 //  this.addProperties(properties);
 
 };
 
 
-Task_Dependencies.prototype.run = function(framework){
+Task_Dependency.prototype.run = function(framework){
 
 
     this.framework = framework;
@@ -57,7 +59,7 @@ Task_Dependencies.prototype.run = function(framework){
 };
 
 
-Task_Dependencies.prototype.computeDependencies = function() {
+Task_Dependency.prototype.computeDependencies = function() {
 var that = this;
 
    this.framework.files.forEach(function(file) {

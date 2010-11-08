@@ -73,8 +73,6 @@ Framework.prototype.addProperties = function(properties){
          that[key] = properties[key];
     });
 
-     var util = require('util');
-    console.log(util.inspect(this.taskChain, true, null));
 
 };
 
@@ -108,7 +106,6 @@ Framework.prototype.loadFiles = function() {
  */
 Framework.prototype.build = function(){
 var that = this;
-    var util = require('util');
 _l.sys.puts('\n****** Calling build for "'+this.name+'" ******');
 
     this.loadFiles();
@@ -117,7 +114,7 @@ _l.sys.puts('\n****** Calling build for "'+this.name+'" ******');
        task.run(that);
     });
    
-   console.log(util.inspect(this.filesDependencies, true, null));
+   console.log(require('util').inspect(this.filesDependencies, true, null));
 
 };
 

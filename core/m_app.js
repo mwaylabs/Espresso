@@ -102,7 +102,7 @@ App.prototype.loadJSONConfig = function() {
  */
 App.prototype.addTaskChain = function() {
 
-   this.taskChain = new TaskManager().getTaskChain();
+   this.taskChain = new TaskManager(["dependency"]).getTaskChain();
 
 };
 
@@ -153,36 +153,6 @@ var that = this, _theMProject;
  */
 App.prototype.buildIndexHTML = function(htmlStylesheets, htmlScripts) {
  
-};
-
-
-
-/**
- *
- * Checks a JavaScript file for correctness according to JSLINT.
- * alex: 3/11/2010 will soon be moved to its own file/handler.
- *
- */
-App.prototype.checkJSLINT = function(path,file){
-
-
-    var data = _l.fs.readFileSync(path, encoding='utf8');
-        erg = _l.jslint(data);
-        if(!erg){
-
-        for (i = 0; i < _l.jslint.errors.length; ++i) {
-              e = _l.jslint.errors[i];
-
-              if (e) {
-                  _l.sys.puts('WARNING: jslint error in "'+ file +'" at line ' + e.line + ' character ' + e.character + ': ' + e.reason);
-                  _l.sys.puts('         ' + (e.evidence || '').replace(/^\s*(\S*(\s+\S+)*)\s*$/, "$1"));
-                  _l.sys.puts('');
-              }
-        }
-
-}
-    
-
 };
 
 

@@ -80,6 +80,39 @@ File.prototype.getFileExtension = function() {
   return this.extname;
 };
 
+/**
+ * True if file is a stylesheet.
+ */
+File.prototype.isStylesheet = function() {
+  return this.extname === '.css';
+};
+
+/**
+ * True if file is JavaScript.
+ */
+File.prototype.isJavaScript = function() {
+  return this.extname === '.js' && !/tests\//.test(this.path);
+};
+
+/**
+ * True if file is a Image.
+ * Based on the possible resource extensions:
+ *  .png,
+ *  .jpg,
+ *  .gif,
+ *  .svg
+ */
+File.prototype.isImage = function() {
+var that = this;
+    that.isImage = false;
+    this.resourceExtensions.forEach(function (resExt) {
+        if(resExt == that.extname){
+            that.isImage = true;
+        }
+    });
+  return that.isImage;
+};
+
 
 
 
