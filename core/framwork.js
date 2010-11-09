@@ -80,7 +80,7 @@ Framework.prototype.addProperties = function(properties){
 };
 
 /**
- * Browse throw all files containing in the Framework.
+ * Browse throw all resources containing in the Framework.
  */
 Framework.prototype.loadFiles = function(path,callback){
 
@@ -157,15 +157,27 @@ Framework.prototype.build = function(callback){
 var that = this;
 _l.sys.puts('\n****** Calling build for "'+this.name+'" ******');
 
-    this.loadFiles(that.path, callback); 
+   // this.loadFiles(that.path, callback); 
 
-  /*
-    this.taskChain.forEach(function(task){
-       task.run(that);
-    });
-  */  
-   
- //  console.log(require('util').inspect(this.filesDependencies, true, null));
+
+  this.loadFiles(that.path, function(files) {
+    // files = selectLanguageFiles(files);
+    var files = files;
+        _l.sys.puts("Files for '"+that.name+"' loaded");
+
+     //   that.taskChain.forEach(function(task){
+            // task.run(that);
+      //  });
+         that.taskChain[0].run(that,callback);
+
+   // buildStylesheets(files);
+   // buildResources(files);
+   // buildTests(files);
+
+
+  //  if (callback) callback();
+
+  });
 
 };
 

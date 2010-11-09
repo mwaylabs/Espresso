@@ -41,6 +41,7 @@ Task_Dependency = exports.Task_Dependency = function() {
   this.name = 'dependencie_task';
   this.files = [];
   this.filesDependencies = new Array();
+  this.nextTask;
 
 
 
@@ -50,19 +51,26 @@ Task_Dependency = exports.Task_Dependency = function() {
 };
 
 
-Task_Dependency.prototype.run = function(framework){
+Task_Dependency.prototype.run = function(framework,callback){
 
 
     this.framework = framework;
-    this.computeDependencies();
+    if(this.next === undefined){
+        this.computeDependencies(framework,callback);
+    }else{
+        this.next.run(framework, callback, this.computeDependencies);
+    }
 
+   // this.computeDependencies();
+      //callback();
 };
 
 
-Task_Dependency.prototype.computeDependencies = function() {
+Task_Dependency.prototype.computeDependencies = function(framework,callback) {
 var that = this;
-
-   this.framework.files.forEach(function(file) {
+_l.sys.puts('Running Task: "dependency"');
+   framework.files.forEach(function(file) {
+      if(file.isJavaScript()){
          var _re, _match, _path;
 
          var _dependenciesObject = new Object();
@@ -78,8 +86,9 @@ var that = this;
             _dependenciesObject.dependencies.push(_path);
           }
 
-       that.framework.filesDependencies[file.getBaseName()] = _dependenciesObject;
+       framework.filesDependencies[file.getBaseName()] = _dependenciesObject;
+           }
     });
-
+    callback(framework);
 };
 

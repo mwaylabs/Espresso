@@ -33,7 +33,7 @@ Task_JSLINT = exports.Task_JSLINT = function() {
 
   /* Local properties */
   this.framework;
-  this.name = 'dependencie_task';
+  this.name = 'jslint';
   this.files = [];
   this.filesDependencies = new Array();
 
@@ -42,23 +42,40 @@ Task_JSLINT = exports.Task_JSLINT = function() {
 
 };
 
-Task_JSLINT.prototype.run = function(framework){
+Task_JSLINT.prototype.run = function(framework,callback,nextTask){
 var that = this;
 
     this.framework = framework;
     var files = framework.files;
 
+
+
+    if(this.next === undefined){
+        _l.sys.puts('Running Task: "jslint"');
          files.forEach(function (file){
             that.checkJSLINT(file.path);
 
          });
+       
+        if(!(nextTask === undefined)){
+            nextTask(framework,callback);
+        }else{
+            callback(framework);
+        }
+    }else{
+         this.next.run(framework, callback, this.computeDependencies);
+    }
 
+
+
+
+
+    // nextTask(framework,callback);
 
 };
 
 
 Task_JSLINT.prototype.checkJSLINT = function(path,file){
-
 
     var data = _l.fs.readFileSync(path, encoding='utf8');
         erg = _l.jslint(data);

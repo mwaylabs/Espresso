@@ -84,14 +84,14 @@ File.prototype.getFileExtension = function() {
  * True if file is a stylesheet.
  */
 File.prototype.isStylesheet = function() {
-  return this.extname === '.css';
+  return this.getFileExtension() === '.css';
 };
 
 /**
  * True if file is JavaScript.
  */
 File.prototype.isJavaScript = function() {
-  return this.extname === '.js' && !/tests\//.test(this.path);
+  return this.getFileExtension() === '.js'; // && !/tests\//.test(this.path);
 };
 
 /**
@@ -106,7 +106,7 @@ File.prototype.isImage = function() {
 var that = this;
     that.isImage = false;
     this.resourceExtensions.forEach(function (resExt) {
-        if(resExt == that.extname){
+        if(resExt == that.getFileExtension()){
             that.isImage = true;
         }
     });

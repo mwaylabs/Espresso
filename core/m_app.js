@@ -103,7 +103,7 @@ App.prototype.loadJSONConfig = function() {
  */
 App.prototype.addTaskChain = function() {
 
-   this.taskChain = new TaskManager(["dependency"]).getTaskChain(); /* definition of standard build chain*/ 
+   this.taskChain = new TaskManager(["jslint","dependency"]).getTaskChain(); /* definition of standard build chain*/ 
 
 };
 
@@ -136,9 +136,9 @@ var that = this, _theMProject;
   * and generate Framework objects.
   */
     //'foundation','utility'
- _theMProject = ['datastore','foundation','utility'].map(function(module) {
+ _theMProject = ['core'].map(function(module) {
     var _frameworkOptions  = {};
-        _frameworkOptions.path = that.pathName+'modules/core/' + module;
+        _frameworkOptions.path = that.pathName+'modules/' + module;
         _frameworkOptions.name = module;
         _frameworkOptions.taskChain = that.taskChain;
        return new Framework(_frameworkOptions);
@@ -179,11 +179,11 @@ var _AppBuilder = function(app, callback) {
     that.build = function() {
 
       app.frameworks.forEach(function(framework) {
-        framework.build(function(files) {
+        framework.build(function(fr) {
           /* count  = -1 if a framework has been build. */
           that._resourceCounter -= 1;
-           _l.sys.puts("FR COUNTER = "+that._resourceCounter);
-          console.log(require('util').inspect(framework, true, null));
+          _l.sys.puts("FR COUNTER = "+that._resourceCounter);
+          console.log(require('util').inspect(fr.filesDependencies, true, null));
           /* check if callback can be called, the condition ist that all frameworks has been build. */
           that.callbackIfDone();
         });
