@@ -94,36 +94,43 @@ var _FileBrowser = function(framework, callback) {
 
     that.callbackIfDone = function() {
       if (that.count <= 0){
+       //    _l.sys.puts("CB CALLLED with counter = "+that.count); 
           callback(that.files);
       }
     };
 
     that.browse = function(path) {
       _l.fs.stat(path, function(err, stats) {
+         // that.count += 1;
         if (err){
             throw err;
         }else {
 
           if (stats.isDirectory()) {
-
+             //that.count -= 1;
             _l.fs.readdir(path, function(err, subpaths) {
-            that.count += subpaths.length;
+//that.count += subpaths.length;
+ //_l.sys.puts('subapths3 = '+subpaths + " counted sub files = "+that.count);
 
-              if (err) throw err;
-
+              if (err){
+                  throw err;
+              }else {
+                //that.count += subpaths.length - 1;
                 subpaths.forEach(function(subpath) {
-                  if (subpath[0] !== '.') {
-                    that.browse(_l.path.join(path, subpath));
-                  }
-                });
+             if (subpath.match('\\.')) {
+                     that.count += 1;
+                    //  _l.sys.puts('subapth = '+subpath);
+                    //   _l.sys.puts(that.count);
 
+                  } that.browse(_l.path.join(path, subpath));
+                });
+               }
             });
 
           } else {
 
             _l.fs.readFile(path, encoding='utf8',function(err, data) {
               that.count -= 1;
-                  
               if (err){
                 throw err;
               }else{
