@@ -9,9 +9,9 @@
 // ==========================================================================
 
 
-var self = this,
-    _l, Server;
-    _l = {};
+var Server;
+    _l = {},
+    App = require('./m_app').App;
  
 
 _l.sys = require('sys');
@@ -19,50 +19,73 @@ _l.http = require('http');
 _l.url = require('url');
 
 
-self.Server = function() {
+Server = exports.Server = function() {
 
   this.port = 8000;
   this.hostname = '127.0.0.1';
 
+  this.apps = [];   /* = the applications managed by this server */
+  this.files = [];  /* = the files, that should be served by  this server */
+
 };
 
-Server = self.Server;
+/**
+ * Getting a new App object, and set the Apps server reference to this,
+ * so the new app wil be aware of its server.
+ *
+ * @param appOptions the option/properties for the new App object.
+ */
+Server.prototype.getNewApp = function(appOptions) {
+
+  app = new App(appOptions); /* getting a new App object, passing over the appOptions (if there is any) */
 
 
-Server.prototype.run = function(app) {
+  app.server = this;   /* let the new App know about its server. */
+
+  this.apps.push(app); /* saving the app in local array */
+  return app;
+};
+
+/**
+ * Start the server!
+ * @param app
+ */
+Server.prototype.run = function() {
 
     var that = this;
 
-    var appName = app.name;
-    var appTheme = app.theme;
-    var appLanguage = app.buildLanguage;
+    var app;
 
     _l.http.createServer(function (req, res) {
         res.writeHead(200, {'Content-Type': 'text/html'});
 
         var reqURL = _l.url.parse(req.url);
-
-
-
         _l.sys.puts(reqURL.pathname);
+        
+        that.apps.forEach(function (app){
+             if(reqURL.pathname == '/'+app.name){
+                    res.write('Espresso Server Responding to: '+ app.name);
+                    res.write('<\/br>');
+                    res.write('using theme: '+ app.theme);
+                    res.write('<\/br>');
+                    res.write('using language: ' + app.language);
+                    app.build();
 
-        if(reqURL.pathname == '/'+appName){
+                    
+             }else{
 
-            res.write('Espresso Server Responding to: '+ appName);
-            res.write('<\/br>');
-            res.write('using theme: '+ appTheme);
-            res.write('<\/br>');
-            res.write('using language: ' + appLanguage);
+                   res.write('Application "' + reqURL.pathname+ '" not found on server!');
+                  // res.writeHead(404);
 
-        }else{
-          res.write(reqURL.pathname + ' not found !');
-        }
-        res.end();
+             }
+        });
 
-       
+          res.end();
+
+
     }).listen(that.port, that.hostname);
 
-    _l.sys.puts('Server running at http://127.0.0.1:' + that.port + '/' + appName);
+    _l.sys.puts('Server running at http://127.0.0.1:' + that.port);
 
 
 };

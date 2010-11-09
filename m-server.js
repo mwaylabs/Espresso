@@ -13,7 +13,7 @@ var espresso  = require('./core/espresso').Espresso;
 
 var server = new espresso.Server();
 
-var app = new espresso.App();
+var app = server.getNewApp();
 
 app.addTaskChain();
 

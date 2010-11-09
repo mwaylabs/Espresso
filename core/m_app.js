@@ -18,6 +18,7 @@
 
 var _l = {},
     App,
+    Step = require('../lib/step'),
     TaskManager = require('./task_manager').TaskManager,
     Framework = require('./framwork').Framework;
 
@@ -30,7 +31,7 @@ var _l = {},
  *
  */
 _l.sys = require('sys');
-_l.jslint = require('../lib/jslint').JSLINT;
+
 _l.fs = require('fs');
 
 
@@ -102,7 +103,7 @@ App.prototype.loadJSONConfig = function() {
  */
 App.prototype.addTaskChain = function() {
 
-   this.taskChain = new TaskManager(["dependency"]).getTaskChain();
+   this.taskChain = new TaskManager(["dependency"]).getTaskChain(); /* definition of standard build chain*/ 
 
 };
 
@@ -132,9 +133,10 @@ var that = this, _theMProject;
 
  /*
   * Getting all The-M-Project related files
-  * and generate Framework objects
+  * and generate Framework objects.
   */
- _theMProject = ['datastore', 'foundation', 'utility'].map(function(module) {
+    //
+ _theMProject = ['foundation','datastore','utility'].map(function(module) {
     var _frameworkOptions  = {};
         _frameworkOptions.path = that.pathName+'modules/core/' + module;
         _frameworkOptions.name = module;
@@ -162,14 +164,39 @@ App.prototype.buildIndexHTML = function(htmlStylesheets, htmlScripts) {
  */
 App.prototype.build = function(callback){
 
-    /* Build each Framework */
-    this.frameworks.forEach(function(framework) {
-         framework.build();
-    });
+var _AppBuilder = function(app, callback) {
+    var that = this;
 
 
-  //   this.BuildStep1();
-       callback(this);
+    /* amount of used frameworks, for this application. */
+    that.count = app.frameworks.length -1;
+
+    /* callback checker, called if all frameworks are build. */
+    that.callbackIfDone = function() {
+      if (callback && that.count <= 0) callback();
+    };
+
+    that.build = function() {
+
+      app.frameworks.forEach(function(framework) {
+        framework.build(function(files) {
+          /* count  = -1 if a framework has been build. */
+          that.count -= 1;
+           console.log(require('util').inspect(framework, true, null));
+          /* check if callback can be called, the condition ist that all frameworks has been build. */
+          that.callbackIfDone();
+        });
+      });
+    };
+  };
+
+return new _AppBuilder(this, callback).build();
+};
+
+
+App.prototype.saveLocal = function(callback){
+
+     _l.sys.puts('save application to filesystem');
 
 };
 

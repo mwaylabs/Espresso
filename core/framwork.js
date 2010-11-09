@@ -19,7 +19,9 @@
 
 var _l = {},
     Framework,
+    Step = require('../lib/step');
     File = require('./file').File;
+
 
 /*
  * The required modules for Framework.
@@ -30,6 +32,7 @@ var _l = {},
  */
 _l.fs = require('fs');
 _l.sys = require('sys');
+_l.path = require('path');
 
 
 
@@ -79,42 +82,89 @@ Framework.prototype.addProperties = function(properties){
 /**
  * Browse throw all files containing in the Framework.
  */
-Framework.prototype.browseFiles = function() {
-    var files = _l.fs.readdirSync(this.path);
-    return files;
+Framework.prototype.loadFiles = function(path,callback){
+
+    
+var _FileBrowser = function(framework, callback) {
+    var that = this;
+
+    that.count = 0;
+
+    that.files = [];
+
+    that.callbackIfDone = function() {
+      if (that.count <= 0){
+          callback(that.files);
+      }
+    };
+
+    that.browse = function(path) {
+      _l.fs.stat(path, function(err, stats) {
+        if (err){
+            throw err;
+        }else {
+
+          if (stats.isDirectory()) {
+
+            _l.fs.readdir(path, function(err, subpaths) {
+            that.count += subpaths.length;
+
+              if (err) throw err;
+
+                subpaths.forEach(function(subpath) {
+                  if (subpath[0] !== '.') {
+                    that.browse(_l.path.join(path, subpath));
+                  }
+                });
+
+            });
+
+          } else {
+
+            _l.fs.readFile(path, encoding='utf8',function(err, data) {
+              that.count -= 1;
+                  
+              if (err){
+                throw err;
+              }else{
+                framework.files.push(
+                  new File({
+                            name: path,
+                            path: path,
+                            framework: framework,
+                            content: data
+                           })
+                            
+                  );
+                that.callbackIfDone();
+              }
+            });
+          }
+        }
+      });
+    };
+  };
+return new _FileBrowser(this, callback).browse(path);
 };
 
-/**
- * load the files contained in the framework, and store them in
- * the framework property: that.files
- */
-Framework.prototype.loadFiles = function() {
 
- var that = this;
-
- var files = this.browseFiles();
-
-     files.forEach(function (file){
-         var data = _l.fs.readFileSync(that.path+'/'+file, encoding='utf8');
-         that.files.push(new File({ name: file, path: that.path+'/'+file, content: data}));
-     });
-
-};
 
 /**
  * Building the framework, included all files.
  */
-Framework.prototype.build = function(){
+Framework.prototype.build = function(callback){
 var that = this;
 _l.sys.puts('\n****** Calling build for "'+this.name+'" ******');
 
-    this.loadFiles();
+    this.loadFiles(that.path, callback); 
 
+  /*
     this.taskChain.forEach(function(task){
        task.run(that);
     });
+  */  
    
-   console.log(require('util').inspect(this.filesDependencies, true, null));
+ //  console.log(require('util').inspect(this.filesDependencies, true, null));
 
 };
 
