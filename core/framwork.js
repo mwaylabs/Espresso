@@ -87,42 +87,32 @@ Framework.prototype.loadFiles = function(path,callback){
     
 var _FileBrowser = function(framework, callback) {
     var that = this;
-
-    that.count = 0;
-
-    that.files = [];
+    
+     /* keep in track of the files, to load. Execute callback only if all resources are loaded*/
+    that._resourceCounter = 0;
 
     that.callbackIfDone = function() {
-      if (that.count <= 0){
-       //    _l.sys.puts("CB CALLLED with counter = "+that.count); 
-          callback(that.files);
+      if (that._resourceCounter <= 0){
+          callback(framework.files);
       }
     };
 
     that.browse = function(path) {
       _l.fs.stat(path, function(err, stats) {
-         // that.count += 1;
         if (err){
             throw err;
         }else {
 
           if (stats.isDirectory()) {
-             //that.count -= 1;
             _l.fs.readdir(path, function(err, subpaths) {
-//that.count += subpaths.length;
- //_l.sys.puts('subapths3 = '+subpaths + " counted sub files = "+that.count);
 
               if (err){
                   throw err;
               }else {
-                //that.count += subpaths.length - 1;
                 subpaths.forEach(function(subpath) {
-             if (subpath.match('\\.')) {
-                     that.count += 1;
-                    //  _l.sys.puts('subapth = '+subpath);
-                    //   _l.sys.puts(that.count);
-
-                  } that.browse(_l.path.join(path, subpath));
+                  /* add 1 to the counter if subfile is NOT a folder*/
+                 if (subpath.match('\\.')) {that._resourceCounter += 1;}
+                 that.browse(_l.path.join(path, subpath));
                 });
                }
             });
@@ -130,19 +120,23 @@ var _FileBrowser = function(framework, callback) {
           } else {
 
             _l.fs.readFile(path, encoding='utf8',function(err, data) {
-              that.count -= 1;
-              if (err){
+
+               if (err){
                 throw err;
               }else{
+                 /* Add a new file to the framework*/
                 framework.files.push(
                   new File({
-                            name: path,
-                            path: path,
-                            framework: framework,
-                            content: data
+                            name: path, /*name */
+                            path: path, /*path */
+                            framework: framework, /* the framework, this file belongs to.*/
+                            content: data /*the raw data content of this file*/
                            })
-                            
+
                   );
+                /* inform the  resource counter that we added a file*/
+                that._resourceCounter -= 1;
+                /* check if all files has been loaded, if yes, execute callback*/
                 that.callbackIfDone();
               }
             });

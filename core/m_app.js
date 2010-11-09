@@ -169,11 +169,11 @@ var _AppBuilder = function(app, callback) {
 
 
     /* amount of used frameworks, for this application. */
-    that.count = app.frameworks.length;
+    that._resourceCounter = app.frameworks.length;
 
     /* callback checker, called if all frameworks are build. */
     that.callbackIfDone = function() {
-      if (callback && that.count <= 0) callback();
+      if (callback && that._resourceCounter <= 0) callback();
     };
 
     that.build = function() {
@@ -181,8 +181,8 @@ var _AppBuilder = function(app, callback) {
       app.frameworks.forEach(function(framework) {
         framework.build(function(files) {
           /* count  = -1 if a framework has been build. */
-          that.count -= 1;
-           _l.sys.puts("FR COUNTER = "+that.count);
+          that._resourceCounter -= 1;
+           _l.sys.puts("FR COUNTER = "+that._resourceCounter);
           console.log(require('util').inspect(framework, true, null));
           /* check if callback can be called, the condition ist that all frameworks has been build. */
           that.callbackIfDone();
