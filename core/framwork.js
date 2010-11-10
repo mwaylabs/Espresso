@@ -19,7 +19,6 @@
 
 var _l = {},
     Framework,
-    Step = require('../lib/step');
     File = require('./file').File;
 
 
@@ -166,19 +165,7 @@ _l.sys.puts('\n****** Calling build for "'+this.name+'" ******');
     // files = selectLanguageFiles(files);
     var files = files;
         _l.sys.puts("Files for '"+that.name+"' loaded");
-
-     //   that.taskChain.forEach(function(task){
-            // task.run(that);
-      //  });
-         that.taskChain[0].run(that,callback);
-
-   // buildStylesheets(files);
-   // buildResources(files);
-   // buildTests(files);
-
-
-  //  if (callback) callback();
-
+       that.taskChain[0].run(that,callback);
   });
 
 };

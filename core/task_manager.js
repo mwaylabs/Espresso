@@ -17,7 +17,6 @@
 
 var _l = {},
     TaskManager,
-    Step = require('../lib/step'),
     ManagedTasks = require('../tasks/managed_tasks').ManagedTasks.Tasks,
     File = require('../core/file').File;
 

@@ -17,7 +17,6 @@
 
 var _l = {},
     Task_Dependency,
-    Step = require('../lib/step'),
     Task = require('./Task').Task;
     File = require('../core/file').File;
 
@@ -49,6 +48,10 @@ Task_Dependency = exports.Task_Dependency = function() {
 Task_Dependency.prototype = new Task;
 
 
+/**
+ * The duty of this task.
+ * @param framework
+ */
 Task_Dependency.prototype.duty = function(framework) {
 var that = this;
 _l.sys.puts('Running Task: "dependency"');

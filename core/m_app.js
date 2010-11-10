@@ -18,7 +18,6 @@
 
 var _l = {},
     App,
-    Step = require('../lib/step'),
     TaskManager = require('./task_manager').TaskManager,
     Framework = require('./framwork').Framework;
 
