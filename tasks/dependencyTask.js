@@ -17,6 +17,8 @@
 
 var _l = {},
     Task_Dependency,
+    Step = require('../lib/step'),
+    Task = require('./Task').Task;
     File = require('../core/file').File;
 
 /*
@@ -37,38 +39,20 @@ Task_Dependency = exports.Task_Dependency = function() {
   /* Properties */
 
   /* Local properties */
-  this.framework;
   this.name = 'dependencie_task';
   this.files = [];
   this.filesDependencies = new Array();
-  this.nextTask;
-
-
-
-  /* Adding the properties for Task_Dependency */
-  // this.addProperties(properties);
 
 };
 
 
-Task_Dependency.prototype.run = function(framework,callback){
+Task_Dependency.prototype = new Task;
 
 
-    this.framework = framework;
-    if(this.next === undefined){
-        this.computeDependencies(framework,callback);
-    }else{
-        this.next.run(framework, callback, this.computeDependencies);
-    }
-
-   // this.computeDependencies();
-      //callback();
-};
-
-
-Task_Dependency.prototype.computeDependencies = function(framework,callback) {
+Task_Dependency.prototype.duty = function(framework) {
 var that = this;
 _l.sys.puts('Running Task: "dependency"');
+
    framework.files.forEach(function(file) {
       if(file.isJavaScript()){
          var _re, _match, _path;
@@ -89,6 +73,7 @@ _l.sys.puts('Running Task: "dependency"');
        framework.filesDependencies[file.getBaseName()] = _dependenciesObject;
            }
     });
-    callback(framework);
+    
+    return framework; //  callback(framework);
 };
 

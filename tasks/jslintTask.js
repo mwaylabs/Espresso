@@ -11,6 +11,8 @@
 
 var _l = {},
     Task_JSLINT,
+    Step = require('../lib/step'),
+    Task = require('./Task').Task;
     File = require('../core/file').File;
 
 /*
@@ -32,53 +34,22 @@ Task_JSLINT = exports.Task_JSLINT = function() {
   /* Properties */
 
   /* Local properties */
-  this.framework;
   this.name = 'jslint';
   this.files = [];
   this.filesDependencies = new Array();
 
-  /* Adding the properties for Task_Dependency */
-//  this.addProperties(properties);
-
 };
 
-Task_JSLINT.prototype.run = function(framework,callback,nextTask){
-var that = this;
-
-    this.framework = framework;
-    var files = framework.files;
+Task_JSLINT.prototype = new Task;
 
 
+Task_JSLINT.prototype.duty = function(framework){
+  var files = framework.files;
 
-    if(this.next === undefined){
-        _l.sys.puts('Running Task: "jslint"');
-         files.forEach(function (file){
-            that.checkJSLINT(file.path);
-
-         });
-       
-        if(!(nextTask === undefined)){
-            nextTask(framework,callback);
-        }else{
-            callback(framework);
-        }
-    }else{
-         this.next.run(framework, callback, this.computeDependencies);
-    }
-
-
-
-
-
-    // nextTask(framework,callback);
-
-};
-
-
-Task_JSLINT.prototype.checkJSLINT = function(path,file){
-
-    var data = _l.fs.readFileSync(path, encoding='utf8');
-        erg = _l.jslint(data);
+_l.sys.puts('Running Task JSLINT');
+      
+    files.forEach(function (file){
+        erg = _l.jslint(file.content);
         if(!erg){
 
         for (i = 0; i < _l.jslint.errors.length; ++i) {
@@ -89,9 +60,10 @@ Task_JSLINT.prototype.checkJSLINT = function(path,file){
                   _l.sys.puts('         ' + (e.evidence || '').replace(/^\s*(\S*(\s+\S+)*)\s*$/, "$1"));
                   _l.sys.puts('');
               }
+          }
         }
+     });
 
-}
-
+    return framework;
 
 };

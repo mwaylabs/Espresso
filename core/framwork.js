@@ -100,7 +100,9 @@ var _FileBrowser = function(framework, callback) {
     that.browse = function(path) {
       _l.fs.stat(path, function(err, stats) {
         if (err){
+            
             throw err;
+            
         }else {
 
           if (stats.isDirectory()) {

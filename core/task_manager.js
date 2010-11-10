@@ -39,11 +39,11 @@ TaskManager = exports.TaskManager = function(Tasks) {
   /* Properties */
 
   /* Local properties */
-  this.framework;
   this.tasksChain = new Array();
 
-  this.loadNewTaskChain(Tasks);
-
+  if(!(Tasks === undefined)){
+    this.loadNewTaskChain(Tasks);
+  }
 
 };
 
@@ -54,59 +54,28 @@ TaskManager.prototype.loadNewTaskChain = function (Tasks){
 var that = this;
 
 
-  var reversedTasks = Tasks.reverse();
-  var i, name, args, first, current, next;
+  var i, firstTask, current, nextTask;
 
-  for (i = 0; i < reversedTasks.length; ++i) {
-    args = reversedTasks[i];
+  for (i = 0; i < Tasks.length; ++i) {
+      
+      nextTask = new ManagedTasks[Tasks[i]];
 
-    if (args instanceof Array) {
-      name = args.shift();  // Entfernt das erste Element, die anderen rŸcken nach.
-    } else {
-      name = args;
-      args = [];
-    }
-
-
-    next = new ManagedTasks[name];
- //   next.apply(this, args);
-    //  console.log(require('util').inspect(next, true, null));
+     //  console.log(require('util').inspect(next, true, null));
        //wendet this.handlers[name] auf das this an
        //und Ÿbergibt args (= verbleibende Handler) als Parameter
 
-    if (first === undefined) {
-      first = next;
+    if (firstTask === undefined) {
+      firstTask = nextTask;
     } else {
-      current.next = next;
+      current.next = nextTask;
     }
-    current = next; // wird bei first === undefined auf 'first' gesetzt.
+    current = nextTask; // wird bei first === undefined auf 'first' gesetzt.
   }
-that.tasksChain.push(first);
+    console.log(require('util').inspect(firstTask, true, null));
+    that.tasksChain.push(firstTask);
  //Sconsole.log(require('util').inspect(first, true, null));
 
-    /*
-  var reversedTasks = Tasks.reverse();
 
-
-  reversedTasks.forEach(function(task) {
-        if(ManagedTasks[task] === undefined){
-          _l.sys.puts("ERROR: cant found Task: '"+task+"' build stopped!");
-          process.exit(1);  
-        }else{
-         var dep = new ManagedTasks['dependency'];
-             dep.next = new ManagedTasks['jslint'];
-          that.tasksChain.push(new ManagedTasks[task]);
-        }
-    });
-
-  var dep = new ManagedTasks['dependency'];
-      dep.next = new ManagedTasks['jslint'];
-
-
-
-
-     that.tasksChain.push(dep);
-*/
    /* Tasks.forEach(function(task) {
         if(ManagedTasks[task] === undefined){
           _l.sys.puts("ERROR: cant found Task: '"+task+"' build stopped!");  

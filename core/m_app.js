@@ -135,7 +135,7 @@ var that = this, _theMProject;
   * Getting all The-M-Project related files
   * and generate Framework objects.
   */
-    //'foundation','utility'
+    //'datastore','foundation','utility'
  _theMProject = ['core'].map(function(module) {
     var _frameworkOptions  = {};
         _frameworkOptions.path = that.pathName+'modules/' + module;
@@ -182,8 +182,9 @@ var _AppBuilder = function(app, callback) {
         framework.build(function(fr) {
           /* count  = -1 if a framework has been build. */
           that._resourceCounter -= 1;
-          _l.sys.puts("FR COUNTER = "+that._resourceCounter);
-          console.log(require('util').inspect(fr.filesDependencies, true, null));
+
+            console.log(require('util').inspect(framework.filesDependencies, true, null));
+             _l.sys.puts("FR COUNTER = "+that._resourceCounter);
           /* check if callback can be called, the condition ist that all frameworks has been build. */
           that.callbackIfDone();
         });
