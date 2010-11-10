@@ -36,8 +36,6 @@ TaskManager = exports.TaskManager = function(Tasks) {
 
 
   /* Properties */
-
-  /* Local properties */
   this.tasksChain = new Array();
 
   if(!(Tasks === undefined)){
@@ -48,61 +46,29 @@ TaskManager = exports.TaskManager = function(Tasks) {
 
 /**
  * Load the all tasks that had been registered in managed_tasks.js.
+ * @param Task the task defined in the managed_tasks.js.
  */
 TaskManager.prototype.loadNewTaskChain = function (Tasks){
 var that = this;
 
+  if(!(Tasks === undefined)){
 
-  var i, firstTask, current, nextTask;
+    var i, firstTask, current, nextTask;
 
-  for (i = 0; i < Tasks.length; ++i) {
+    for (i = 0; i < Tasks.length; ++i) {
       
       nextTask = new ManagedTasks[Tasks[i]];
 
-     //  console.log(require('util').inspect(next, true, null));
-       //wendet this.handlers[name] auf das this an
-       //und Ÿbergibt args (= verbleibende Handler) als Parameter
-
-    if (firstTask === undefined) {
-      firstTask = nextTask;
-    } else {
-      current.next = nextTask;
-    }
-    current = nextTask; // wird bei first === undefined auf 'first' gesetzt.
+      if (firstTask === undefined) {
+        firstTask = nextTask;
+      } else {
+        current.next = nextTask;
+      }
+      current = nextTask;
   }
-    console.log(require('util').inspect(firstTask, true, null));
-    that.tasksChain.push(firstTask);
- //Sconsole.log(require('util').inspect(first, true, null));
-
-
-   /* Tasks.forEach(function(task) {
-        if(ManagedTasks[task] === undefined){
-          _l.sys.puts("ERROR: cant found Task: '"+task+"' build stopped!");  
-          process.exit(1); /* terminated espresso process! 
-        }else{
-          that.tasksChain.push(new ManagedTasks[task]);
-        }
-    });
-*/
-  // console.log(require('util').inspect(ManagedTasks, true, null));
-
+   that.tasksChain.push(firstTask);
+  }
 };
-
-/*
-Step(
-  function readSelf() {
-    fs.readFile(__filename, this);
-  },
-  function capitalize(err, text) {
-    if (err) throw err;
-    return text.toUpperCase();
-  },
-  function showIt(err, newText) {
-    if (err) throw err;
-    console.log(newText);
-  }
-);
- */
 
 /**
  * Return the task chain.

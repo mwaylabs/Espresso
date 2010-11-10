@@ -27,7 +27,6 @@ var _l = {},
  * fs     = filesystem
  *
  */
-_l.fs = require('fs'); 
 _l.sys = require('sys');
 
 
@@ -36,21 +35,20 @@ Task_Dependency = exports.Task_Dependency = function() {
 
 
   /* Properties */
-
-  /* Local properties */
   this.name = 'dependencie_task';
-  this.files = [];
-  this.filesDependencies = new Array();
 
 };
 
-
+/**
+ * Get the run() function from Task
+ * @param framework
+ */
 Task_Dependency.prototype = new Task;
 
 
 /**
  * The duty of this task.
- * @param framework
+ * @param framework the reference to the framework this task is working with. 
  */
 Task_Dependency.prototype.duty = function(framework) {
 var that = this;

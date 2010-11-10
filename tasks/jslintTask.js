@@ -21,7 +21,6 @@ var _l = {},
  * fs     = filesystem
  *
  */
-_l.fs = require('fs');
 _l.sys = require('sys');
 _l.jslint = require('../lib/jslint').JSLINT;
 
@@ -31,23 +30,28 @@ Task_JSLINT = exports.Task_JSLINT = function() {
 
 
   /* Properties */
-
-  /* Local properties */
   this.name = 'jslint';
-  this.files = [];
-  this.filesDependencies = new Array();
+
 
 };
 
+/**
+ * Get the run() function from Task
+ * @param framework
+ */
 Task_JSLINT.prototype = new Task;
 
-
+/**
+ * Checking the file sin the framework, according to jslint.
+ * @param framework the reference to the framework this task is working with. 
+ */
 Task_JSLINT.prototype.duty = function(framework){
   var files = framework.files;
 
 _l.sys.puts('Running Task JSLINT');
       
     files.forEach(function (file){
+      if(file.isJavaScript()){
         erg = _l.jslint(file.content);
         if(!erg){
 
@@ -61,6 +65,8 @@ _l.sys.puts('Running Task JSLINT');
               }
           }
         }
+
+      }
      });
 
     return framework;

@@ -46,7 +46,8 @@ var that = this;
  TaskSequencer.sequenceThat(
       function executeSelf() {
          /* Execute the duty function of this task first,
-            then pass the framework object forward to the next task. */
+            then pass the framework object forward to the next task.
+            returns the framework, it may be modified by the duty() function. */
         return that.duty(framework);
       },
       function callNextTask(err, fr) {
