@@ -32,6 +32,7 @@ File = exports.File = function(properties) {
   this.extname;
   this.basename;
   this.name = '';
+  this.dependencies = [];
   this.resourceExtensions = ['.png', '.jpg', '.gif', '.svg'];
 
   /* Adding the properties */

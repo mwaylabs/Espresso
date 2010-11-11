@@ -36,6 +36,7 @@ Task_Dependency = exports.Task_Dependency = function() {
 
   /* Properties */
   this.name = 'dependencie_task';
+  this.deps = [];
 
 };
 
@@ -53,28 +54,149 @@ Task_Dependency.prototype = new Task;
 Task_Dependency.prototype.duty = function(framework) {
 var that = this;
 _l.sys.puts('Running Task: "dependency"');
+ this.TaskSequencer.sequenceThat(
+      function fetchDependencies() {
+          framework.files.forEach(function(file) {
+              if(file.isJavaScript()){
+                 var _re, _match, _path;
+                 var deps = [];
 
-   framework.files.forEach(function(file) {
-      if(file.isJavaScript()){
-         var _re, _match, _path;
 
-         var _dependenciesObject = new Object();
-             _dependenciesObject.dependencies = [];
+                  _re = new RegExp("m_require\\([\"'](.*?)[\"']\\)", "g");
 
-          _re = new RegExp("m_require\\([\"'](.*?)[\"']\\)", "g");
+                  while (_match = _re.exec(file.content)) {
+                    _path = _match[1];
+                    if (!/\.js$/.test(_path)){
+                        _path += '.js';
+                    }
+                      deps.push(_path)
+                  //  _dependenciesObject.dependencies.push(_path);
+                  }
 
-          while (_match = _re.exec(file.content)) {
-            _path = _match[1];
-            if (!/\.js$/.test(_path)){
-                _path += '.js';
+                  file.dependencies = deps;
+
+
+                 // framework.filesDependencies[file.getBaseName()] = _dependenciesObject;
+              }
+            });
+
+      return framework;
+      },
+       /*Tree based sort*/
+      function sortDependencies(err, fr) {
+         if (err){throw err;}
+
+
+            fr.files.forEach(function (file){
+                if(file.isJavaScript() ){
+              //    _l.sys.puts(file.getBaseName()+' -> '+file.dependencies);
+                }
+           });
+
+            var _fileTree = new Object();
+            
+            var _treeNode = function(nodeName) {
+                var that = this;
+                that.nodeName = nodeName;
+                that.children = [];
+
+                that.addChildeNode = function(childNode){
+                    that.children.push(childNode);
+                }
+
+                that.getChildeNodes = function(){
+                   return that.children;
+                }
+
+                this.toString = function(){
+                  var  it = this.nodeName+'\n';
+
+                    this.children.forEach(function (child){
+                         it +=' -'+ child.nodeName;
+
+                     });
+
+                    return it;
+                }
             }
-            _dependenciesObject.dependencies.push(_path);
-          }
 
-       framework.filesDependencies[file.getBaseName()] = _dependenciesObject;
-           }
-    });
-    
-    return framework; //  callback(framework);
+            //var _node
+
+            /* finding and adding the root node!*/
+           fr.files.forEach(function (file){
+                if(file.isJavaScript() && file.getBaseName() === 'm'){
+                   _fileTree = new _treeNode(file.getBaseName());
+                }
+           });
+
+
+
+
+
+          var _nodeBrowser = function(f) {
+             var that = this;
+                 that.files =  f;
+
+             that.browse = function(node){
+                   that.files.forEach(function(file){
+                       file.dependencies.forEach(function (dep){
+                            if(file.getBaseName() !== node.nodeName){
+                             //   _l.sys.puts("dep = "+dep)
+                               if(dep === node.nodeName+'.js'){
+                                   node.addChildeNode(that.browse(new _treeNode(file.getBaseName())));
+                               }
+   
+                            }
+                       })
+                        //    that.browse(node);
+                   });
+/*
+                   node.getgetChildeNodes.forEach(function(childNode){
+
+                          that.browse(childNode);  
+                   });
+*/      
+                    return node
+
+             }
+
+          };
+
+
+              var ro =  new _nodeBrowser(fr.files).browse(_fileTree);
+          //    console.log(require('util').inspect(ro, true, null));
+//_l.sys.puts(ro);
+//          console.log(require('util').inspect(ro, true, null));
+
+              function print(node,string){
+
+             //    string += ' '+node.nodeName+' \n';
+                  string += '+';
+                  var it = node.nodeName+' \n'
+
+
+                 if (node.children){
+                      node.children.forEach(function (child){
+                        it += print(child,string);
+
+                     });
+
+                 }
+                  
+                 return string+' '+it;
+
+
+              }
+
+
+         _l.sys.puts(print(ro,''));
+
+      }
+  );
+
+return framework;
+
+
+
 };
 

@@ -56,17 +56,31 @@ var that = this;
     var i, firstTask, current, nextTask;
 
     for (i = 0; i < Tasks.length; ++i) {
-      
-      nextTask = new ManagedTasks[Tasks[i]];
 
-      if (firstTask === undefined) {
-        firstTask = nextTask;
-      } else {
-        current.next = nextTask;
-      }
-      current = nextTask;
+      if(!ManagedTasks[Tasks[i]]){
+          _l.sys.puts("ERROR: Task '"+Tasks[i]+"' not found! ");
+          _l.sys.puts("Hint: make sure, that the task is defined and has an entry in /tasks/managed_tasks");
+          _l.sys.puts("Hint: check spelling");
+          process.exit(1); /* exit the process, reason: task not found!*/
+      }else{
+
+        nextTask = new ManagedTasks[Tasks[i]];
+      
+        if (firstTask === undefined) {
+          firstTask = nextTask;
+        } else {
+          current.next = nextTask;
+        }
+        current = nextTask;
+     }     
   }
-   that.tasksChain.push(firstTask);
+   if(firstTask){
+       that.tasksChain.push(firstTask);
+   }else{
+     _l.sys.puts("ERROR: No Task defined");
+     process.exit(1); /* exit the process, reason: not task was defined*/
+   }
+
   }
 };
 
@@ -75,6 +89,6 @@ var that = this;
  */
 TaskManager.prototype.getTaskChain = function (){
 
-  return this.tasksChain;
+  return this.tasksChain[0];
 
 };

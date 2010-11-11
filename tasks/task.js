@@ -17,8 +17,7 @@
 
 
 var _l = {},
-    Task,
-    TaskSequencer = require('../lib/sequencer');
+    Task;
     _l.sys = require('sys');
 
 /**
@@ -33,6 +32,12 @@ Task = exports.Task = function() {
 };
 
 /**
+ * Adding the TaskSequencer to Task definition, any Task that uses this object as prototype
+ * getting access to tha TaskSequencer.
+ */
+Task.prototype.TaskSequencer = require('../lib/sequencer');
+
+/**
  * The run function, defined here for any task.
  * @param framework the framework, this task is working with
  * @param callback  the function, that should be called after the all tasks finished there job.
@@ -43,24 +48,24 @@ var that = this;
 
     /* Using TaskSequencer to take care of the task chain execution.
        If executeSelf() is finished, the framework is passed on to: callNextTask().*/
- TaskSequencer.sequenceThat(
+ this.TaskSequencer.sequenceThat(
       function executeSelf() {
          /* Execute the duty function of this task first,
             then pass the framework object forward to the next task.
             returns the framework, it may be modified by the duty() function. */
-        return that.duty(framework);
+         return that.duty(framework);
       },
       function callNextTask(err, fr) {
-        if (err){throw err;}
-        if (that.next === undefined){
+         if (err){throw err;}
+         if (that.next === undefined){
             /* If no next task is defined, we reached the end of the task chain.
                Execute the callback (that should be called after the build finishes) instead. */
             callback(fr);
-        }else{
+         }else{
             /* If a next task is defined, call its run function, and pass over the framework object
                and the callback, that should be called when the build is done. */
            that.next.run(fr,callback);
-        }
+         }
       }
     );
 

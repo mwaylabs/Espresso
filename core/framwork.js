@@ -158,14 +158,10 @@ Framework.prototype.build = function(callback){
 var that = this;
 _l.sys.puts('\n****** Calling build for "'+this.name+'" ******');
 
-   // this.loadFiles(that.path, callback); 
-
-
   this.loadFiles(that.path, function(files) {
-    // files = selectLanguageFiles(files);
     var files = files;
         _l.sys.puts("Files for '"+that.name+"' loaded");
-       that.taskChain[0].run(that,callback);
+       that.taskChain.run(that,callback);
   });
 
 };

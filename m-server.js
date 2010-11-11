@@ -10,7 +10,6 @@
 
 var espresso  = require('./core/espresso').Espresso;
 
-
 var server = new espresso.Server();
 
 var app = server.getNewApp();

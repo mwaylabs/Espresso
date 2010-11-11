@@ -49,7 +49,6 @@ Task_JSLINT.prototype.duty = function(framework){
   var files = framework.files;
 
 _l.sys.puts('Running Task JSLINT');
-      
     files.forEach(function (file){
       if(file.isJavaScript()){
         erg = _l.jslint(file.content);

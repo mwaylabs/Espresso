@@ -22,4 +22,7 @@ ManagedTasks.Tasks = new Array();
  */
 ManagedTasks.Tasks['dependency'] =  require('./dependencyTask').Task_Dependency;
 ManagedTasks.Tasks['jslint'] =  require('./jslintTask').Task_JSLINT;
+ManagedTasks.Tasks['T1'] =  require('./t1.js').T1;
+ManagedTasks.Tasks['T2'] =  require('./t2.js').T2;
+ManagedTasks.Tasks['T3'] =  require('./t3.js').T3;
 

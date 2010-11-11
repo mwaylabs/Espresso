@@ -102,7 +102,7 @@ App.prototype.loadJSONConfig = function() {
  */
 App.prototype.addTaskChain = function() {
 
-   this.taskChain = new TaskManager(["jslint","dependency"]).getTaskChain(); /* definition of standard build chain*/ 
+   this.taskChain = new TaskManager(["dependency"]).getTaskChain(); /* definition of standard build chain*/ 
 
 };
 
@@ -182,7 +182,7 @@ var _AppBuilder = function(app, callback) {
           /* count  = -1 if a framework has been build. */
           that._resourceCounter -= 1;
 
-            console.log(require('util').inspect(framework.filesDependencies, true, null));
+           
              _l.sys.puts("FR COUNTER = "+that._resourceCounter);
           /* check if callback can be called, the condition ist that all frameworks has been build. */
           that.callbackIfDone();
