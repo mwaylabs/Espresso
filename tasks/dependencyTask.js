@@ -28,6 +28,7 @@ var _l = {},
  *
  */
 _l.sys = require('sys');
+_l.fs = require('fs');
 
 
 
@@ -86,18 +87,12 @@ _l.sys.puts('Running Task: "dependency"');
       function sortDependencies(err, fr) {
          if (err){throw err;}
 
-
-            fr.files.forEach(function (file){
-                if(file.isJavaScript() ){
-              //    _l.sys.puts(file.getBaseName()+' -> '+file.dependencies);
-                }
-           });
-
             var _fileTree = new Object();
             
-            var _treeNode = function(nodeName) {
+            var _treeNode = function(nodeName,file) {
                 var that = this;
                 that.nodeName = nodeName;
+                that.file = file;
                 that.children = [];
 
                 that.addChildeNode = function(childNode){
@@ -108,24 +103,12 @@ _l.sys.puts('Running Task: "dependency"');
                    return that.children;
                 }
 
-                this.toString = function(){
-                  var  it = this.nodeName+'\n';
-
-                    this.children.forEach(function (child){
-                         it +=' -'+ child.nodeName;
-
-                     });
-
-                    return it;
-                }
             }
-
-            //var _node
 
             /* finding and adding the root node!*/
            fr.files.forEach(function (file){
                 if(file.isJavaScript() && file.getBaseName() === 'm'){
-                   _fileTree = new _treeNode(file.getBaseName());
+                   _fileTree = new _treeNode(file.getBaseName(),file);
                 }
            });
 
@@ -143,19 +126,14 @@ _l.sys.puts('Running Task: "dependency"');
                             if(file.getBaseName() !== node.nodeName){
                              //   _l.sys.puts("dep = "+dep)
                                if(dep === node.nodeName+'.js'){
-                                   node.addChildeNode(that.browse(new _treeNode(file.getBaseName())));
+                                   node.addChildeNode(that.browse(new _treeNode(file.getBaseName(),file)));
                                }
    
                             }
                        })
-                        //    that.browse(node);
-                   });
-/*
-                   node.getgetChildeNodes.forEach(function(childNode){
 
-                          that.browse(childNode);  
                    });
-*/      
+
                     return node
 
              }
@@ -163,33 +141,85 @@ _l.sys.puts('Running Task: "dependency"');
           };
 
 
-              var ro =  new _nodeBrowser(fr.files).browse(_fileTree);
-          //    console.log(require('util').inspect(ro, true, null));
-//_l.sys.puts(ro);
-//          console.log(require('util').inspect(ro, true, null));
+          var treeOfFiles =  new _nodeBrowser(fr.files).browse(_fileTree);
+
+
+          return treeOfFiles;
+
+      },
+      function mergeFiles(er,treeOfFiles) {
+
 
               function print(node,string){
-
-             //    string += ' '+node.nodeName+' \n';
                   string += '+';
                   var it = node.nodeName+' \n'
-
-
                  if (node.children){
                       node.children.forEach(function (child){
                         it += print(child,string);
-
                      });
-
                  }
-                  
                  return string+' '+it;
-
-
               }
 
 
-         _l.sys.puts(print(ro,''));
+         _l.sys.puts(print(treeOfFiles,''));
+
+
+        var Merger = function() {
+             var that = this;
+             //var mergedFile= '';
+                // that.files =  f;
+
+             that.merge = function(node,level){
+                 mergedFile += node.file.content;
+              //    _l.sys.puts(mergedFile);
+
+                  var  childContent = '' ;
+                 node.children.forEach(function (child){
+                      _l.sys.puts(child.nodeName);
+     
+
+                      childContent = child.file.content;
+
+                      level[child.nodeName] = child.nodeName;
+
+                 });
+
+                 node.children.forEach(function (child){
+                      _l.sys.puts(child.nodeName);
+
+                   //  if(!level[child.nodeName]){
+                        childContent = that.merge(child,level);
+
+                     //}
+
+
+                 });
+                  return mergedFile+childContent;
+
+             }
+
+          };
+
+          var mergedFile =  new Merger().merge(treeOfFiles,'',[]);
+        //  var mergedFile = treeOfFiles.file.content;
+
+          
+
+          
+          
+
+          
+
+
+          _l.fs.writeFile('merged.js', mergedFile, function (err) {
+              if (err) throw err;
+              console.log('It\'s saved!');
+            });
+
+
+
+
 
       }
   );
