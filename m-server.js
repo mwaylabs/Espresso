@@ -12,7 +12,15 @@ var espresso  = require('./core/espresso').Espresso;
 
 var server = new espresso.Server();
 
-var app = server.getNewApp();
+var app = server.getNewApp({
+
+    "name" : "demoApplication",
+    "pathName" : "espresso_test_case/",
+    "buildLanguage" : "en",
+    "theme" : "m-deafult",
+    "jslintCheck" : true
+
+});
 
 app.addTaskChain();
 

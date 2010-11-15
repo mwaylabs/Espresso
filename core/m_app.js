@@ -54,7 +54,7 @@ App = exports.App = function (build_options) {
   this.theme = 'm-deafult';
   this.outputFolder = 'build';
   this.jslintCheck = true;
-  this.pathName = "espresso_test_case/";
+  this.pathName = "";
   this.taskChain = new Array(); 
 
   /* Properties used by App */
@@ -102,7 +102,7 @@ App.prototype.loadJSONConfig = function() {
  */
 App.prototype.addTaskChain = function() {
 
-   this.taskChain = new TaskManager(["dependency"]).getTaskChain(); /* definition of standard build chain*/ 
+  // this.taskChain = new TaskManager(["dependency"]).getTaskChain();
 
 };
 
@@ -137,9 +137,12 @@ var that = this, _theMProject;
     //'datastore','foundation','utility'
  _theMProject = ['core'].map(function(module) {
     var _frameworkOptions  = {};
-        _frameworkOptions.path = that.pathName+'modules/' + module;
+        _frameworkOptions.path = that.pathName+'/frameworks/Mproject/modules/' + module;
         _frameworkOptions.name = module;
-        _frameworkOptions.taskChain = that.taskChain;
+        _frameworkOptions.buildVersion = that.buildVersion;
+        _frameworkOptions.appName = that.name;
+         /* Definition of standard build chain for The-M-Project«s core files*/ 
+        _frameworkOptions.taskChain = new TaskManager(["dependency"]).getTaskChain();
        return new Framework(_frameworkOptions);
     });
 
@@ -181,9 +184,8 @@ var _AppBuilder = function(app, callback) {
         framework.build(function(fr) {
           /* count  = -1 if a framework has been build. */
           that._resourceCounter -= 1;
-
-           
-             _l.sys.puts("FR COUNTER = "+that._resourceCounter);
+          _l.sys.puts("FR COUNTER = "+that._resourceCounter);
+             console.log(require('util').inspect(fr.filesDependencies, true, 1));
           /* check if callback can be called, the condition ist that all frameworks has been build. */
           that.callbackIfDone();
         });
@@ -195,6 +197,11 @@ return new _AppBuilder(this, callback).build();
 };
 
 
+/**
+ * Saves the application to the filesystem. Inside the app folder, specified by the
+ * outputFolder property.
+ * @param callback that should be called after the build.
+ */
 App.prototype.saveLocal = function(callback){
 
      _l.sys.puts('save application to filesystem');

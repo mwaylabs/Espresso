@@ -42,7 +42,7 @@ Framework = exports.Framework = function(properties) {
 
   /* Build configuration */
   this.buildVersion = null;
-  this.combineScripts = false;
+  this.combineScripts = true;
   this.combineStylesheets = true;
   this.minifyScripts = false;
   this.minifyStylesheets = false;
@@ -50,11 +50,13 @@ Framework = exports.Framework = function(properties) {
   this.buildLanguage = 'english';
 
   /* Local properties */
+  this.appName = '';  
   this.path = '';
   this.name = '';
   this.url  = '';
   this.files = new Array();
   this.filesDependencies = new Array();
+  this.dependencyTree = {};
   this.taskChain = new Array();
 
   /* Adding the properties fot this Frameworks */
