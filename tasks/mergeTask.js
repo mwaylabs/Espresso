@@ -11,6 +11,7 @@
 
 var _l = {},
     Task_Merge,
+    Step = require('../lib/step'),
     Task = require('./Task').Task;
 
 /*
@@ -23,11 +24,9 @@ _l.fs = require('fs');
 
 Task_Merge = exports.Task_Merge = function() {
 
-
   /* Properties */
   this.name = 'merge';
   this.mergedFile = ''; /*The merged output file*/
-
 
 };
 
@@ -44,17 +43,26 @@ Task_Merge.prototype = new Task;
 Task_Merge.prototype.duty = function(framework){
 var that = this;
 _l.sys.puts('Running Task: "merge"');
-
-framework.orderdFiles.forEach(function(d){
+    framework.files.forEach(function(file){
             /*Putting all file contents together.*/
-            that.mergedFile += d.file.content;
+            that.mergedFile += file.content;
          });
+ Step(
+      function makeItSo(){
+         _l.fs.writeFile(framework.name+'.js', that.mergedFile,this);
+                    
+      }, function saved(err,f){
+         if(err) throw err;
+         _l.sys.puts("It is saved!")
+    
+      }
+
+
+ );
+
 
 /*Write the merged file to output folder.*/
-_l.fs.writeFile(framework.name+'.js', that.mergedFile, function (err) {
-              if (err) throw err;
-               _l.sys.puts('It\'s saved!');
-         });
+
     
 
    // _l.fs.writeFile(fr.name+'.js', mergedFile,this);
