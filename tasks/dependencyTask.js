@@ -60,7 +60,6 @@ _l.sys.puts('Running Task: "dependency"');
       function fetchDependencies() {
           framework.files.forEach(function(file) {
               if(file.isJavaScript()){
-           //      _l.sys.puts(file.getName());
                  var _re, _match, _path;
                  var deps = [];
                   /*RegExp = all string match: m_require('someFile.js');*/
@@ -73,12 +72,10 @@ _l.sys.puts('Running Task: "dependency"');
                     }
                       deps.push(_path)
                   }
-                //  _l.sys.puts('deps.length = '+deps.length);
                   if(deps.length >= 1){
                       file.dependencies = deps;
-                      framework.files_with_Dependencies.push(file); // = deps;
+                      framework.files_with_Dependencies.push(file);
                   }else{
-                      _l.sys.puts('  + + + + + + + + +  + +');
                       framework.files_without_Dependencies.push(file);
                   }
               }
@@ -165,7 +162,7 @@ _l.sys.puts('Running Task: "dependency"');
       },
       function mergeFiles(er,fr) {
 
-      var queue  = [];
+      var _queue  = [];
 
       function print(node,string){
                   string += '+';
@@ -212,7 +209,7 @@ _l.sys.puts('Running Task: "dependency"');
                   /*Set the dependency found-counter for the next round  back to: 0
                    *The counter is used to determine if all dependencies of a particular
                    *node have been saved in the orderedFiles Array.
-                   *If NOT, the current node/file can«t be written to the orderedFiles array. */  
+                   *If NOT, the current node/file can«t yet be written to the orderedFiles array. */
                   var _deps_found  = 0;
                     for(var i = 0; i < _currentNode_Deps.length; i++ ){
                          /* check if all dependencies are already done*/
@@ -250,12 +247,12 @@ _l.sys.puts('Running Task: "dependency"');
       };
 
      /*Pushing the root node on the the queue.*/
-     queue.push(fr.dependencyTree)
+     _queue.push(fr.dependencyTree);
      /*Merge the files*/
-     var done =  new _Merger().merge([],queue);
+     var _done =  new _Merger().merge([],_queue);
 
      var _files_with_dependencies = [];
-     done.forEach(function(d){
+     _done.forEach(function(d){
           _files_with_dependencies.push(d.file);
 
      });

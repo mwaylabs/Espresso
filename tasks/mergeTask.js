@@ -47,9 +47,13 @@ _l.sys.puts('Running Task: "merge"');
             /*Putting all file contents together.*/
             that.mergedFile += file.content;
          });
+   _l.sys.puts(framework.execPath+'/'+framework.outputFolder) 
  Step(
-      function makeItSo(){
-         _l.fs.writeFile(framework.name+'.js', that.mergedFile,this);
+      function f(){
+        _l.fs.mkdir(framework.execPath+'/'+framework.outputFolder, 0777 ,this)
+      },
+      function makeItSo(err, folder){
+         _l.fs.writeFile(framework.execPath+'/'+framework.outputFolder+'/'+framework.name+'.js', that.mergedFile,this);
                     
       }, function saved(err,f){
          if(err) throw err;
