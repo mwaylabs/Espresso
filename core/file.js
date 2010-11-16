@@ -55,6 +55,13 @@ File.prototype.addProperties = function(properties){
 
 };
 
+File.prototype.getName = function(){
+     var name = this.name;
+     
+
+     return name; 
+};
+
 /**
  * Getting the name of the File without the file extension.
  */

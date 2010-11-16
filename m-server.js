@@ -15,9 +15,10 @@ var server = new espresso.Server();
 var app = server.getNewApp({
 
     "name" : "demoApplication",
-    "pathName" : "espresso_test_case/",
+    "pathName" : "/espresso_test_case/",
     "buildLanguage" : "en",
     "theme" : "m-deafult",
+    "execPath" : __dirname, /*the a actually folder name, in which this files is executed.*/
     "jslintCheck" : true
 
 });

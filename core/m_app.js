@@ -55,6 +55,7 @@ App = exports.App = function (build_options) {
   this.outputFolder = 'build';
   this.jslintCheck = true;
   this.pathName = "";
+  this.execPath = "";  
   this.taskChain = new Array(); 
 
   /* Properties used by App */
@@ -67,6 +68,7 @@ App = exports.App = function (build_options) {
   } else{
      this.addOptions(build_options);
   }
+  _l.sys.puts(this.execPath);
 
 };
 
@@ -135,14 +137,16 @@ var that = this, _theMProject;
   * and generate Framework objects.
   */
     //'datastore','foundation','utility'
- _theMProject = ['core'].map(function(module) {
+ _theMProject = ['core','ui'].map(function(module) {
     var _frameworkOptions  = {};
-        _frameworkOptions.path = that.pathName+'/frameworks/Mproject/modules/' + module;
+        _frameworkOptions.path = that.execPath+that.pathName+'/frameworks/Mproject/modules/' + module;
         _frameworkOptions.name = module;
+        _frameworkOptions.execPath = that.execPath;
         _frameworkOptions.buildVersion = that.buildVersion;
+        _frameworkOptions.outputFolder = that.outputFolder;
         _frameworkOptions.appName = that.name;
          /* Definition of standard build chain for The-M-Project«s core files*/ 
-        _frameworkOptions.taskChain = new TaskManager(["dependency"]).getTaskChain();
+        _frameworkOptions.taskChain = new TaskManager(["dependency","merge"]).getTaskChain();
        return new Framework(_frameworkOptions);
     });
 

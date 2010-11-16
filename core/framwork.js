@@ -52,11 +52,14 @@ Framework = exports.Framework = function(properties) {
   /* Local properties */
   this.appName = '';  
   this.path = '';
+  this.execPath = ''; 
   this.name = '';
   this.url  = '';
+  this.outputFolder= '';  
   this.files = new Array();
   this.filesDependencies = new Array();
   this.dependencyTree = {};
+  this.orderdFiles = [];
   this.taskChain = new Array();
 
   /* Adding the properties fot this Frameworks */
