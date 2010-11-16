@@ -42,22 +42,23 @@ Task_Merge.prototype = new Task;
  */
 Task_Merge.prototype.duty = function(framework){
 var that = this;
+var _outputPath = framework.execPath+'/'+framework.outputFolder+'/'+framework.buildVersion;
 _l.sys.puts('Running Task: "merge"');
     framework.files.forEach(function(file){
             /*Putting all file contents together.*/
             that.mergedFile += file.content;
          });
-   _l.sys.puts(framework.execPath+'/'+framework.outputFolder) 
+   _l.sys.puts(_outputPath); 
  Step(
       function f(){
-        _l.fs.mkdir(framework.execPath+'/'+framework.outputFolder, 0777 ,this)
+        _l.fs.mkdir(_outputPath, 0777 ,this)
       },
       function makeItSo(err, folder){
-         _l.fs.writeFile(framework.execPath+'/'+framework.outputFolder+'/'+framework.name+'.js', that.mergedFile,this);
+         _l.fs.writeFile(_outputPath+'/'+framework.name+'.js', that.mergedFile,this);
                     
       }, function saved(err,f){
          if(err) throw err;
-         _l.sys.puts("It is saved!")
+         _l.sys.puts("'"+framework.name+"' is saved to: "+_outputPath);
     
       }
 
