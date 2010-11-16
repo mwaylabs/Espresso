@@ -56,11 +56,11 @@ Framework = exports.Framework = function(properties) {
   this.name = '';
   this.url  = '';
   this.outputFolder= '';  
-  this.files = new Array();
-  this.filesDependencies = new Array();
+  this.files = [];
+  this.files_without_Dependencies = [];
+  this.files_with_Dependencies = [];
   this.dependencyTree = {};
-  this.orderdFiles = [];
-  this.taskChain = new Array();
+  this.taskChain = [];
 
   /* Adding the properties fot this Frameworks */
   this.addProperties(properties);

@@ -38,6 +38,8 @@ File = exports.File = function(properties) {
   /* Adding the properties */
   this.addProperties(properties);
 
+  
+
 };
 
 
@@ -56,10 +58,9 @@ File.prototype.addProperties = function(properties){
 };
 
 File.prototype.getName = function(){
-     var name = this.name;
-     
 
-     return name; 
+     var filename =  this.name.split('modules/');
+     return filename[1]; 
 };
 
 /**

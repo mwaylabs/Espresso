@@ -189,7 +189,7 @@ var _AppBuilder = function(app, callback) {
           /* count  = -1 if a framework has been build. */
           that._resourceCounter -= 1;
           _l.sys.puts("FR COUNTER = "+that._resourceCounter);
-             console.log(require('util').inspect(fr.filesDependencies, true, 1));
+             console.log(require('util').inspect(fr.files_with_Dependencies, true, 1));
           /* check if callback can be called, the condition ist that all frameworks has been build. */
           that.callbackIfDone();
         });
