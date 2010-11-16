@@ -73,11 +73,13 @@ _l.sys.puts('Running Task: "dependency"');
                     }
                       deps.push(_path)
                   }
+                //  _l.sys.puts('deps.length = '+deps.length);
                   if(deps.length >= 1){
                       file.dependencies = deps;
-                      framework.files_with_Dependencies[file.getName()] = deps;
+                      framework.files_with_Dependencies.push(file); // = deps;
                   }else{
-                      framework.files_without_Dependencies[file.getName()];
+                      _l.sys.puts('  + + + + + + + + +  + +');
+                      framework.files_without_Dependencies.push(file);
                   }
               }
             });
@@ -85,7 +87,7 @@ _l.sys.puts('Running Task: "dependency"');
       return framework;
       },
        /*Tree based sort*/
-      function sortDependencies(err, git ) {
+      function sortDependencies(err, fr) {
          if (err){throw err;}
 
            /*object to hold the root node.*/
@@ -153,7 +155,7 @@ _l.sys.puts('Running Task: "dependency"');
          };
 
          /*setting the dependency tree to the framework*/
-         fr.dependencyTree = new _TreeBuilder(fr.files).buildTree(_rootNode);
+         fr.dependencyTree = new _TreeBuilder(fr.files_with_Dependencies).buildTree(_rootNode);
 
 
 //  console.log(require('util').inspect(fr.dependencyTree, true, 1));
@@ -187,12 +189,11 @@ _l.sys.puts('Running Task: "dependency"');
        *
        * @param tree the root node of the framework«s dependency tree.
        */
-      var _Merger = function(tree) {
+      var _Merger = function() {
              var that = this;
-             var nodes = tree
               /*The return value, orderedFiles contains the files of a framework in ordered sequence
                *according to the files dependencies.*/
-             var orderdFiles = [];
+             var _orderdFiles = [];
           /**
            * The merge function is taking care of the actually merge process
            * @param done the array, containing all file names, that have already been merged.
@@ -202,41 +203,41 @@ _l.sys.puts('Running Task: "dependency"');
                /* if the queue is empty, the walk trough the tree is complete
                 * return the ordered files, so the files can finally be merged. */
                if(queue.length === 0){
-                  return orderdFiles;
+                  return _orderdFiles;
                }else{
                   /*Get the next node in the  queue*/
-                  var currentNode = queue.shift();
+                  var _currentNode = queue.shift();
                   /*Get the dependencies of the current node*/
-                  var currentNode_Deps = currentNode.file.dependencies;
+                  var _currentNode_Deps = _currentNode.file.dependencies;
                   /*Set the dependency found-counter for the next round  back to: 0
                    *The counter is used to determine if all dependencies of a particular
                    *node have been saved in the orderedFiles Array.
                    *If NOT, the current node/file can«t be written to the orderedFiles array. */  
-                  var deps_found  = 0;
-                    for(var i = 0; i < currentNode_Deps.length; i++ ){
+                  var _deps_found  = 0;
+                    for(var i = 0; i < _currentNode_Deps.length; i++ ){
                          /* check if all dependencies are already done*/
                          for(var x = 0; x < done.length; x++ ){
-                              if(done[x] === currentNode_Deps[i] ){
-                               deps_found++;
+                              if(done[x] === _currentNode_Deps[i] ){
+                               _deps_found++;
                               }
                          }
                     }
                      /* check if all dependencies of a file have already been written to orderdFiles.
                       * If NOT all file dependencies are included do it later ! */
-                    if(deps_found === currentNode_Deps.length || currentNode.name === 'core/foundation/m.js' ){
+                    if(_deps_found === _currentNode_Deps.length || _currentNode.name === 'core/foundation/m.js' ){
                         /*Take care that a node is only singular in the orderedFiles array */
-                         if(done.indexOf(currentNode.name) === -1){
-                             done.push(currentNode.name);
-                             orderdFiles.push(currentNode);
+                         if(done.indexOf(_currentNode.name) === -1){
+                             done.push(_currentNode.name);
+                             _orderdFiles.push(_currentNode);
                          }
                
                     }
 
                     /*adding all direct child nodes to the queue*/
-                    var q = currentNode.getChildeNodes();
+                    var _q = _currentNode.getChildeNodes();
 
-                    if(q !== undefined){
-                       q.forEach(function(queuee){
+                    if(_q !== undefined){
+                       _q.forEach(function(queuee){
                           /*Pushing the the children ad the end of the queue*/
                           queue.push(queuee);
                       });
@@ -251,16 +252,22 @@ _l.sys.puts('Running Task: "dependency"');
      /*Pushing the root node on the the queue.*/
      queue.push(fr.dependencyTree)
      /*Merge the files*/
-     var done =  new _Merger(fr.dependencyTree).merge([],queue);
+     var done =  new _Merger().merge([],queue);
 
-     var akku = [];
+     var _files_with_dependencies = [];
      done.forEach(function(d){
-          akku.push(d.file);
+          _files_with_dependencies.push(d.file);
 
      });
 
+      /*Merging the files WITH and WITHOUT dependencies together again*/
+      fr.files = _files_with_dependencies;
+          if(fr.files_without_Dependencies.length >= 1){
+             fr.files_without_Dependencies.forEach(function(file_with_no_dependency){
+                  fr.files.push(file_with_no_dependency);
+             });
 
-      fr.files = akku;
+          }
       return fr;
      
 
@@ -272,3 +279,4 @@ _l.sys.puts('Running Task: "dependency"');
 
 };
 
+ 
