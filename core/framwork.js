@@ -59,7 +59,7 @@ Framework = exports.Framework = function(properties) {
   this.files = [];
   this.files_without_Dependencies = [];
   this.files_with_Dependencies = [];
-  this.dependencyTree = {};
+  this.dependencyTrees = [];
   this.taskChain = [];
 
   /* Adding the properties fot this Frameworks */
