@@ -187,7 +187,7 @@ _l.sys.puts('Running Task: "dependency"');
                  _l.sys.puts(print(tree,''));
        });
 
-
+       
       
 
       /**
@@ -259,16 +259,16 @@ _l.sys.puts('Running Task: "dependency"');
            }
       };
 
-      var merger = new _Merger([]);
+      var _merger = new _Merger([]);
 
       /* Merge files for every  formed dependency tree.*/
       fr.dependencyTrees.forEach(function (tree){
-              /*Reset _queue for each tree*/
+          /*Reset _queue for each tree*/
           _queue = [];
-              /*Pushing the root node on the the queue.*/
-             _queue.push(tree);
+          /*Pushing the root node on the the queue.*/
+          _queue.push(tree);
               /*Merge the files*/
-         var _done = merger.merge([],_queue);
+         var _done = _merger.merge([],_queue);
              _done.forEach(function(d){
                    _mergedFiles.push(d.file);
 

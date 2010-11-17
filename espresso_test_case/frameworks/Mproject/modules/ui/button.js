@@ -8,7 +8,6 @@
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
-
 /**
  * @class
  *
@@ -36,13 +35,8 @@ M.ButtonView = M.View.extend({
      * Renders a button as an input tag. Input is automatically converted by jQuery mobile.
      */
     render: function() {
-        var html = '<a href="#" id="' + this.id + '"' + this.style() + '>' + this.value + '</a>';
-        if(this.renderToDOM) {
-            document.write(html);
-            this.applyTheme();
-        } else {
-            return html;
-        }
+        this.html += '<a href="#" id="' + this.id + '"' + this.style() + '>' + this.value + '</a>';
+        return this.html;
     },
 
     /**
@@ -56,7 +50,7 @@ M.ButtonView = M.View.extend({
     /**
      * Triggers rendering engine, e.g. jQuery mobile, to style the button.
      */
-    applyTheme: function() {
+    theme: function() {
         $('#' + this.id).button();
     },
 
@@ -70,6 +64,9 @@ M.ButtonView = M.View.extend({
         }
         if(this.icon) {
             html += 'data-icon="' + this.icon + '"';
+        }
+        if(this.cssClass) {
+            html += 'data-theme="' + this.cssClass + '"';
         }
         return html;
     }

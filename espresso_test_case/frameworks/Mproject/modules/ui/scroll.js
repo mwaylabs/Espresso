@@ -8,8 +8,6 @@
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
-
-
 /**
  * @class
  *
@@ -32,13 +30,20 @@ M.ScrollView = M.View.extend({
      * 3. Rendering closing tag
      */
     render: function() {
-        var html = '<div id="' + this.id + '" data-role="content">';
-        document.write(html);
+        this.html += '<div id="' + this.id + '" data-role="content">';
 
         this.renderChildViews();
 
-        html = '</div>';
-        document.write(html);
+        this.html += '</div>';
+
+        return this.html;
+    },
+
+    /**
+     * This method triggers the styling of the scrollview and its subviews.
+     */
+    theme: function() {
+        this.themeChildViews();
     }
 
 });

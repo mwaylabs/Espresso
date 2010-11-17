@@ -8,9 +8,6 @@
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
-
-
-
 /**
  * @class
  *
@@ -40,13 +37,14 @@ M.PageView = M.View.extend({
      * 3. Rendering closing tag
      */
     render: function() {
-        var html = '<div id="' + this.id + '" data-role="page">';
-        document.write(html);
+        this.html += '<div id="' + this.id + '" data-role="page">';
 
         this.renderChildViews();
-        
-        html = '</div>';
-        document.write(html);
+
+        this.html += '</div>';
+
+        this.writeToDOM();
+        this.theme();
     },
 
     /**
@@ -55,16 +53,45 @@ M.PageView = M.View.extend({
      */
     pageDidLoad: function() {
         if(this.onLoad) {
-            this.onLoad.target[this.onLoad.action](this.isFirstLoad);
-            this.isFirstLoad = NO;
+            this.onLoad.target[this.onLoad.action](this.isFirstLoad);            
         }
+
+        /* WORKAROUND for being able to use more than two tab items within a tab bar */
+        /* TODO: Get rid of this workaround with a future version of jquery mobile */
+        if(this.isFirstLoad && this.childViews) {
+            var childViews = $.trim(this.childViews).split(' ');
+            for(var i in childViews) {
+                var view = this[childViews[i]];
+                if(view.type === 'M.TabBarView') {
+                    $('[data-id="' + view.name + '"]:not(:last-child)').each(function() {
+                        if(!$(this).hasClass('ui-footer-duplicate')) {
+                            $(this).empty();
+                            $(this).hide();
+                        }
+                    });
+                }
+            }
+        }
+
+        this.isFirstLoad = NO;
     },
 
 
     /**
      * This method is called if the device's orientation changed.
      */
-    orientationDidChange: function(evt) {
-        // console.log(evt);
+    orientationDidChange: function(orientation) {
+        if(this.onOrientationChange) {
+            this.onOrientationChange.target[this.onOrientationChange.action](orientation);
+        }
+    },
+
+    /**
+     * This method triggers the styling of the page and its subviews.
+     */
+    theme: function() {
+        $('#' + this.id).page();
+        this.themeChildViews();
     }
+    
 });

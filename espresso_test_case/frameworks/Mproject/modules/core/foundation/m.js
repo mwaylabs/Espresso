@@ -30,4 +30,3 @@ var m_require = m_require || function require() {};
  */
 var YES = true;
 var NO = false;
-

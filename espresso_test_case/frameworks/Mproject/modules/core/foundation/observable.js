@@ -10,7 +10,6 @@
 
 m_require('core/utility/logger.js');
 
-
 /**
  * @class
  *

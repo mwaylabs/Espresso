@@ -8,8 +8,6 @@
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
-
-
 /**
  * @class
  *
@@ -24,8 +22,9 @@ M.ListView = M.View.extend({
 
     render: function() {
         var listTagName = this.isNumberedList ? 'ol' : 'ul';
-        var html = '<' + listTagName + ' id="' + this.id + '" data-role="listview"></' + listTagName + '>';
-        document.write(html);
+        this.html = '<' + listTagName + ' id="' + this.id + '" data-role="listview" data-icon="save"></' + listTagName + '>';
+        
+        return this.html;
     },
 
     items: null,
@@ -83,7 +82,7 @@ M.ListView = M.View.extend({
             var obj = templateView.design({});
 
             /* Get the child views as an array of strings */
-            var childViewsArray = obj.childViews[0].split(' ');
+            var childViewsArray = obj.childViews.split(' ');
 
             /* If the item is a model, read the values from the 'record' property instead */
             var record = item.type === 'M.Model' ? item.record : item;
@@ -127,18 +126,25 @@ M.ListView = M.View.extend({
 
             /* ... once it is in the DOM, make it look nice */
             for(var i in childViewsArray) {
-                obj[childViewsArray[i]].applyTheme();
+                obj[childViewsArray[i]].theme();
             }
         });
 
         /* Finally let the whole list look nice */
-        this.applyTheme();
+        this.themeUpdate();
     },
 
     /**
      * Triggers rendering engine, e.g. jQuery mobile, to style the button.
      */
-    applyTheme: function() {
+    theme: function() {
+        $('#' + this.id).listview();
+    },
+
+    /**
+     * Triggers rendering engine, e.g. jQuery mobile, to style the button.
+     */
+    themeUpdate: function() {
         $('#' + this.id).listview('refresh');
     },
 
@@ -152,8 +158,8 @@ M.ListView = M.View.extend({
         if(eval(this.contentBinding)) {
             this.inEditMode = !this.inEditMode;
 
-            if(options.disableOnEdit[0]) {
-                var views = options.disableOnEdit[0].split(' ');
+            if(options.disableOnEdit) {
+                var views = $.trim(options.disableOnEdit).split(' ');
                 _.each(views, function(view) {
                     var view = eval(view);
                     view.isEnabled = !view.isEnabled;
