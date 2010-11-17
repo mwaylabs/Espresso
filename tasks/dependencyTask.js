@@ -57,7 +57,8 @@ var that = this;
 _l.sys.puts('Running Task: "dependency"');
     
  this.TaskSequencer.sequenceThat(
-      function fetchDependencies() {
+       /*Resolve all dependencies for all JavaScript files, contained in a framework*/
+      function resolveDependencies() {
           framework.files.forEach(function(file) {
               if(file.isJavaScript()){
                  var _re, _match, _path;
@@ -73,10 +74,8 @@ _l.sys.puts('Running Task: "dependency"');
                       deps.push(_path)
                   }
                   if(deps.length >= 1){
+                      /*Add the found dependencies to the file.*/
                       file.dependencies = deps;
-                   //   framework.files_with_Dependencies.push(file);
-                  }else{
-                   //   framework.files_without_Dependencies.push(file);
                   }
               }
             });
@@ -84,14 +83,14 @@ _l.sys.puts('Running Task: "dependency"');
       return framework;
       },
        /*Tree based sort*/
-      function sortDependencies(err, fr) {
+      function buildDependencyTrees(err, fr) {
 
          if (err){throw err;}
 
           var that = this;
 
-           /*object to hold the root node.*/
-            var _rootNode = {};
+           /*object to hold the root nodes.*/
+           var _roots = [];
 
           /**
            * Helper object to generate nodes.
@@ -114,24 +113,13 @@ _l.sys.puts('Running Task: "dependency"');
                 }
             }
 
-           var roots = [];
 
+           /* find and add the root nodes first!*/
            fr.files.forEach(function (file){
                 if(file.isJavaScript() && file.dependencies.length === 0){
-                  _l.sys.puts(file.getBaseName());
-                   roots.push(new _TreeNode(file.getName(),file));
+                   _roots.push(new _TreeNode(file.getName(),file));
                 }
            });
-
-           /* find and add the root node first!*/
-          // fr.files.forEach(function (file){
-          //      if(file.isJavaScript() && file.getBaseName() === 'm'){
-                  // _rootNode = new _TreeNode(file.getBaseName(),file);
-          //         _rootNode = new _TreeNode(file.getName(),file);
-          //      }
-          // });
-
-
 
           /**
            * Helper object to compute a tree of all files, according to there dependencies.
@@ -165,33 +153,21 @@ _l.sys.puts('Running Task: "dependency"');
 
          };
 
-         var depsTrees = [];
-
-          roots.forEach(function (root){
-
-              fr.dependencyTrees.push(new _TreeBuilder(fr.files).buildTree(root));
+          _roots.forEach(function (rootNode){
+              /*setting the dependency tree to the framework*/
+              fr.dependencyTrees.push(new _TreeBuilder(fr.files).buildTree(rootNode));
 
           });
-
-
-     
-    //   _l.sys.puts(print(depsTrees[0],''));
-    //   _l.sys.puts(print(depsTrees[1],''));
-
-
-         /*setting the dependency tree to the framework*/
-       //  fr.dependencyTree = new _TreeBuilder(fr.files).buildTree(_rootNode);
-
 
 //  console.log(require('util').inspect(fr.dependencyTree, true, 1));
          /*shifting the framework to the next step in the sequencer*/
          return fr;
 
       },
-      function mergeFiles(er,fr) {
+      function sortDependencies(er,fr) {
 
       var _queue  = [];
-      var _files_with_dependencies = [];
+      var _mergedFiles = [];
 
 
 
@@ -294,13 +270,13 @@ _l.sys.puts('Running Task: "dependency"');
               /*Merge the files*/
          var _done = merger.merge([],_queue);
              _done.forEach(function(d){
-                   _files_with_dependencies.push(d.file);
+                   _mergedFiles.push(d.file);
 
              });
       });
 
       /*Set the merged files*/
-      fr.files = _files_with_dependencies;
+      fr.files = _mergedFiles;
 
       return fr;
      

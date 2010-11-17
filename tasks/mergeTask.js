@@ -48,7 +48,6 @@ _l.sys.puts('Running Task: "merge"');
             /*Putting all file contents together.*/
             that.mergedFile += file.content;
          });
-   _l.sys.puts(_outputPath); 
  Step(
       function f(){
         _l.fs.mkdir(_outputPath, 0777 ,this)
