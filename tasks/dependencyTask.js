@@ -191,6 +191,9 @@ _l.sys.puts('Running Task: "dependency"');
       function mergeFiles(er,fr) {
 
       var _queue  = [];
+      var _files_with_dependencies = [];
+
+
 
       function print(node,string){
                   string += '+';
@@ -275,19 +278,20 @@ _l.sys.puts('Running Task: "dependency"');
 
                     }
                     /*Calling merge recursively.*/
-                      return that.merge(orderdFiles,queue);
+                    return that.merge(orderdFiles,queue);
                }
            }
       };
 
-      var _files_with_dependencies = [];
+      var merger = new _Merger([]);
 
-      var merger  =   new _Merger([]);
-
+      /* Merge files for every  formed dependency tree.*/
       fr.dependencyTrees.forEach(function (tree){
-
-         var _queue =  [] ;
+              /*Reset _queue for each tree*/
+          _queue = [];
+              /*Pushing the root node on the the queue.*/
              _queue.push(tree);
+              /*Merge the files*/
          var _done = merger.merge([],_queue);
              _done.forEach(function(d){
                    _files_with_dependencies.push(d.file);
@@ -295,26 +299,9 @@ _l.sys.puts('Running Task: "dependency"');
              });
       });
 
-
-     /*Pushing the root node on the the queue.*/
-  //   _queue.push(fr.dependencyTree);
-     /*Merge the files*/
-  //   var _done =  new _Merger().merge([],_queue);
-
-  //   var _files_with_dependencies = [];
-  //   _done.forEach(function(d){
-  //        _files_with_dependencies.push(d.file);
-
-  //   });
-
-      /*Merging the files WITH and WITHOUT dependencies together again*/
+      /*Set the merged files*/
       fr.files = _files_with_dependencies;
-      //    if(fr.files_without_Dependencies.length >= 1){
-      //      fr.files_without_Dependencies.forEach(function(file_with_no_dependency){
-      //            fr.files.push(file_with_no_dependency);
-      //       });
 
-      //    }
       return fr;
      
 
