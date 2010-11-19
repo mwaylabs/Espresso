@@ -17,7 +17,8 @@
 
 
 var _l = {},
-    Task;
+    Task,
+    Step = require('../lib/step');
     _l.sys = require('sys');
 
 /**
@@ -44,30 +45,46 @@ Task.prototype.TaskSequencer = require('../lib/sequencer');
  */
 Task.prototype.run = function(framework,callback){
 var that = this;
+    
+      /* Execute the duty function of this task first,
+         then pass the framework object forward to the next task.
+         returns the framework, it may be modified by the duty() function. */
+      that.duty(framework,function(fr){
+            if (that.next === undefined){
+               /* If no next task is defined, we reached the end of the task chain.
+                  Execute the callback (that should be called after the build finishes) instead. */
+               callback(fr);
+            }else{
+               /* If a next task is defined, call its run function, and pass over the framework object
+                  and the callback, that should be called when the build is done. */
+               that.next.run(fr,callback);
+            }
 
+      });
 
     /* Using TaskSequencer to take care of the task chain execution.
        If executeSelf() is finished, the framework is passed on to: callNextTask().*/
- this.TaskSequencer.sequenceThat(
-      function executeSelf() {
+//Step(
+  //    function executeSelf() {
          /* Execute the duty function of this task first,
             then pass the framework object forward to the next task.
             returns the framework, it may be modified by the duty() function. */
-         return that.duty(framework);
-      },
-      function callNextTask(err, fr) {
-         if (err){throw err;}
-         if (that.next === undefined){
-            /* If no next task is defined, we reached the end of the task chain.
-               Execute the callback (that should be called after the build finishes) instead. */
-            callback(fr);
-         }else{
-            /* If a next task is defined, call its run function, and pass over the framework object
-               and the callback, that should be called when the build is done. */
-           that.next.run(fr,callback);
-         }
-      }
-    );
+    //     that.duty(framework,this);
+    //  },
+   //   function callNextTask(err, fr) {
+     //    if (err){_l.sys.puts("Error ");throw err;}
+// _l.sys.puts("callNextTask");
+  //       if (that.next === undefined){
+  //          /* If no next task is defined, we reached the end of the task chain.
+  //             Execute the callback (that should be called after the build finishes) instead. */
+  //          callback(fr);
+  //       }else{
+   //         /* If a next task is defined, call its run function, and pass over the framework object
+     //          and the callback, that should be called when the build is done. */
+   //        that.next.run(fr,callback);
+   //      }
+   //   }
+  //  );
 
 
 

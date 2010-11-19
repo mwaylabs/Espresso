@@ -8,14 +8,14 @@
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
-var espresso  = require('./core/espresso').Espresso;
+var espresso  = require('../../Espresso/core/espresso').Espresso;
 
 var server = new espresso.Server();
 
 var app = server.getNewApp({
     
-    "name" : "demoApplication",
-    "pathName" : "/espresso_test_case/",
+    "name" : "todos",
+    "pathName" : "",
     "buildLanguage" : "en",
     "theme" : "m-deafult",
     "execPath" : __dirname, /*the a actually folder name, in which this files is executed.*/
@@ -24,6 +24,8 @@ var app = server.getNewApp({
 });
 
 app.addTaskChain();
+
+app.loadTheApplication();
 
 app.loadTheMProject();
 

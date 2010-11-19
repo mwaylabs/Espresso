@@ -8,7 +8,7 @@
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
-var espresso  = require('./core/espresso').Espresso;
+var espresso  = require('../../Espresso/core/espresso').Espresso;
 
 var server = new espresso.Server();
 

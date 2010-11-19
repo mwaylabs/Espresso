@@ -26,7 +26,7 @@ Task_Merge = exports.Task_Merge = function() {
 
   /* Properties */
   this.name = 'merge';
-  this.mergedFile = ''; /*The merged output file*/
+  this.mergedFile = '/**/'; /*The merged output file*/ 
 
 };
 
@@ -40,15 +40,64 @@ Task_Merge.prototype = new Task;
  * Combining all the files, contained in the result of merging process
  * @param framework the reference to the framework this task is working with.
  */
-Task_Merge.prototype.duty = function(framework){
+Task_Merge.prototype.duty = function(framework,callback){
 var that = this;
-var _outputPath = framework.execPath+'/'+framework.outputFolder; //+'/'+framework.buildVersion;
-_l.sys.puts('Running Task: "merge"');
-    framework.files.forEach(function(file){
-            /*Putting all file contents together.*/
+    _l.sys.puts('Running Task: "merge"');
+
+
+  var _outputPath = framework.execPath+'/'+framework.outputFolder; //+'/'+framework.buildVersion;
+
+  framework.files.forEach(function(file){
+        if(file.isJavaScript){
+
             that.mergedFile += file.content;
+        }
+  });
+
+
+ var _FileMerger = function(framework, callback) {
+    var that = this;
+
+
+    that._resourceCounter = 1;
+  //  _l.sys.puts(framework.name+" -> framework.files.length "+that._resourceCounter);
+    that.callbackIfDone = function() {
+      if (that._resourceCounter === 0){
+          callback(framework);
+      }
+    };
+
+    that.merge = function(mergedFile) {
+
+    if(that._resourceCounter >=1){
+     if(mergedFile !== undefined){
+      _l.fs.writeFile(_outputPath+'/'+framework.buildVersion+'/'+framework.name+'.js', mergedFile,
+              function(err){
+                if(err) {throw err}
+                that._resourceCounter--;
+                that.merge(mergedFile);
+              });
+
+         }
+
+     }
+      that.callbackIfDone();
+    }
+
+
+
+ };
+
+ new _FileMerger(framework, callback).merge(that.mergedFile);
+
+  /*
+    framework.files.forEach(function(file){
+        if(file.isJavaScript){
+          
+            that.mergedFile += file.content;
+        }
          });
- Step(
+this.TaskSequencer.sequenceThat(
       function f(){
         _l.sys.puts("->>>>> "+_outputPath);
         _l.fs.mkdir(_outputPath, 0777 ,this)
@@ -59,25 +108,23 @@ _l.sys.puts('Running Task: "merge"');
         _l.fs.mkdir(_outputPath+'/'+framework.buildVersion, 0777 ,this)
       },
       function makeItSo(err, folder){
-         // if(err){throw err}
+
+         _l.sys.puts("write the file: "+framework.name+'.js');
          _l.fs.writeFile(_outputPath+'/'+framework.buildVersion+'/'+framework.name+'.js', that.mergedFile,this);
                     
       }, function saved(err,f){
          if(err) throw err;
          _l.sys.puts("'"+framework.name+"' is saved to: "+_outputPath+'/'+framework.buildVersion);
+         cb(f); 
     
       }
 
 
  );
 
+*/
 
-/*Write the merged file to output folder.*/
-
-    
-
-   // _l.fs.writeFile(fr.name+'.js', mergedFile,this);
-
-    return framework;
+// cb(framework); 
+//    return framework;
 
 };

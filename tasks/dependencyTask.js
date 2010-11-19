@@ -17,6 +17,7 @@
 
 var _l = {},
     Task_Dependency,
+    Step = require('../lib/step'),
     Task = require('./Task').Task;
     File = require('../core/file').File;
 
@@ -52,11 +53,11 @@ Task_Dependency.prototype = new Task;
  * The duty of this task.
  * @param framework the reference to the framework this task is working with. 
  */
-Task_Dependency.prototype.duty = function(framework) {
+Task_Dependency.prototype.duty = function(framework,cb) {
 var that = this;
 _l.sys.puts('Running Task: "dependency"');
-    
- this.TaskSequencer.sequenceThat(
+   //  cb(framework);
+this.TaskSequencer.sequenceThat(
        /*Resolve all dependencies for all JavaScript files, contained in a framework*/
       function resolveDependencies() {
           framework.files.forEach(function(file) {
@@ -277,15 +278,18 @@ _l.sys.puts('Running Task: "dependency"');
 
       /*Set the merged files*/
       fr.files = _mergedFiles;
+         // _l.sys.puts(cb)
+         // _l.sys.puts(fr)
+     cb(fr);
+    //  return fr;
 
-      return fr;
-     
 
     }
  );
 
-
-  return framework;
+//_l.sys.puts("sdsdsdsdsdsd");
+ // return framework;
+//  cb(framework);
 
 };
 

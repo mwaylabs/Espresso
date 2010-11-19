@@ -124,13 +124,33 @@ var that = this;
 
 };
 
+App.prototype.loadTheApplication = function(options) {
+    var that = this, _theApplication = [];
+_l.sys.puts("loade App")
+  _theApplication = ['app'].map(function(module) {
+    var _frameworkOptions  = {};
+        _frameworkOptions.path = that.execPath + '/' + module;
+        _frameworkOptions.name = that.name;
+        _frameworkOptions.execPath = that.execPath;
+        _frameworkOptions.buildVersion = that.buildVersion;
+        _frameworkOptions.outputFolder = that.outputFolder;
+        _frameworkOptions.appName = that.name;
+         /* Definition of standard build chain for The-M-Project«s core files*/
+        _frameworkOptions.taskChain = new TaskManager(["merge"]).getTaskChain();
+       return new Framework(_frameworkOptions);
+    });
+
+ this.addFrameworks(_theApplication); 
+_l.sys.puts(that.frameworks.length);
+};
+
 /**
  * Called when adding The-M-Project to the current build.
  * Loads the files for the core system.
  * @param options
  */
 App.prototype.loadTheMProject = function(options) {
-var that = this, _theMProject;
+var that = this, _theMProject, _fr;
 
  /*
   * Getting all The-M-Project related files
@@ -139,18 +159,34 @@ var that = this, _theMProject;
     //'datastore','foundation','utility'
  _theMProject = ['core','ui'].map(function(module) {
     var _frameworkOptions  = {};
-        _frameworkOptions.path = that.execPath+that.pathName+'/frameworks/Mproject/modules/' + module;
+        _frameworkOptions.path = that.execPath+'/frameworks/Mproject/modules/' + module;
         _frameworkOptions.name = module;
         _frameworkOptions.execPath = that.execPath;
         _frameworkOptions.buildVersion = that.buildVersion;
         _frameworkOptions.outputFolder = that.outputFolder;
         _frameworkOptions.appName = that.name;
          /* Definition of standard build chain for The-M-Project«s core files*/ 
-        _frameworkOptions.taskChain = new TaskManager(["dependency","merge"]).getTaskChain();
+        _frameworkOptions.taskChain = new TaskManager(["mkdir","dependency","merge"]).getTaskChain();
        return new Framework(_frameworkOptions);
     });
 
- this.addFrameworks(_theMProject); 
+ this.addFrameworks(_theMProject);
+
+
+  _fr = ['jquery','jquery_mobile','underscore'].map(function(module) {
+    var _frameworkOptions  = {};
+        _frameworkOptions.path = that.execPath+'/frameworks/Mproject/modules/' + module;
+        _frameworkOptions.name = module;
+        _frameworkOptions.execPath = that.execPath;
+        _frameworkOptions.buildVersion = that.buildVersion;
+        _frameworkOptions.outputFolder = that.outputFolder;
+        _frameworkOptions.appName = that.name;
+     //     Definition of standard build chain for The-M-Project«s core files
+        _frameworkOptions.taskChain = new TaskManager(["mkdir","copy"]).getTaskChain();
+       return new Framework(_frameworkOptions);
+    });
+
+  this.addFrameworks(_fr);
 
 };
 
