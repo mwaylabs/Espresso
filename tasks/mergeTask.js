@@ -90,41 +90,4 @@ var that = this;
 
  new _FileMerger(framework, callback).merge(that.mergedFile);
 
-  /*
-    framework.files.forEach(function(file){
-        if(file.isJavaScript){
-          
-            that.mergedFile += file.content;
-        }
-         });
-this.TaskSequencer.sequenceThat(
-      function f(){
-        _l.sys.puts("->>>>> "+_outputPath);
-        _l.fs.mkdir(_outputPath, 0777 ,this)
-      },
-
-      function f2(){
-        _l.sys.puts("ver ->>> "+_outputPath+'/'+framework.buildVersion);
-        _l.fs.mkdir(_outputPath+'/'+framework.buildVersion, 0777 ,this)
-      },
-      function makeItSo(err, folder){
-
-         _l.sys.puts("write the file: "+framework.name+'.js');
-         _l.fs.writeFile(_outputPath+'/'+framework.buildVersion+'/'+framework.name+'.js', that.mergedFile,this);
-                    
-      }, function saved(err,f){
-         if(err) throw err;
-         _l.sys.puts("'"+framework.name+"' is saved to: "+_outputPath+'/'+framework.buildVersion);
-         cb(f); 
-    
-      }
-
-
- );
-
-*/
-
-// cb(framework); 
-//    return framework;
-
 };

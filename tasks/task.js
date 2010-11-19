@@ -48,7 +48,7 @@ var that = this;
     
       /* Execute the duty function of this task first,
          then pass the framework object forward to the next task.
-         returns the framework, it may be modified by the duty() function. */
+         the framework in callback may be modified by the duty() function. */
       that.duty(framework,function(fr){
             if (that.next === undefined){
                /* If no next task is defined, we reached the end of the task chain.
@@ -61,32 +61,6 @@ var that = this;
             }
 
       });
-
-    /* Using TaskSequencer to take care of the task chain execution.
-       If executeSelf() is finished, the framework is passed on to: callNextTask().*/
-//Step(
-  //    function executeSelf() {
-         /* Execute the duty function of this task first,
-            then pass the framework object forward to the next task.
-            returns the framework, it may be modified by the duty() function. */
-    //     that.duty(framework,this);
-    //  },
-   //   function callNextTask(err, fr) {
-     //    if (err){_l.sys.puts("Error ");throw err;}
-// _l.sys.puts("callNextTask");
-  //       if (that.next === undefined){
-  //          /* If no next task is defined, we reached the end of the task chain.
-  //             Execute the callback (that should be called after the build finishes) instead. */
-  //          callback(fr);
-  //       }else{
-   //         /* If a next task is defined, call its run function, and pass over the framework object
-     //          and the callback, that should be called when the build is done. */
-   //        that.next.run(fr,callback);
-   //      }
-   //   }
-  //  );
-
-
 
 };
 
@@ -101,6 +75,6 @@ var that = this;
 Task.prototype.duty = function(framework,callback){
 
       _l.sys.puts("No duty() function implemented for: '" +this.name + "' !");
-      _l.sys.puts("Override the run() function in your tass by writing:\n yourTask.prototype.duty = function(framework,callback){ ... }");
+      _l.sys.puts("Override the duty() function in your task by writing:\n yourTask.prototype.duty = function(framework,callback){ ... }");
 
 };
