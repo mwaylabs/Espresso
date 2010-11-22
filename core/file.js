@@ -23,6 +23,7 @@ _l.sys = require('sys');
 File = exports.File = function(properties) {
  
    /* Properties */
+  this.virtual = false;  
   this.path = '';
   this.framework = '';
   this.children = '';
@@ -31,6 +32,7 @@ File = exports.File = function(properties) {
   this.url = '';
   this.extname;
   this.basename;
+  this.frDelimiter;
   this.name = '';
   this.dependencies = [];
   this.resourceExtensions = ['.png', '.jpg', '.gif', '.svg'];
@@ -57,10 +59,19 @@ File.prototype.addProperties = function(properties){
 
 };
 
+File.prototype.isVirtual = function(){
+
+
+      return this.virtual
+   // return this.name;
+};
+
+
 File.prototype.getName = function(){
 
-     var filename =  this.name.split('modules/');
-     return filename[1]; 
+      var filename =  this.name.split(this.frDelimiter);
+      return filename[1];
+   // return this.name;
 };
 
 /**
@@ -94,6 +105,14 @@ File.prototype.getFileExtension = function() {
  */
 File.prototype.isStylesheet = function() {
   return this.getFileExtension() === '.css';
+};
+
+
+/**
+ * True if file is a stylesheet.
+ */
+File.prototype.isHTML = function() {
+  return this.getFileExtension() === '.html';
 };
 
 /**

@@ -40,8 +40,13 @@ Task_MakeOutputDir.prototype = new Task;
  * @param framework the reference to the framework this task is working with.
  */
 Task_MakeOutputDir.prototype.duty = function(framework,callback){
-var that = this;
-var _outputPath = framework.execPath+'/'+framework.outputFolder; 
+var self = this;
+var _outputPath = framework.app.execPath+'/'+framework.app.outputFolder;
+   self.outP = [];
+   self.outP.push(_outputPath);
+   self.outP.push('/'+framework.app.buildVersion);
+   self.outP.push('/theme');
+   self.outP.push('/images');
 _l.sys.puts('Running Task: "make output dir"');
 
 
@@ -49,7 +54,7 @@ _l.sys.puts('Running Task: "make output dir"');
     var that = this;
 
 
-    that._resourceCounter = 2;
+    that._resourceCounter = 4; /*make 2 folders*/
 
     that.callbackIfDone = function() {
       if (that._resourceCounter === 0){
@@ -57,12 +62,17 @@ _l.sys.puts('Running Task: "make output dir"');
       }
     };
 
+    that.exitNow = function() {
+          callback(framework);
+    };
+
     that.makeOutputDir = function(path) {
 
       if(that._resourceCounter >=1){
-      _l.fs.mkdir(path, 0777 ,function(){
+      _l.fs.mkdir(path, 0777 ,function(err){
+           if(err){}
            that._resourceCounter--;
-           that.makeOutputDir(path+'/'+framework.buildVersion);
+           that.makeOutputDir(path+ self.outP.shift());
 
 
       });
@@ -72,8 +82,19 @@ _l.sys.puts('Running Task: "make output dir"');
     }
 
   };
-    
- new _OutputDirMaker(framework, callback).makeOutputDir(_outputPath);
+
+
+ _l.fs.readdir(_outputPath, function(err, files){
+       if(err){
+           if(err.errno === 17){
+                _l.fs.readdir(_outputPath, function(err, files){
+
+                });
+           }
+       }
+ });  
+
+ new _OutputDirMaker(framework, callback).makeOutputDir(self.outP.shift());
 
 
 };

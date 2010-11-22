@@ -125,18 +125,17 @@ var that = this;
 };
 
 App.prototype.loadTheApplication = function(options) {
+  
     var that = this, _theApplication = [];
 _l.sys.puts("loade App")
   _theApplication = ['app'].map(function(module) {
     var _frameworkOptions  = {};
         _frameworkOptions.path = that.execPath + '/' + module;
-        _frameworkOptions.name = that.name;
-        _frameworkOptions.execPath = that.execPath;
-        _frameworkOptions.buildVersion = that.buildVersion;
-        _frameworkOptions.outputFolder = that.outputFolder;
-        _frameworkOptions.appName = that.name;
+        _frameworkOptions.name = that.name+'_App';
+        _frameworkOptions.frDelimiter = that.execPath+'/';
+        _frameworkOptions.app = that;
          /* Definition of standard build chain for The-M-Project«s core files*/
-        _frameworkOptions.taskChain = new TaskManager(["merge"]).getTaskChain();
+        _frameworkOptions.taskChain = new TaskManager(["dependency","merge"]).getTaskChain();
        return new Framework(_frameworkOptions);
     });
 
@@ -161,28 +160,24 @@ var that = this, _theMProject, _fr;
     var _frameworkOptions  = {};
         _frameworkOptions.path = that.execPath+'/frameworks/Mproject/modules/' + module;
         _frameworkOptions.name = module;
-        _frameworkOptions.execPath = that.execPath;
-        _frameworkOptions.buildVersion = that.buildVersion;
-        _frameworkOptions.outputFolder = that.outputFolder;
-        _frameworkOptions.appName = that.name;
+        _frameworkOptions.app = that;
+        _frameworkOptions.frDelimiter = 'modules/';
          /* Definition of standard build chain for The-M-Project«s core files*/ 
-        _frameworkOptions.taskChain = new TaskManager(["mkdir","dependency","merge"]).getTaskChain();
+        _frameworkOptions.taskChain = new TaskManager(["dependency","merge"]).getTaskChain();
        return new Framework(_frameworkOptions);
     });
 
  this.addFrameworks(_theMProject);
 
 
-  _fr = ['jquery','jquery_mobile','underscore'].map(function(module) {
+  _fr = ['jquery','jquery_mobile','underscore','themes'].map(function(module) {
     var _frameworkOptions  = {};
         _frameworkOptions.path = that.execPath+'/frameworks/Mproject/modules/' + module;
         _frameworkOptions.name = module;
-        _frameworkOptions.execPath = that.execPath;
-        _frameworkOptions.buildVersion = that.buildVersion;
-        _frameworkOptions.outputFolder = that.outputFolder;
-        _frameworkOptions.appName = that.name;
+        _frameworkOptions.app = that;
+        _frameworkOptions.frDelimiter = 'modules/';
      //     Definition of standard build chain for The-M-Project«s core files
-        _frameworkOptions.taskChain = new TaskManager(["mkdir","copy"]).getTaskChain();
+        _frameworkOptions.taskChain = new TaskManager(["copy"]).getTaskChain();
        return new Framework(_frameworkOptions);
     });
 
@@ -195,16 +190,134 @@ var that = this, _theMProject, _fr;
  * @param htmlStylesheets
  * @param htmlScripts
  */
-App.prototype.buildIndexHTML = function(htmlStylesheets, htmlScripts) {
+App.prototype.buildIndexHTML = function() {
+
+var html = [];
+
+    html.push(
+      '<!DOCTYPE html>',
+      '<html>',
+      '<head>',
+        '<meta name="apple-mobile-web-app-capable" content="yes">'+
+        '<meta name="apple-mobile-web-app-status-bar-style" content="default">'+
+        '<meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">'+
+        '<title>'+this.name+'</title>'+
+        '<script src="jquery-1.4.4.min.js"></script>'+
+        '<script src="jquery.mobile-1.0a2.min.js"></script>'+
+        '<script src="underscore-min.js"></script>'+
+        '<script src="core.js"></script>'+
+        '<script src="ui.js"></script>'+
+        '<link href="theme/jquery.mobile-1.0a2.min.css" rel="stylesheet" />'+
+        '<script src="'+this.name+'.js"></script>'+
+      '<head>'
+    );
+
+
+
+    html.push(
+      '<body>'
+    );
+
+    html.push('<script language="JavaScript">'+this.name+'.app.main();'+'</script>' );
+
+    html.push(
+    	  '</body>',
+      '</html>'
+    );
+
+    html = html.join('\n');
+
+
+    var _frameworkOptions  = {};
+        _frameworkOptions.path = this.execPath;
+        _frameworkOptions.name = 'App';
+        _frameworkOptions.app = this;
+        _frameworkOptions.frDelimiter = '/';
+     //     Definition of standard build chain for The-M-Project«s core files
+        _frameworkOptions.taskChain = new TaskManager(["copy"]).getTaskChain();
+    var fr = new Framework(_frameworkOptions);
+
+        fr.files.push(
+                  new File({
+                            frDelimiter: fr.frDelimiter,
+                            virtual: true,
+                            name:'/index.html', //name[name.length-1], /*name */
+                            path:'/index.html', /*path */
+                            framework: fr, /* the framework, this file belongs to.*/
+                            content: html
+                           })
+
+                  );
+//_l.sys.puts(fr.files[0].getName());
+ var ar = [];
+    ar.push(fr);
+//  this.addFrameworks(ar);
+ // _l.sys.puts(this.frameworks);
+
  
 };
 
+App.prototype.makeOutputFolder = function(callback){
+
+
+var self = this;
+var _outputPath = this.execPath+'/'+this.outputFolder;
+   self.outP = [];
+   self.outP.push(_outputPath);
+   self.outP.push('/'+this.buildVersion);
+   self.outP.push('/theme');
+   self.outP.push('/images');
+_l.sys.puts('Running Task: "make output dir"');
+
+
+ var _OutputDirMaker = function(callback) {
+    var that = this;
+
+
+    that._resourceCounter = 4; /*make 2 folders*/
+
+    that.callbackIfDone = function() {
+      if (that._resourceCounter === 0){
+          callback();
+      }
+    };
+
+    that.makeOutputDir = function(path) {
+
+      if(that._resourceCounter >=1){
+      _l.fs.mkdir(path, 0777 ,function(err){
+          // if(err){}
+           that._resourceCounter--;
+           that.makeOutputDir(path+ self.outP.shift());
+
+
+      });
+      }
+      that.callbackIfDone();
+
+    }
+
+  };
+
+
+new _OutputDirMaker(callback).makeOutputDir(self.outP.shift());
+
+
+
+
+
+};
 
 /**
  * The function tat builds the application.
  * @param callback that should be called after the build.
  */
 App.prototype.build = function(callback){
+
+  this.buildIndexHTML();
+
+var self = this;
+
 
 var _AppBuilder = function(app, callback) {
     var that = this;
@@ -236,7 +349,20 @@ var _AppBuilder = function(app, callback) {
     };
   };
 
-return new _AppBuilder(this, callback).build();
+
+
+
+
+//return new _AppBuilder(this, callback).build();
+
+    /*
+    return this.makeOutputFolder(function(){
+       _l.sys.puts("DONE")
+    }); */
+
+    return this.makeOutputFolder(function(){
+        new _AppBuilder(self, callback).build();
+    });
 };
 
 

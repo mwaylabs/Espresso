@@ -44,7 +44,7 @@ Task_Copy.prototype = new Task;
  */
 Task_Copy.prototype.duty = function(framework,callback){
 var that = this;
-var _outputPath = framework.execPath+'/'+framework.outputFolder; 
+var _outputPath = framework.app.execPath+'/'+framework.app.outputFolder;
 
 
  var _FileCopier = function(framework, callback) {
@@ -64,16 +64,43 @@ var _outputPath = framework.execPath+'/'+framework.outputFolder;
      var current_File = files.shift();
 
      if(current_File !== undefined){
-         if(current_File.isJavaScript()||current_File.isImage()){
+             if (current_File.isJavaScript()){
+                 _l.sys.puts(current_File.path);
              _l.sys.pump(_l.fs.createReadStream(current_File.path),
-                         _l.fs.createWriteStream(_outputPath+'/'+framework.buildVersion+'/'+current_File.getBaseName()+current_File.getFileExtension()),
+                         _l.fs.createWriteStream(_outputPath+'/'+framework.app.buildVersion+'/'+current_File.getBaseName()+current_File.getFileExtension()),
+                            function(err){
+                                if(err) {throw err}
+                                that._resourceCounter--;
+                                that.copy(files);
+                            });
+             }else if (current_File.isImage()){
+             _l.sys.pump(_l.fs.createReadStream(current_File.path),
+                         _l.fs.createWriteStream(_outputPath+'/'+framework.app.buildVersion+'/theme/images/'+current_File.getBaseName()+current_File.getFileExtension()),
                             function(err){
                                 if(err) {throw err}
                                 that._resourceCounter--;
                                 that.copy(files);
                             });
 
-         }
+             }else if (current_File.isStylesheet()){
+             _l.sys.pump(_l.fs.createReadStream(current_File.path),
+                         _l.fs.createWriteStream(_outputPath+'/'+framework.app.buildVersion+'/theme/'+current_File.getBaseName()+current_File.getFileExtension()),
+                            function(err){
+                                if(err) {throw err}
+                                that._resourceCounter--;
+                                that.copy(files);
+                            });
+
+             }else if (current_File.isVirtual()){
+                 _l.fs.writeFile(_outputPath+'/'+framework.app.buildVersion+'/'+current_File.getBaseName()+current_File.getFileExtension(), current_File.content,
+                         function(err){
+                           if(err) {throw err}
+                           that._resourceCounter--;
+                           that.copy(files);
+                         });
+
+             }
+
           that.copy(files);
      }
     that.callbackIfDone();

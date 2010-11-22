@@ -45,7 +45,7 @@ var that = this;
     _l.sys.puts('Running Task: "merge"');
 
 
-  var _outputPath = framework.execPath+'/'+framework.outputFolder; //+'/'+framework.buildVersion;
+  var _outputPath = framework.app.execPath+'/'+framework.app.outputFolder;
 
   framework.files.forEach(function(file){
         if(file.isJavaScript){
@@ -71,7 +71,7 @@ var that = this;
 
     if(that._resourceCounter >=1){
      if(mergedFile !== undefined){
-      _l.fs.writeFile(_outputPath+'/'+framework.buildVersion+'/'+framework.name+'.js', mergedFile,
+      _l.fs.writeFile(_outputPath+'/'+framework.app.buildVersion+'/'+framework.name+'.js', mergedFile,
               function(err){
                 if(err) {throw err}
                 that._resourceCounter--;

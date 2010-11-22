@@ -32,6 +32,7 @@ var _l = {},
 _l.fs = require('fs');
 _l.sys = require('sys');
 _l.path = require('path');
+_l.qfs = require('../lib/qfs');
 
 
 
@@ -50,12 +51,11 @@ Framework = exports.Framework = function(properties) {
   this.buildLanguage = 'english';
 
   /* Local properties */
-  this.appName = '';  
+  this.app = null;
   this.path = '';
-  this.execPath = ''; 
   this.name = '';
   this.url  = '';
-  this.outputFolder= '';  
+  this.frDelimiter;
   this.files = [];
   this.files_without_Dependencies = [];
   this.files_with_Dependencies = [];
@@ -124,28 +124,52 @@ var _FileBrowser = function(framework, callback) {
             });
 
           } else {
+/*
+              _l.qfs.readFile(path, function(err, data) {
+               if (err){
+                 throw err;
+               }else{
+               
+                framework.files.push(
+                   new File({
+                             frDelimiter: framework.frDelimiter,
+                            name: path,
+                          path: path,
+                          framework: framework,
+                            content: data
+                          })
+                         );
+                    }
+
+                that._resourceCounter -= 1;
+
+                that.callbackIfDone();
+                });
+*/
 
             _l.fs.readFile(path, encoding='utf8',function(err, data) {
 
-               if (err){
+                if (err){
                 throw err;
-              }else{
-                 /* Add a new file to the framework*/
+               }else{
+
                 framework.files.push(
                   new File({
-                            name: path, /*name */
-                            path: path, /*path */
-                            framework: framework, /* the framework, this file belongs to.*/
-                            content: data /*the raw data content of this file*/
-                           })
+                             frDelimiter: framework.frDelimiter,
+                             name: path,
+                             path: path,
+                             framework: framework,
+                            content: data
+                            })
 
                   );
+
                 /* inform the  resource counter that we added a file*/
                 that._resourceCounter -= 1;
-                /* check if all files has been loaded, if yes, execute callback*/
+          //      /* check if all files has been loaded, if yes, execute callback*/
                 that.callbackIfDone();
-              }
-            });
+             }
+           });
           }
         }
       });
@@ -165,7 +189,7 @@ _l.sys.puts('\n****** Calling build for "'+this.name+'" ******');
 
   this.loadFiles(that.path, function(files) {
     var files = files;
-        _l.sys.puts("Files for '"+that.name+"' loaded");
+       _l.sys.puts("Files for '"+that.name+"' loaded");
        that.taskChain.run(that,callback);
   });
 
