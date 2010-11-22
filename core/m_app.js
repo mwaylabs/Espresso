@@ -127,7 +127,7 @@ var that = this;
 App.prototype.loadTheApplication = function(options) {
   
     var that = this, _theApplication = [];
-_l.sys.puts("loade App")
+_l.sys.puts("Load App")
   _theApplication = ['app'].map(function(module) {
     var _frameworkOptions  = {};
         _frameworkOptions.path = that.execPath + '/' + module;
@@ -140,7 +140,6 @@ _l.sys.puts("loade App")
     });
 
  this.addFrameworks(_theApplication); 
-_l.sys.puts(that.frameworks.length);
 };
 
 /**
@@ -208,7 +207,7 @@ var html = [];
         '<script src="core.js"></script>'+
         '<script src="ui.js"></script>'+
         '<link href="theme/jquery.mobile-1.0a2.min.css" rel="stylesheet" />'+
-        '<script src="'+this.name+'.js"></script>'+
+        '<script src="'+this.name+'_App.js"></script>'+
       '<head>'
     );
 
@@ -230,8 +229,9 @@ var html = [];
 
     var _frameworkOptions  = {};
         _frameworkOptions.path = this.execPath;
-        _frameworkOptions.name = 'App';
+        _frameworkOptions.name = 'IndexHtml';
         _frameworkOptions.app = this;
+        _frameworkOptions.virtual = true;
         _frameworkOptions.frDelimiter = '/';
      //     Definition of standard build chain for The-M-Project«s core files
         _frameworkOptions.taskChain = new TaskManager(["copy"]).getTaskChain();
@@ -250,9 +250,9 @@ var html = [];
                   );
 //_l.sys.puts(fr.files[0].getName());
  var ar = [];
-    ar.push(fr);
-//  this.addFrameworks(ar);
- // _l.sys.puts(this.frameworks);
+     ar.push(fr);
+  this.addFrameworks(ar);
+  _l.sys.puts(this.frameworks);
 
  
 };
@@ -267,14 +267,14 @@ var _outputPath = this.execPath+'/'+this.outputFolder;
    self.outP.push('/'+this.buildVersion);
    self.outP.push('/theme');
    self.outP.push('/images');
-_l.sys.puts('Running Task: "make output dir"');
+_l.sys.puts('makeing output dir');
 
 
  var _OutputDirMaker = function(callback) {
     var that = this;
 
 
-    that._resourceCounter = 4; /*make 2 folders*/
+    that._resourceCounter = 4; /*make 4 folders*/
 
     that.callbackIfDone = function() {
       if (that._resourceCounter === 0){
@@ -303,9 +303,6 @@ _l.sys.puts('Running Task: "make output dir"');
 new _OutputDirMaker(callback).makeOutputDir(self.outP.shift());
 
 
-
-
-
 };
 
 /**
@@ -324,11 +321,14 @@ var _AppBuilder = function(app, callback) {
 
 
     /* amount of used frameworks, for this application. */
-    that._resourceCounter = app.frameworks.length;
+    that._resourceCounter = app.frameworks.length +1;
+     console.log(require('util').inspect(that._resourceCounter, true, 1));
 
     /* callback checker, called if all frameworks are build. */
     that.callbackIfDone = function() {
-      if (callback && that._resourceCounter <= 0) callback();
+      if (callback && that._resourceCounter <= 0){
+          callback();
+      }
     };
 
     that.build = function() {
@@ -337,7 +337,8 @@ var _AppBuilder = function(app, callback) {
         framework.build(function(fr) {
           /* count  = -1 if a framework has been build. */
           that._resourceCounter -= 1;
-          _l.sys.puts("FRAMEWORK COUNTER = "+that._resourceCounter);
+          _l.sys.puts("############################# ############ #############  "+fr.name+" sets FRAMEWORK COUNTER = "+that._resourceCounter);
+
            /* fr.files_with_Dependencies.forEach(function(file){
                _l.sys.puts(file.getName()+' '+file.dependencies);
             }); */
@@ -349,17 +350,7 @@ var _AppBuilder = function(app, callback) {
     };
   };
 
-
-
-
-
 //return new _AppBuilder(this, callback).build();
-
-    /*
-    return this.makeOutputFolder(function(){
-       _l.sys.puts("DONE")
-    }); */
-
     return this.makeOutputFolder(function(){
         new _AppBuilder(self, callback).build();
     });

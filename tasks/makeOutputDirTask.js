@@ -70,7 +70,6 @@ _l.sys.puts('Running Task: "make output dir"');
 
       if(that._resourceCounter >=1){
       _l.fs.mkdir(path, 0777 ,function(err){
-           if(err){}
            that._resourceCounter--;
            that.makeOutputDir(path+ self.outP.shift());
 
@@ -82,17 +81,7 @@ _l.sys.puts('Running Task: "make output dir"');
     }
 
   };
-
-
- _l.fs.readdir(_outputPath, function(err, files){
-       if(err){
-           if(err.errno === 17){
-                _l.fs.readdir(_outputPath, function(err, files){
-
-                });
-           }
-       }
- });  
+  
 
  new _OutputDirMaker(framework, callback).makeOutputDir(self.outP.shift());
 

@@ -52,9 +52,11 @@ var _outputPath = framework.app.execPath+'/'+framework.app.outputFolder;
 
 
     that._resourceCounter = framework.files.length -1;
+     _l.sys.puts("that._resourceCounter  ++++++++   for"+framework.name+"      ++++++++++++ "+that._resourceCounter);
   //  _l.sys.puts(framework.name+" -> framework.files.length "+that._resourceCounter);
     that.callbackIfDone = function() {
       if (that._resourceCounter === 0){
+       //   _l.sys.puts("callbackIfDone for ++++++++         ++++++++++++ "+framework.name);
           callback(framework);
       }
     };

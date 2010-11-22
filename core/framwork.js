@@ -52,6 +52,7 @@ Framework = exports.Framework = function(properties) {
 
   /* Local properties */
   this.app = null;
+  this.virtual = false;  
   this.path = '';
   this.name = '';
   this.url  = '';
@@ -145,8 +146,8 @@ var _FileBrowser = function(framework, callback) {
 
                 that.callbackIfDone();
                 });
-*/
 
+*/
             _l.fs.readFile(path, encoding='utf8',function(err, data) {
 
                 if (err){
@@ -159,17 +160,18 @@ var _FileBrowser = function(framework, callback) {
                              name: path,
                              path: path,
                              framework: framework,
-                            content: data
+                             content: data
                             })
 
                   );
 
-                /* inform the  resource counter that we added a file*/
+
                 that._resourceCounter -= 1;
-          //      /* check if all files has been loaded, if yes, execute callback*/
+
                 that.callbackIfDone();
              }
            });
+
           }
         }
       });
@@ -187,11 +189,15 @@ Framework.prototype.build = function(callback){
 var that = this;
 _l.sys.puts('\n****** Calling build for "'+this.name+'" ******');
 
-  this.loadFiles(that.path, function(files) {
-    var files = files;
-       _l.sys.puts("Files for '"+that.name+"' loaded");
-       that.taskChain.run(that,callback);
-  });
+    if(!that.virtual){
+        this.loadFiles(that.path, function(files) {
+               _l.sys.puts("Files for '"+that.name+"' loaded");
+               that.taskChain.run(that,callback);
+          });
+    }else{
+         that.taskChain.run(that,callback);
+    }
+
 
 };
 
