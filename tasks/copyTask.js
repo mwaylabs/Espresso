@@ -50,9 +50,9 @@ var _outputPath = framework.app.execPath+'/'+framework.app.outputFolder;
  var _FileCopier = function(framework, callback) {
     var that = this;
 
-    that._resourceCounter = framework.files.length -1;
+    that._folderCounter = framework.files.length -1;
     that.callbackIfDone = function() {
-      if (that._resourceCounter === 0){
+      if (that._folderCounter === 0){
        //   _l.sys.puts("callbackIfDone for ++++++++         ++++++++++++ "+framework.name);
           callback(framework);
       }
@@ -69,7 +69,7 @@ var _outputPath = framework.app.execPath+'/'+framework.app.outputFolder;
                          _l.fs.createWriteStream(_outputPath+'/'+framework.app.buildVersion+'/'+current_File.getBaseName()+current_File.getFileExtension()),
                             function(err){
                                 if(err) {throw err}
-                                that._resourceCounter--;
+                                that._folderCounter--;
                                 that.copy(files);
                             });
              }else if (current_File.isImage()){
@@ -77,7 +77,7 @@ var _outputPath = framework.app.execPath+'/'+framework.app.outputFolder;
                          _l.fs.createWriteStream(_outputPath+'/'+framework.app.buildVersion+'/theme/images/'+current_File.getBaseName()+current_File.getFileExtension()),
                             function(err){
                                 if(err) {throw err}
-                                that._resourceCounter--;
+                                that._folderCounter--;
                                 that.copy(files);
                             });
 
@@ -86,7 +86,7 @@ var _outputPath = framework.app.execPath+'/'+framework.app.outputFolder;
                          _l.fs.createWriteStream(_outputPath+'/'+framework.app.buildVersion+'/theme/'+current_File.getBaseName()+current_File.getFileExtension()),
                             function(err){
                                 if(err) {throw err}
-                                that._resourceCounter--;
+                                that._folderCounter--;
                                 that.copy(files);
                             });
 
@@ -94,7 +94,7 @@ var _outputPath = framework.app.execPath+'/'+framework.app.outputFolder;
                  _l.fs.writeFile(_outputPath+'/'+framework.app.buildVersion+'/'+current_File.getBaseName()+current_File.getFileExtension(), current_File.content,
                          function(err){
                            if(err) {throw err}
-                           that._resourceCounter--;
+                           that._folderCounter--;
                            that.copy(files);
                          });
 

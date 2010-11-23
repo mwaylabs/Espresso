@@ -59,22 +59,22 @@ var that = this;
     var that = this;
 
 
-    that._resourceCounter = 1;
+    that._folderCounter = 1;
   //  _l.sys.puts(framework.name+" -> framework.files.length "+that._resourceCounter);
     that.callbackIfDone = function() {
-      if (that._resourceCounter === 0){
+      if (that._folderCounter === 0){
           callback(framework);
       }
     };
 
     that.merge = function(mergedFile) {
 
-    if(that._resourceCounter >=1){
+    if(that._folderCounter >=1){
      if(mergedFile !== undefined){
       _l.fs.writeFile(_outputPath+'/'+framework.app.buildVersion+'/'+framework.name+'.js', mergedFile,
               function(err){
                 if(err) {throw err}
-                that._resourceCounter--;
+                that._folderCounter--;
                 that.merge(mergedFile);
               });
 
