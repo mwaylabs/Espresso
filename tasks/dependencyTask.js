@@ -156,8 +156,7 @@ this.TaskSequencer.sequenceThat(
 
           _roots.forEach(function (rootNode){
               /*setting the dependency tree to the framework*/
-              fr.dependencyTrees.push(new _TreeBuilder(fr.files).buildTree(rootNode));
-
+                fr.dependencyTrees.push(new _TreeBuilder(fr.files).buildTree(rootNode));
           });
 
 //  console.log(require('util').inspect(fr.dependencyTree, true, 1));
@@ -276,19 +275,12 @@ this.TaskSequencer.sequenceThat(
              });
       });
 
-      /*Set the merged files*/
+      /*attache the merged and sorted files to the framework*/
       fr.files = _mergedFiles;
-         // _l.sys.puts(cb)
-         // _l.sys.puts(fr)
-     cb(fr);
-    //  return fr;
-
+      cb(fr);
 
     }
  );
-
-//_l.sys.puts("sdsdsdsdsdsd");
- // return framework;
 //  cb(framework);
 
 };

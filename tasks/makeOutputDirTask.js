@@ -42,11 +42,11 @@ Task_MakeOutputDir.prototype = new Task;
 Task_MakeOutputDir.prototype.duty = function(framework,callback){
 var self = this;
 var _outputPath = framework.app.execPath+'/'+framework.app.outputFolder;
-   self.outP = [];
-   self.outP.push(_outputPath);
-   self.outP.push('/'+framework.app.buildVersion);
-   self.outP.push('/theme');
-   self.outP.push('/images');
+   self._outP = [];
+   self._outP.push(_outputPath);
+   self._outP.push('/'+framework.app.buildVersion);
+   self._outP.push('/theme');
+   self._outP.push('/images');
 _l.sys.puts('Running Task: "make output dir"');
 
 
@@ -71,7 +71,7 @@ _l.sys.puts('Running Task: "make output dir"');
       if(that._resourceCounter >=1){
       _l.fs.mkdir(path, 0777 ,function(err){
            that._resourceCounter--;
-           that.makeOutputDir(path+ self.outP.shift());
+           that.makeOutputDir(path+ self._outP.shift());
 
 
       });
@@ -83,7 +83,7 @@ _l.sys.puts('Running Task: "make output dir"');
   };
   
 
- new _OutputDirMaker(framework, callback).makeOutputDir(self.outP.shift());
+ new _OutputDirMaker(framework, callback).makeOutputDir(self._outP.shift());
 
 
 };

@@ -39,7 +39,7 @@ _l.qfs = require('../lib/qfs');
 Framework = exports.Framework = function(properties) {
 
 
-   /* Properties */
+  /* Properties */
 
   /* Build configuration */
   this.buildVersion = null;
@@ -58,14 +58,12 @@ Framework = exports.Framework = function(properties) {
   this.url  = '';
   this.frDelimiter;
   this.files = [];
-  this.files_without_Dependencies = [];
-  this.files_with_Dependencies = [];
   this.dependencyTrees = [];
   this.taskChain = [];
 
+
   /* Adding the properties fot this Frameworks */
   this.addProperties(properties);
-
 };
 
 
@@ -84,6 +82,13 @@ Framework.prototype.addProperties = function(properties){
 
 };
 
+Framework.prototype.isVirtual = function(){
+
+  return this.virtual;
+
+}
+
+
 /**
  * Browse throw all resources containing in the Framework.
  */
@@ -92,6 +97,7 @@ Framework.prototype.loadFiles = function(path,callback){
     
 var _FileBrowser = function(framework, callback) {
     var that = this;
+    that._filesToExclude = ['.DS_Store']; /*Files that should be excluded*/
     
      /* keep in track of the files, to load. Execute callback only if all resources are loaded*/
     that._resourceCounter = 0;
@@ -102,12 +108,27 @@ var _FileBrowser = function(framework, callback) {
       }
     };
 
+    /**
+     * Check if a file path contains a file that should not be in the final build.
+     * @param path, the path to check.
+     */
+    that.checkIfFileShouldBeExcluded = function (path){
+
+        var fileBaseName = path.split('/');
+
+        if(that._filesToExclude.indexOf(fileBaseName[fileBaseName.length-1]) === -1){
+            return false;
+        }else{
+            return true;
+        }
+
+    }
+
     that.browse = function(path) {
       _l.fs.stat(path, function(err, stats) {
+
         if (err){
-            
-            throw err;
-            
+            throw err;   
         }else {
 
           if (stats.isDirectory()) {
@@ -117,37 +138,19 @@ var _FileBrowser = function(framework, callback) {
                   throw err;
               }else {
                 subpaths.forEach(function(subpath) {
-                  /* add 1 to the counter if subfile is NOT a folder*/
-                 if (subpath.match('\\.')) {that._resourceCounter += 1;}
-                 that.browse(_l.path.join(path, subpath));
+                   if(that.checkIfFileShouldBeExcluded(subpath)){
+                   }else{
+                      /* add 1 to the counter if sub file is NOT a folder*/
+                      if (subpath.match('\\.')) {that._resourceCounter += 1;}
+                      that.browse(_l.path.join(path, subpath)); 
+                   }
+
                 });
                }
             });
 
           } else {
-/*
-              _l.qfs.readFile(path, function(err, data) {
-               if (err){
-                 throw err;
-               }else{
-               
-                framework.files.push(
-                   new File({
-                             frDelimiter: framework.frDelimiter,
-                            name: path,
-                          path: path,
-                          framework: framework,
-                            content: data
-                          })
-                         );
-                    }
 
-                that._resourceCounter -= 1;
-
-                that.callbackIfDone();
-                });
-
-*/
             _l.fs.readFile(path, encoding='utf8',function(err, data) {
 
                 if (err){
@@ -164,10 +167,7 @@ var _FileBrowser = function(framework, callback) {
                             })
 
                   );
-
-
                 that._resourceCounter -= 1;
-
                 that.callbackIfDone();
              }
            });
@@ -187,18 +187,16 @@ return new _FileBrowser(this, callback).browse(path);
  */
 Framework.prototype.build = function(callback){
 var that = this;
-_l.sys.puts('\n****** Calling build for "'+this.name+'" ******');
+_l.sys.puts('\n****** calling build for "'+this.name+'" ******');
 
-    if(!that.virtual){
-        this.loadFiles(that.path, function(files) {
-               _l.sys.puts("Files for '"+that.name+"' loaded");
-               that.taskChain.run(that,callback);
-          });
+    if(that.isVirtual()){
+       that.taskChain.run(that,callback);
     }else{
-         that.taskChain.run(that,callback);
+       this.loadFiles(that.path, function(files) {
+            _l.sys.puts("Files for '"+that.name+"' loaded");
+            that.taskChain.run(that,callback);
+       });
     }
-
-
 };
 
 /**
@@ -211,17 +209,4 @@ Framework.prototype.toString = function() {
 };
 
 
-/*
- * Function for espresso development. Has only testing duty.
- * This function will NOT be in the finished version of Espresso. 
- */
-Framework.prototype.testFunction = function(){
- _l.sys.puts('\n****** Calling build for "'+this.name+'" ******');
-     this.loadFiles();
-     var files = this.files;
-         files.forEach(function (file){
-           _l.sys.puts('File: '+file.getBaseName()+ ' extension: '+ file.getFileExtension());
-         });
-     _l.sys.puts('\n');
-};
 

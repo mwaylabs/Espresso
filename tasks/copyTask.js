@@ -50,10 +50,7 @@ var _outputPath = framework.app.execPath+'/'+framework.app.outputFolder;
  var _FileCopier = function(framework, callback) {
     var that = this;
 
-
     that._resourceCounter = framework.files.length -1;
-     _l.sys.puts("that._resourceCounter  ++++++++   for"+framework.name+"      ++++++++++++ "+that._resourceCounter);
-  //  _l.sys.puts(framework.name+" -> framework.files.length "+that._resourceCounter);
     that.callbackIfDone = function() {
       if (that._resourceCounter === 0){
        //   _l.sys.puts("callbackIfDone for ++++++++         ++++++++++++ "+framework.name);
@@ -65,9 +62,9 @@ var _outputPath = framework.app.execPath+'/'+framework.app.outputFolder;
 
      var current_File = files.shift();
 
-     if(current_File !== undefined){
+     if(current_File !== undefined ){
+       //  _l.sys.puts("current_File Extension ++++++++   for "+framework.name+"      ++++++++++++ "+current_File.getBaseName());
              if (current_File.isJavaScript()){
-                 _l.sys.puts(current_File.path);
              _l.sys.pump(_l.fs.createReadStream(current_File.path),
                          _l.fs.createWriteStream(_outputPath+'/'+framework.app.buildVersion+'/'+current_File.getBaseName()+current_File.getFileExtension()),
                             function(err){
@@ -103,7 +100,6 @@ var _outputPath = framework.app.execPath+'/'+framework.app.outputFolder;
 
              }
 
-          that.copy(files);
      }
     that.callbackIfDone();
 

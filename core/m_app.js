@@ -124,7 +124,11 @@ var that = this;
 
 };
 
-App.prototype.loadTheApplication = function(options) {
+/**
+ * Load the projects related files.
+ * The project is equals the application.
+ */
+App.prototype.loadTheApplication = function() {
   
     var that = this, _theApplication = [];
 _l.sys.puts("Load App")
@@ -148,10 +152,10 @@ _l.sys.puts("Load App")
  * @param options
  */
 App.prototype.loadTheMProject = function(options) {
-var that = this, _theMProject, _fr;
+var that = this, _theMProject, _theMProjectResources;
 
  /*
-  * Getting all The-M-Project related files
+  * Getting all The-M-Project core files
   * and generate Framework objects.
   */
     //'datastore','foundation','utility'
@@ -168,19 +172,21 @@ var that = this, _theMProject, _fr;
 
  this.addFrameworks(_theMProject);
 
-
-  _fr = ['jquery','jquery_mobile','underscore','themes'].map(function(module) {
+  /*
+   * Getting the The-M-Project resources and third party frameworks,
+   * like jquery and jquery_mobile. 
+   */
+  _theMProjectResources = ['jquery','jquery_mobile','underscore','themes'].map(function(module) {
     var _frameworkOptions  = {};
         _frameworkOptions.path = that.execPath+'/frameworks/Mproject/modules/' + module;
         _frameworkOptions.name = module;
         _frameworkOptions.app = that;
-        _frameworkOptions.frDelimiter = 'modules/';
-     //     Definition of standard build chain for The-M-Project«s core files
+        _frameworkOptions.frDelimiter = 'modules/'; 
         _frameworkOptions.taskChain = new TaskManager(["copy"]).getTaskChain();
        return new Framework(_frameworkOptions);
     });
 
-  this.addFrameworks(_fr);
+  this.addFrameworks(_theMProjectResources);
 
 };
 
@@ -249,30 +255,28 @@ var html = [];
 
                   );
 //_l.sys.puts(fr.files[0].getName());
- var ar = [];
-     ar.push(fr);
-  this.addFrameworks(ar);
-  _l.sys.puts(this.frameworks);
-
- 
+  var ar = [];
+      ar.push(fr);
+  this.addFrameworks(ar); 
 };
 
+/**
+ * Function to generate the projects output folders. 
+ * @param callback, the function that should be called after the output folders are made.
+ */
 App.prototype.makeOutputFolder = function(callback){
-
-
 var self = this;
 var _outputPath = this.execPath+'/'+this.outputFolder;
-   self.outP = [];
-   self.outP.push(_outputPath);
-   self.outP.push('/'+this.buildVersion);
-   self.outP.push('/theme');
-   self.outP.push('/images');
+    self._outP = [];
+    self._outP.push(_outputPath);
+    self._outP.push('/'+this.buildVersion);
+    self._outP.push('/theme');
+    self._outP.push('/images');
 _l.sys.puts('makeing output dir');
 
 
  var _OutputDirMaker = function(callback) {
     var that = this;
-
 
     that._resourceCounter = 4; /*make 4 folders*/
 
@@ -288,7 +292,7 @@ _l.sys.puts('makeing output dir');
       _l.fs.mkdir(path, 0777 ,function(err){
           // if(err){}
            that._resourceCounter--;
-           that.makeOutputDir(path+ self.outP.shift());
+           that.makeOutputDir(path+ self._outP.shift());
 
 
       });
@@ -300,8 +304,7 @@ _l.sys.puts('makeing output dir');
   };
 
 
-new _OutputDirMaker(callback).makeOutputDir(self.outP.shift());
-
+new _OutputDirMaker(callback).makeOutputDir(self._outP.shift());
 
 };
 
@@ -311,7 +314,7 @@ new _OutputDirMaker(callback).makeOutputDir(self.outP.shift());
  */
 App.prototype.build = function(callback){
 
-  this.buildIndexHTML();
+this.buildIndexHTML();
 
 var self = this;
 
@@ -321,7 +324,7 @@ var _AppBuilder = function(app, callback) {
 
 
     /* amount of used frameworks, for this application. */
-    that._resourceCounter = app.frameworks.length +1;
+    that._resourceCounter = app.frameworks.length ;
      console.log(require('util').inspect(that._resourceCounter, true, 1));
 
     /* callback checker, called if all frameworks are build. */
@@ -337,11 +340,7 @@ var _AppBuilder = function(app, callback) {
         framework.build(function(fr) {
           /* count  = -1 if a framework has been build. */
           that._resourceCounter -= 1;
-          _l.sys.puts("############################# ############ #############  "+fr.name+" sets FRAMEWORK COUNTER = "+that._resourceCounter);
-
-           /* fr.files_with_Dependencies.forEach(function(file){
-               _l.sys.puts(file.getName()+' '+file.dependencies);
-            }); */
+         // _l.sys.puts(" ============>  "+fr.name+" sets FRAMEWORK COUNTER to: "+that._resourceCounter);
            //  console.log(require('util').inspect(fr.files_with_Dependencies, true, 1));
           /* check if callback can be called, the condition ist that all frameworks has been build. */
           that.callbackIfDone();
@@ -364,30 +363,11 @@ var _AppBuilder = function(app, callback) {
  */
 App.prototype.saveLocal = function(callback){
 
-     _l.sys.puts('save application to filesystem');
+     _l.sys.puts('saved application to filesystem!');
 
 };
 
 
-/*
- * Function for espresso development and has only testing duty!
- * This function will NOT be in the finished version of Espresso.
- */
-App.prototype.BuildStep1 = function(){
-var that  = this;
-    this.frameworks.forEach(function(framework) {
-         framework.loadFiles();
-         var files = framework.files;
-         _l.sys.puts('\n');
-         _l.sys.puts('Files in '+framework.name);
-         files.forEach(function (file){
-            //that.checkJSLINT(file.path);
-           _l.sys.puts('File: '+file.getBaseName()+ ' extension: '+ file.getFileExtension());
-         });
-    });
-
- _l.sys.puts('Used BuildStep 1');
-};
 
 
 
