@@ -100,10 +100,10 @@ var _FileBrowser = function(framework, callback) {
     that._filesToExclude = ['.DS_Store']; /*Files that should be excluded*/
     
      /* keep in track of the files, to load. Execute callback only if all resources are loaded*/
-    that._resourceCounter = 0;
+    that._folderCounter = 0;
 
     that.callbackIfDone = function() {
-      if (that._resourceCounter <= 0){
+      if (that._folderCounter <= 0){
           callback(framework.files);
       }
     };
@@ -141,7 +141,7 @@ var _FileBrowser = function(framework, callback) {
                    if(that.checkIfFileShouldBeExcluded(subpath)){
                    }else{
                       /* add 1 to the counter if sub file is NOT a folder*/
-                      if (subpath.match('\\.')) {that._resourceCounter += 1;}
+                      if (subpath.match('\\.')) {that._folderCounter += 1;}
                       that.browse(_l.path.join(path, subpath)); 
                    }
 
@@ -167,7 +167,7 @@ var _FileBrowser = function(framework, callback) {
                             })
 
                   );
-                that._resourceCounter -= 1;
+                that._folderCounter -= 1;
                 that.callbackIfDone();
              }
            });

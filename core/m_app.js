@@ -278,20 +278,20 @@ _l.sys.puts('makeing output dir');
  var _OutputDirMaker = function(callback) {
     var that = this;
 
-    that._resourceCounter = 4; /*make 4 folders*/
+    that._folderCounter = 4; /*make 4 folders*/
 
     that.callbackIfDone = function() {
-      if (that._resourceCounter === 0){
+      if (that._folderCounter === 0){
           callback();
       }
     };
 
     that.makeOutputDir = function(path) {
 
-      if(that._resourceCounter >=1){
+      if(that._folderCounter >=1){
       _l.fs.mkdir(path, 0777 ,function(err){
           // if(err){}
-           that._resourceCounter--;
+           that._folderCounter--;
            that.makeOutputDir(path+ self._outP.shift());
 
 
@@ -324,12 +324,12 @@ var _AppBuilder = function(app, callback) {
 
 
     /* amount of used frameworks, for this application. */
-    that._resourceCounter = app.frameworks.length ;
-     console.log(require('util').inspect(that._resourceCounter, true, 1));
+    that._folderCounter = app.frameworks.length ;
+     console.log(require('util').inspect(that._folderCounter, true, 1));
 
     /* callback checker, called if all frameworks are build. */
     that.callbackIfDone = function() {
-      if (callback && that._resourceCounter <= 0){
+      if (callback && that._folderCounter <= 0){
           callback();
       }
     };
@@ -339,7 +339,7 @@ var _AppBuilder = function(app, callback) {
       app.frameworks.forEach(function(framework) {
         framework.build(function(fr) {
           /* count  = -1 if a framework has been build. */
-          that._resourceCounter -= 1;
+          that._folderCounter -= 1;
          // _l.sys.puts(" ============>  "+fr.name+" sets FRAMEWORK COUNTER to: "+that._resourceCounter);
            //  console.log(require('util').inspect(fr.files_with_Dependencies, true, 1));
           /* check if callback can be called, the condition ist that all frameworks has been build. */
