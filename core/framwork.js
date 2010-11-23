@@ -61,7 +61,9 @@ Framework = exports.Framework = function(properties) {
 
 
   /* Adding the properties fot this Frameworks */
-  this.addProperties(properties);
+  if(properties){
+     this.addProperties(properties);
+  }
 };
 
 

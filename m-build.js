@@ -23,7 +23,6 @@ var app = server.getNewApp({
 
 });
 
-app.addTaskChain();
 
 app.loadTheApplication();
 
