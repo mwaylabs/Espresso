@@ -16,7 +16,6 @@
  *
  */
 
-
 var _l = {},
     Framework,
     File = require('./file').File;
@@ -32,7 +31,6 @@ var _l = {},
 _l.fs = require('fs');
 _l.sys = require('sys');
 _l.path = require('path');
-_l.qfs = require('../lib/qfs');
 
 
 
