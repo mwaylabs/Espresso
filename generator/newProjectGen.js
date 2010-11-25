@@ -334,7 +334,7 @@ this.checkArguments(args);
    };
 
     that.copy = function(files) {
-
+        var current_File = files.shift();
         if(current_File !== undefined ){
             var fileTarget = current_File.path.split('frameworks/')[1];
             fileTarget = fileTarget.split(current_File.getBaseName()+current_File.getFileExtension())[0];
@@ -350,8 +350,8 @@ this.checkArguments(args);
 
 
         }
-        var current_File = files.shift();
-        // _l.sys.puts('All done!');
+
+        //_l.sys.puts('All done!');
         return '';
     }
 
@@ -365,6 +365,11 @@ this.checkArguments(args);
 
  };
 
+_l.fs.mkdir(self.outputPath+'Apps', 0777, function(err){
+
+    if(err){
+      _l.sys.puts(self.outputPath+'Apps');
+    }
 
 
 /*
@@ -382,6 +387,6 @@ new _ProjectDirMaker(function(){
     })._generateBuildFiles(self._tools)
 }).makeOutputDir(self._outP.shift());
 
-
+});
 
 };

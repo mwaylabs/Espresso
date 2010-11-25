@@ -56,6 +56,7 @@ Framework = exports.Framework = function(properties) {
   this.url  = '';
   this.frDelimiter;
   this.files = [];
+  this.mergedFiles=[];
   this.dependencyTrees = [];
   this.taskChain = [];
 
@@ -197,6 +198,49 @@ _l.sys.puts('\n****** calling build for "'+this.name+'" ******');
             that.taskChain.run(that,callback);
        });
     }
+};
+
+
+Framework.prototype.save = function(callback){
+
+ var _outputPath = this.app.execPath+'/'+this.app.outputFolder;
+ var self = this;
+ var _FileSaver = function(filesLength, callback) {
+    var that = this;
+
+
+    that._fileCounter = filesLength;
+  //  _l.sys.puts(framework.name+" -> framework.files.length "+that._resourceCounter);
+    that.callbackIfDone = function() {
+      if (that._fileCounter === 0){
+          callback();
+      }
+    };
+
+    that.save = function(files) {
+    var _currentFile = files.shift();
+    if(that._fileCounter >=1){
+     if(_currentFile !== undefined){
+      _l.fs.writeFile(_outputPath+'/'+self.app.buildVersion+'/'+self.name+'.js', _currentFile ,
+              function(err){
+                if(err) {throw err}
+                that._folderCounter--;
+                that.save(files);
+              });
+
+         }
+
+     }
+      that.callbackIfDone();
+    }
+
+
+
+ };
+
+ new _FileSaver(this.files.length, callback).save(this.mergedFiles);
+    
+
 };
 
 /**
