@@ -49,7 +49,6 @@ var that = this;
 
   framework.files.forEach(function(file){
         if(file.isJavaScript){
-
             that.mergedFile += file.content;
         }
   });

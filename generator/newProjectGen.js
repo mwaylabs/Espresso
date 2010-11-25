@@ -77,10 +77,10 @@ var that = this;
                _l.sys.puts('Unknown argument: "'+args[2]+'"');
                 process.exit(1);
             }
-        } else{
-        _l.sys.puts('No arguments given');
-        process.exit(1);
-       }
+        }else{
+          _l.sys.puts('No arguments given');
+          process.exit(1);
+        }
     }
 };
 
@@ -246,7 +246,7 @@ this.checkArguments(args);
             output.addListener('data', function (c) {buffer += c; })
                   .addListener('end', function () {
                     _l.fs.writeFile(self.outputPath+'Apps/'+self.projectName+'/app/main.js', buffer, function (err) {
-                      if (err) throw err;
+                      if (err){ throw err; }
                       _l.sys.puts('main.js generated!');
                         that._folderCounter -= 1;
                         that._generateMainJS();
@@ -335,24 +335,23 @@ this.checkArguments(args);
 
     that.copy = function(files) {
 
-     var current_File = files.shift();
-
-     if(current_File !== undefined ){
-             var fileTarget = current_File.path.split('frameworks/')[1];
-                 fileTarget = fileTarget.split(current_File.getBaseName()+current_File.getFileExtension())[0];
-             _l.sys.pump(_l.fs.createReadStream(current_File.path),
-                         _l.fs.createWriteStream(self.outputPath+'Apps/'+self.projectName+'/frameworks/'+fileTarget+current_File.getBaseName()+current_File.getFileExtension()),
-                            function(err){
-                                if(err) {throw err}
-                                that._folderCounter--;
-                                that.copy(files);
-                           });
+        if(current_File !== undefined ){
+            var fileTarget = current_File.path.split('frameworks/')[1];
+            fileTarget = fileTarget.split(current_File.getBaseName()+current_File.getFileExtension())[0];
+            _l.sys.pump(_l.fs.createReadStream(current_File.path),
+                    _l.fs.createWriteStream(self.outputPath+'Apps/'+self.projectName+'/frameworks/'+fileTarget+current_File.getBaseName()+current_File.getFileExtension()),
+                    function(err){
+                        if(err) {throw err}
+                        that._folderCounter--;
+                        that.copy(files);
+                    });
 
 
 
 
-     }
-         _l.sys.puts('All done!');
+        }
+        var current_File = files.shift();
+        // _l.sys.puts('All done!');
         return '';
     }
 
@@ -376,7 +375,7 @@ new _ProjectDirMaker(function(){
          new _MainJSGenerator(function(){
              new _MProjectCopy(function(f){
                  new _MProjectCopy(function(d){
-                     //_l.sys.puts('All done!');
+                   //  _l.sys.puts('All done!');
                  }).copy(f)
              })._MProjectCopy()
          })._generateMainJS()

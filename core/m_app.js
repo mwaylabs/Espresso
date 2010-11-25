@@ -215,7 +215,7 @@ var html = [];
         '<link href="theme/jquery.mobile-1.0a2.min.css" rel="stylesheet" />'+
         '<script language="JavaScript">var '+this.name+' = '+this.name+ '|| {};'+'</script>'+
         '<script src="'+this.name+'_App.js"></script>'+
-      '<head>'
+      '</head>'
     );
 
    // html.push('<script language="JavaScript">var '+this.name+' = '+this.name+ '|| {};'+'</script>' );
