@@ -182,7 +182,7 @@ var that = this, _theMProject, _theMProjectResources;
         _frameworkOptions.name = module;
         _frameworkOptions.app = that;
         _frameworkOptions.frDelimiter = 'modules/'; 
-        _frameworkOptions.taskChain = new TaskManager(["copy"]).getTaskChain();
+        _frameworkOptions.taskChain = new TaskManager(["void"]).getTaskChain();
        return new Framework(_frameworkOptions);
     });
 
@@ -241,7 +241,7 @@ var html = [];
         _frameworkOptions.virtual = true;
         _frameworkOptions.frDelimiter = '/';
      //     Definition of standard build chain for The-M-Project«s core files
-        _frameworkOptions.taskChain = new TaskManager(["copy"]).getTaskChain();
+        _frameworkOptions.taskChain = new TaskManager(["void"]).getTaskChain();
     var fr = new Framework(_frameworkOptions);
 
         fr.files.push(
@@ -351,9 +351,6 @@ var _AppBuilder = function(app, callback) {
   };
 
   new _AppBuilder(self, callback).build();
-  /*return this.makeOutputFolder(function(){
-        new _AppBuilder(self, callback).build();
-  });*/
 };
 
 
