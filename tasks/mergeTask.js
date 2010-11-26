@@ -69,43 +69,4 @@ Task_Merge.prototype.duty = function(framework,callback){
 
   callback(framework);
 
-    /*
-
- var _FileMerger = function(framework, callback) {
-    var that = this;
-
-
-    that._folderCounter = 1;
-  //  _l.sys.puts(framework.name+" -> framework.files.length "+that._resourceCounter);
-    that.callbackIfDone = function() {
-      if (that._folderCounter === 0){
-          callback(framework);
-      }
-    };
-
-    that.merge = function(mergedFile) {
-
-    if(that._folderCounter >=1){
-     if(mergedFile !== undefined){
-      _l.fs.writeFile(_outputPath+'/'+framework.app.buildVersion+'/'+framework.name+'.js', mergedFile,
-              function(err){
-                if(err) {throw err}
-                that._folderCounter--;
-                that.merge(mergedFile);
-              });
-
-         }
-
-     }
-      that.callbackIfDone();
-    }
-
-
-
- };
-
- new _FileMerger(framework, callback).merge(framework.mergedFiles[0]);
-
- */
-
 };
