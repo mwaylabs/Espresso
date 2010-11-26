@@ -9,7 +9,7 @@
 // ==========================================================================
 
 
-var _l = {},gti
+var _l = {},
     Task_Merge,
     File = require('../core/file').File;
     Task = require('./Task').Task;
