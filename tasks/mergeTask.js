@@ -11,7 +11,6 @@
 
 var _l = {},
     Task_Merge,
-    Step = require('../lib/step'),
     Task = require('./Task').Task;
 
 /*
@@ -53,6 +52,8 @@ var that = this;
         }
   });
 
+ framework.mergedFiles.push(that.mergedFile);
+
 
  var _FileMerger = function(framework, callback) {
     var that = this;
@@ -87,6 +88,6 @@ var that = this;
 
  };
 
- new _FileMerger(framework, callback).merge(that.mergedFile);
+ new _FileMerger(framework, callback).merge(framework.mergedFiles[0]);
 
 };

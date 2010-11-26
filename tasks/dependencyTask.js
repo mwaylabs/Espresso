@@ -17,7 +17,6 @@
 
 var _l = {},
     Task_Dependency,
-    Step = require('../lib/step'),
     Task = require('./Task').Task;
     File = require('../core/file').File;
 

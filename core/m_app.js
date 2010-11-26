@@ -19,7 +19,7 @@
 var _l = {},
     App,
     TaskManager = require('./task_manager').TaskManager,
-    Framework = require('./framwork').Framework;
+    Framework = require('./framework').Framework;
 
 /*
  * The required modules for App.

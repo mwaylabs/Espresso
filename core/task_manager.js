@@ -59,7 +59,7 @@ var that = this;
 
       if(!ManagedTasks[Tasks[i]]){
           _l.sys.puts("ERROR: Task '"+Tasks[i]+"' not found! ");
-          _l.sys.puts("Hint: make sure, that the task is defined and has an entry in /tasks/managed_tasks");
+          _l.sys.puts("Hint: make sure, the task is defined and has an entry in /tasks/managed_tasks.js");
           _l.sys.puts("Hint: check spelling");
           process.exit(1); /* exit the process, reason: task not found!*/
       }else{

@@ -17,8 +17,7 @@
 
 
 var _l = {},
-    Task,
-    Step = require('../lib/step');
+    Task;
     _l.sys = require('sys');
 
 /**
