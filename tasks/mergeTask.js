@@ -9,7 +9,7 @@
 // ==========================================================================
 
 
-var _l = {},
+var _l = {},gti
     Task_Merge,
     File = require('../core/file').File;
     Task = require('./Task').Task;
@@ -26,7 +26,7 @@ Task_Merge = exports.Task_Merge = function() {
 
   /* Properties */
   this.name = 'merge';
-  this.mergedFile = '/**/'; /*The merged output file*/ 
+  this.mergedFile = ''; /*The merged output file*/ 
 
 };
 
