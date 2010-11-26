@@ -46,7 +46,7 @@ Task_Copy.prototype.duty = function(framework,callback){
 var that = this;
 var _outputPath = framework.app.execPath+'/'+framework.app.outputFolder;
 
-
+/*
  var _FileCopier = function(framework, callback) {
     var that = this;
 
@@ -110,6 +110,8 @@ var _outputPath = framework.app.execPath+'/'+framework.app.outputFolder;
 
  new _FileCopier(framework, callback).copy(framework.files);
 
+*/
+    callback(framework);
 
 };
 

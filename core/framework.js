@@ -41,7 +41,7 @@ Framework = exports.Framework = function(properties) {
 
   /* Build configuration */
   this.buildVersion = null;
-  this.combineScripts = true;
+  this.combinedScripts = false;
   this.combineStylesheets = true;
   this.minifyScripts = false;
   this.minifyStylesheets = false;
@@ -194,23 +194,24 @@ _l.sys.puts('\n****** calling build for "'+this.name+'" ******');
        that.taskChain.run(that,callback);
     }else{
        this.loadFiles(that.path, function(files) {
-            _l.sys.puts("Files for '"+that.name+"' loaded");
+           // _l.sys.puts("Files for '"+that.name+"' loaded");
             that.taskChain.run(that,callback);
        });
     }
 };
 
-
+/**
+ * Save framework to local file system.
+ * @param callback, function to be called after all files had been saved.
+ */
 Framework.prototype.save = function(callback){
 
  var _outputPath = this.app.execPath+'/'+this.app.outputFolder;
  var self = this;
  var _FileSaver = function(filesLength, callback) {
-    var that = this;
-
+ var that = this;
 
     that._fileCounter = filesLength;
-  //  _l.sys.puts(framework.name+" -> framework.files.length "+that._resourceCounter);
     that.callbackIfDone = function() {
       if (that._fileCounter === 0){
           callback();
@@ -218,27 +219,57 @@ Framework.prototype.save = function(callback){
     };
 
     that.save = function(files) {
-    var _currentFile = files.shift();
-    if(that._fileCounter >=1){
-     if(_currentFile !== undefined){
-      _l.fs.writeFile(_outputPath+'/'+self.app.buildVersion+'/'+self.name+'.js', _currentFile ,
-              function(err){
-                if(err) {throw err}
-                that._folderCounter--;
-                that.save(files);
-              });
+        var _currentFile = files.shift();
+        if(that._fileCounter >=1){
+          if(_currentFile !== undefined){
+            if(_currentFile.isImage()){
+               _l.sys.pump(_l.fs.createReadStream(_currentFile.path),
+                           _l.fs.createWriteStream(_outputPath+'/'+self.app.buildVersion+'/theme/images/'+_currentFile.getBaseName()+_currentFile.getFileExtension()),
+                             function(err){
+                               if(err) {throw err}
+                               that._fileCounter--;
+                               that.save(files);
+                             });
 
-         }
+            }else if (_currentFile.isStylesheet()){
+                 _l.sys.pump(_l.fs.createReadStream(_currentFile.path),
+                             _l.fs.createWriteStream(_outputPath+'/'+self.app.buildVersion+'/theme/'+_currentFile.getBaseName()+_currentFile.getFileExtension()),
+                                function(err){
+                                    if(err) {throw err}
+                                    that._fileCounter--;
+                                    that.save(files);
+                                });
 
-     }
-      that.callbackIfDone();
+            }else if (_currentFile.isVirtual()){
+                 _l.fs.writeFile(_outputPath+'/'+self.app.buildVersion+'/'+_currentFile.getBaseName()+_currentFile.getFileExtension(), _currentFile.content,
+                         function(err){
+                           if(err) {throw err}
+                           that._fileCounter--;
+                           that.save(files);
+                         });
+
+             }else{
+                 var fileName =  (self.combinedScripts) ? self.name+'.js' : _currentFile.getBaseName()+_currentFile.getFileExtension();
+
+                 _l.fs.writeFile(_outputPath+'/'+self.app.buildVersion+'/'+fileName, _currentFile.content ,
+                   function(err){
+                    if(err) {throw err}
+                    that._fileCounter--;
+                    that.save(files);
+                 });
+
+            }
+
+
+           }
+
+        }
+          that.callbackIfDone();
     }
-
-
 
  };
 
- new _FileSaver(this.files.length, callback).save(this.mergedFiles);
+ new _FileSaver(this.files.length, callback).save(this.files);
     
 
 };

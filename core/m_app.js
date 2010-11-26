@@ -325,12 +325,12 @@ var _AppBuilder = function(app, callback) {
 
 
     /* amount of used frameworks, for this application. */
-    that._folderCounter = app.frameworks.length ;
-     console.log(require('util').inspect(that._folderCounter, true, 1));
+    that._frameworkCounter = app.frameworks.length ;
+     console.log(require('util').inspect(that._frameworkCounter, true, 1));
 
     /* callback checker, called if all frameworks are build. */
     that.callbackIfDone = function() {
-      if (callback && that._folderCounter <= 0){
+      if (callback && that._frameworkCounter <= 0){
           callback();
       }
     };
@@ -340,7 +340,7 @@ var _AppBuilder = function(app, callback) {
       app.frameworks.forEach(function(framework) {
         framework.build(function(fr) {
           /* count  = -1 if a framework has been build. */
-          that._folderCounter -= 1;
+          that._frameworkCounter -= 1;
          // _l.sys.puts(" ============>  "+fr.name+" sets FRAMEWORK COUNTER to: "+that._resourceCounter);
            //  console.log(require('util').inspect(fr.files_with_Dependencies, true, 1));
           /* check if callback can be called, the condition ist that all frameworks has been build. */
@@ -350,10 +350,10 @@ var _AppBuilder = function(app, callback) {
     };
   };
 
-//return new _AppBuilder(this, callback).build();
-  return this.makeOutputFolder(function(){
+  new _AppBuilder(self, callback).build();
+  /*return this.makeOutputFolder(function(){
         new _AppBuilder(self, callback).build();
-  });
+  });*/
 };
 
 
@@ -363,8 +363,40 @@ var _AppBuilder = function(app, callback) {
  * @param callback that should be called after the build.
  */
 App.prototype.saveLocal = function(callback){
+  var self = this;
 
-     _l.sys.puts('saved application to filesystem!');
+
+  var _AppSaver = function(app, callback) {
+    var that = this;
+
+    /* amount of used frameworks, for this application. */
+    that._frameworkCounter = app.frameworks.length ;
+
+    /* callback checker, called if all frameworks are build. */
+    that.callbackIfDone = function() {
+      if (callback && that._frameworkCounter <= 0){
+          callback();
+      }
+    };
+
+    that.save = function() {
+
+      app.frameworks.forEach(function(framework) {
+        framework.save(function(fr) {
+          /* count  = -1 if a framework has been build. */
+          that._frameworkCounter -= 1;
+          that.callbackIfDone();
+        });
+      });
+    };
+  };
+
+  return this.makeOutputFolder(function(){
+        new _AppSaver(self, function(){
+              _l.sys.puts('saved application to filesystem!');
+        }).save();
+  });
+
 
 };
 

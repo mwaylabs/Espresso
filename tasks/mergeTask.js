@@ -11,6 +11,7 @@
 
 var _l = {},
     Task_Merge,
+    File = require('../core/file').File;
     Task = require('./Task').Task;
 
 /*
@@ -40,20 +41,35 @@ Task_Merge.prototype = new Task;
  * @param framework the reference to the framework this task is working with.
  */
 Task_Merge.prototype.duty = function(framework,callback){
-var that = this;
-    _l.sys.puts('Running Task: "merge"');
 
+  _l.sys.puts('Running Task: "merge"');  
+  var that = this;
+  that.files = [];
 
-  var _outputPath = framework.app.execPath+'/'+framework.app.outputFolder;
-
+  /*Merge all files together*/
   framework.files.forEach(function(file){
         if(file.isJavaScript){
             that.mergedFile += file.content;
         }
   });
 
- framework.mergedFiles.push(that.mergedFile);
 
+  that.files.push( new File({
+                             frDelimiter: framework.frDelimiter,
+                             name: framework.name,
+                             path: framework.name+'.js',
+                             framework: framework,
+                             content: that.mergedFile
+                            })
+
+                  );
+
+
+  framework.files = that.files;
+
+  callback(framework);
+
+    /*
 
  var _FileMerger = function(framework, callback) {
     var that = this;
@@ -89,5 +105,7 @@ var that = this;
  };
 
  new _FileMerger(framework, callback).merge(framework.mergedFiles[0]);
+
+ */
 
 };

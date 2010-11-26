@@ -55,7 +55,7 @@ Task_Dependency.prototype = new Task;
 Task_Dependency.prototype.duty = function(framework,cb) {
 var that = this;
 _l.sys.puts('Running Task: "dependency"');
-   //  cb(framework);
+
 this.TaskSequencer.sequenceThat(
        /*Resolve all dependencies for all JavaScript files, contained in a framework*/
       function resolveDependencies() {
@@ -158,18 +158,18 @@ this.TaskSequencer.sequenceThat(
                 fr.dependencyTrees.push(new _TreeBuilder(fr.files).buildTree(rootNode));
           });
 
-//  console.log(require('util').inspect(fr.dependencyTree, true, 1));
          /*shifting the framework to the next step in the sequencer*/
          return fr;
 
       },
+        /*Sort the found dependencies*/
       function sortDependencies(er,fr) {
 
-      var _queue  = [];
-      var _mergedFiles = [];
+      var _queue  = []; // the queue, needed for the tree sort algorithm.
+      var _sortedFiles = []; // holds the sort result.
 
 
-
+      /*  
       function print(node,string){
                   string += '+';
                   var it = node.name+' \n'
@@ -180,13 +180,13 @@ this.TaskSequencer.sequenceThat(
                  }
                  return string+' '+it;
       }
-/*
+
       fr.dependencyTrees.forEach(function (tree){
 
                  _l.sys.puts(print(tree,''));
        });
 
-    */   
+      */
       
 
       /**
@@ -201,8 +201,6 @@ this.TaskSequencer.sequenceThat(
       var _Merger = function(done) {
              var that = this;
              var _done = done;
-              /*The return value, orderedFiles contains the files of a framework in ordered sequence
-               *according to the files dependencies.*/
           /**
            * The merge function is taking care of the actually merge process
            * @param done the array, containing all file names, that have already been merged.
@@ -212,6 +210,8 @@ this.TaskSequencer.sequenceThat(
                /* if the queue is empty, the walk trough the tree is complete
                 * return the ordered files, so the files can finally be merged. */
                if(queue.length === 0){
+                 /*The return value, orderedFiles contains the files of a framework in ordered sequence
+                  *according to the files dependencies.*/
                   return orderdFiles;
                }else{
                   /*Get the next node in the  queue*/
@@ -241,7 +241,6 @@ this.TaskSequencer.sequenceThat(
                          }
                
                     }
-
                     /*adding all direct child nodes to the queue*/
                     var _q = _currentNode.getChildeNodes();
 
@@ -269,19 +268,17 @@ this.TaskSequencer.sequenceThat(
               /*Merge the files*/
          var _done = _merger.merge([],_queue);
              _done.forEach(function(d){
-                   _mergedFiles.push(d.file);
+                   _sortedFiles.push(d.file);
 
              });
       });
 
       /*attache the merged and sorted files to the framework*/
-      fr.files = _mergedFiles;
+      fr.files = _sortedFiles;
       cb(fr);
 
     }
  );
-//  cb(framework);
-
 };
 
  

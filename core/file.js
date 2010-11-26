@@ -147,7 +147,7 @@ var that = this;
  */
 File.prototype.toString = function() {
 
-    return 'Basename: '+this.getBaseName() + '\n'
+    return 'Basename: '+this.name + '\n'
           +'Filepath: '+this.path + '\n';
 };
 
