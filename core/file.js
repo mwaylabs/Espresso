@@ -59,11 +59,11 @@ File.prototype.addProperties = function(properties){
 
 };
 
+/**
+ * Returns the virtual stat of a file.
+ */
 File.prototype.isVirtual = function(){
-
-
       return this.virtual
-   // return this.name;
 };
 
 
@@ -142,5 +142,13 @@ var that = this;
 };
 
 
+/**
+ * Override Object.toString()
+ */
+File.prototype.toString = function() {
+
+    return 'Basename: '+this.getBaseName() + '\n'
+          +'Filepath: '+this.path + '\n';
+};
 
 
