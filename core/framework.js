@@ -206,6 +206,7 @@ _l.sys.puts('\n****** calling build for "'+this.name+'" ******');
  */
 Framework.prototype.save = function(callback){
 
+// TODO: made some refactoring here, to make the save function more "well-arranged".
  var _outputPath = this.app.execPath+'/'+this.app.outputFolder;
  var self = this;
  var _FileSaver = function(filesLength, callback) {
