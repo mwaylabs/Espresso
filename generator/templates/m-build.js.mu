@@ -19,6 +19,10 @@ app.loadTheApplication();
 
 app.loadTheMProject();
 
-app.build(function (opt) {
-    app.saveLocal(opt);
+
+
+
+app.build(function (options) {
+    app.saveLocal(options);
 });
+

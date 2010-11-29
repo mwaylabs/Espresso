@@ -8,8 +8,9 @@
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
-/**
- * Definition of every file used during the building step.
+/*
+ * The file prototype.
+ *
  */
 
 var _l = {},
@@ -29,6 +30,9 @@ File = exports.File = function(properties) {
   this.children = '';
   this.isHtml = false;
   this.content = '';
+  this.contentType = '';
+  this.requestPath ='';
+
   this.url = '';
   this.extname;
   this.basename;
@@ -132,13 +136,13 @@ File.prototype.isJavaScript = function() {
  */
 File.prototype.isImage = function() {
 var that = this;
-    that.isImage = false;
+    var x  = false;
     this.resourceExtensions.forEach(function (resExt) {
-        if(resExt == that.getFileExtension()){
-            that.isImage = true;
+        if(resExt === that.getFileExtension()){
+            x = true;
         }
     });
-  return that.isImage;
+  return x;
 };
 
 

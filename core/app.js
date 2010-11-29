@@ -49,13 +49,13 @@ App = exports.App = function (build_options) {
   /* Build configuration */
   this.name = 'defaultName';
   this.server = null;
-  this.buildVersion = new Date().getTime();
+  this.buildVersion = new Date().getTime(); // timestamp of the build.
   this.buildLanguage = 'english';
   this.theme = 'm-deafult';
-  this.outputFolder = 'build';
+  this.outputFolder = 'build'; // name of the output folder, default is 'build'.
   this.jslintCheck = true;
-  this.pathName = "";
-  this.execPath = "";  
+ // this.pathName = "";
+  this.execPath = "";  //  the a actually folder name, in which the application is located.
   this.taskChain = new Array(); 
 
   /* Properties used by App */
@@ -139,7 +139,7 @@ _l.sys.puts("Load App")
         _frameworkOptions.frDelimiter = that.execPath+'/';
         _frameworkOptions.app = that;
          /* Definition of standard build chain for The-M-Project«s core files*/
-        _frameworkOptions.taskChain = new TaskManager(["dependency","merge"]).getTaskChain();
+        _frameworkOptions.taskChain = new TaskManager(["dependency","merge","contentType"]).getTaskChain();
        return new Framework(_frameworkOptions);
     });
 
@@ -166,7 +166,7 @@ var that = this, _theMProject, _theMProjectResources;
         _frameworkOptions.app = that;
         _frameworkOptions.frDelimiter = 'modules/';
          /* Definition of standard build chain for The-M-Project«s core files*/ 
-        _frameworkOptions.taskChain = new TaskManager(["dependency","merge"]).getTaskChain();
+        _frameworkOptions.taskChain = new TaskManager(["dependency","merge","contentType"]).getTaskChain();
        return new Framework(_frameworkOptions);
     });
 
@@ -182,7 +182,7 @@ var that = this, _theMProject, _theMProjectResources;
         _frameworkOptions.name = module;
         _frameworkOptions.app = that;
         _frameworkOptions.frDelimiter = 'modules/'; 
-        _frameworkOptions.taskChain = new TaskManager(["void"]).getTaskChain();
+        _frameworkOptions.taskChain = new TaskManager(["contentType"]).getTaskChain();
        return new Framework(_frameworkOptions);
     });
 
@@ -197,9 +197,9 @@ var that = this, _theMProject, _theMProjectResources;
  */
 App.prototype.buildIndexHTML = function() {
 
-var html = [];
+var _indexhtml = [];
 
-    html.push(
+    _indexhtml.push(
       '<!DOCTYPE html>',
       '<html>',
       '<head>',
@@ -220,18 +220,18 @@ var html = [];
 
    // html.push('<script language="JavaScript">var '+this.name+' = '+this.name+ '|| {};'+'</script>' );
 
-    html.push(
+    _indexhtml.push(
       '<body>'
     );
 
-    html.push('<script language="JavaScript">'+this.name+'.app.main();'+'</script>' );
+    _indexhtml.push('<script language="JavaScript">'+this.name+'.app.main();'+'</script>' );
 
-    html.push(
+    _indexhtml.push(
     	  '</body>',
       '</html>'
     );
 
-    html = html.join('\n');
+    _indexhtml = _indexhtml.join('\n');
 
 
     var _frameworkOptions  = {};
@@ -241,17 +241,17 @@ var html = [];
         _frameworkOptions.virtual = true;
         _frameworkOptions.frDelimiter = '/';
      //     Definition of standard build chain for The-M-Project«s core files
-        _frameworkOptions.taskChain = new TaskManager(["void"]).getTaskChain();
+        _frameworkOptions.taskChain = new TaskManager(["contentType"]).getTaskChain();
     var fr = new Framework(_frameworkOptions);
 
         fr.files.push(
                   new File({
                             frDelimiter: fr.frDelimiter,
                             virtual: true,
-                            name:'/index.html', //name[name.length-1], /*name */
-                            path:'/index.html', /*path */
+                            name:'/index.html',
+                            path:'/index.html',
                             framework: fr, /* the framework, this file belongs to.*/
-                            content: html
+                            content: _indexhtml
                            })
 
                   );
@@ -273,7 +273,6 @@ var _outputPath = this.execPath+'/'+this.outputFolder;
     self._outP.push('/'+this.buildVersion);
     self._outP.push('/theme');
     self._outP.push('/images');
-_l.sys.puts('makeing output dir');
 
 
  var _OutputDirMaker = function(callback) {
@@ -339,7 +338,6 @@ var _AppBuilder = function(app, callback) {
         framework.build(function(fr) {
           /* count  = -1 if a framework has been build. */
           that._frameworkCounter -= 1;
-         // _l.sys.puts(" ============>  "+fr.name+" sets FRAMEWORK COUNTER to: "+that._resourceCounter);
            //  console.log(require('util').inspect(fr.files_with_Dependencies, true, 1));
           /* check if callback can be called, the condition ist that all frameworks has been build. */
           that.callbackIfDone();
@@ -365,7 +363,7 @@ App.prototype.saveLocal = function(callback){
     var that = this;
 
     /* amount of used frameworks, for this application. */
-    that._frameworkCounter = app.frameworks.length ;
+    that._frameworkCounter = app.frameworks.length;
 
     /* callback checker, called if all frameworks are build. */
     that.callbackIfDone = function() {
@@ -395,6 +393,43 @@ App.prototype.saveLocal = function(callback){
 
 };
 
+
+App.prototype.prepareForServer = function(callback){
+    var self = this;
+
+    var _AppPreparer = function(app, callback){
+        var that  = this;
+
+        /* amount of used frameworks, for this application. */
+        that._frameworkCounter = app.frameworks.length;
+
+        /* callback checker, called if all frameworks are build. */
+        that.callbackIfDone = function() {
+          if (callback && that._frameworkCounter <= 0){
+              callback();
+          }
+        };
+
+        that.prepareForServer = function (){
+
+            app.frameworks.forEach(function(framework){
+                framework.prepareForServer(self.server, function(){
+
+                /* count  = -1 if a framework has been build. */
+                that._frameworkCounter -= 1;
+                that.callbackIfDone();
+
+                });
+            });
+
+        };
+
+    }
+
+
+    new _AppPreparer(self,callback).prepareForServer();
+
+};
 
 
 

@@ -10,8 +10,8 @@
 
 
 
-/**
- * Definition of Task.
+/*
+ * The task prototype.
  *
  */
 

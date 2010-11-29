@@ -8,6 +8,9 @@
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
+/*
+ * The server prototype.
+ */
 
 var Server;
     _l = {},
@@ -25,7 +28,7 @@ Server = exports.Server = function() {
   this.hostname = '127.0.0.1';
 
   this.apps = [];   /* = the applications managed by this server */
-  this.files = [];  /* = the files, that should be served by  this server */
+  this.files = {};  /* = the files, that should be served by  this server */
 
 };
 
@@ -39,8 +42,7 @@ Server.prototype.getNewApp = function(appOptions) {
 
   app = new App(appOptions); /* getting a new App object, passing over the appOptions (if there is any) */
 
-
-  app.server = this;   /* let the new App know about its server. */
+  app.server = this;   /* let the new app know about its server. */
 
   this.apps.push(app); /* saving the app in local array */
   return app;
@@ -50,42 +52,49 @@ Server.prototype.getNewApp = function(appOptions) {
  * Start the server!
  * @param app
  */
-Server.prototype.run = function() {
+Server.prototype.run = function(appName) {
 
     var that = this;
+
+    if(appName){
+        // options could be some additional config information.
+        //TODO: do something with the options.
+    }
 
     var app;
 
     _l.http.createServer(function (req, res) {
-        res.writeHead(200, {'Content-Type': 'text/html'});
+        //res.writeHead(200, {'Content-Type': 'text/html'});
 
         var reqURL = _l.url.parse(req.url);
         _l.sys.puts(reqURL.pathname);
-        
-        that.apps.forEach(function (app){
-             if(reqURL.pathname == '/'+app.name){
-                    res.write('Espresso Server Responding to: '+ app.name);
-                    res.write('<\/br>');
-                    res.write('using theme: '+ app.theme);
-                    res.write('<\/br>');
-                    res.write('using language: ' + app.language);
-                    app.build();
 
-                    
-             }else{
+        file = that.files[reqURL.pathname];
 
-                   res.write('Application "' + reqURL.pathname+ '" not found on server!');
-                  // res.writeHead(404);
+        if (file === undefined) {
+            res.writeHead(200, {'Content-Type': 'text/html'});
+            res.write('Application "' + reqURL.pathname+ '" not found on server!');
+        } else {
 
-             }
-        });
+            var status = 200;
 
+             var headers = [];
+                 headers['Content-Type'] = file.contentType;
+                // headers['Last-Modified'] = res.lastModified.format('httpDateTime');
+             _l.sys.puts('file.contentType '  +file.contentType);
+
+             res.writeHead(status, headers);
+
+             res.write(file.content);
+
+
+        }
           res.end();
 
 
     }).listen(that.port, that.hostname);
 
-    _l.sys.puts('Server running at http://127.0.0.1:' + that.port);
+    _l.sys.puts('Server running at http://127.0.0.1:' + that.port+'/'+appName);
 
 
 };

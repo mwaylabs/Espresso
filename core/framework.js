@@ -9,11 +9,8 @@
 // ==========================================================================
 
 
-/**
- * Definition of Framework class.
- *
- * Representation of the Framework used in the build chain.
- *
+/*
+ * The framework prototype.
  */
 
 var _l = {},
@@ -274,6 +271,21 @@ Framework.prototype.save = function(callback){
     
 
 };
+
+/**
+ * 
+ * @param server
+ */
+Framework.prototype.prepareForServer = function(server,callback){
+
+
+    this.files.forEach(function(file){
+        server.files[file.requestPath] = file;
+    });
+
+    callback();
+};
+
 
 /**
  * Override Object.toString()
