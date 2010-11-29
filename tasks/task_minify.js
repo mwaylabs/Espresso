@@ -9,6 +9,33 @@
 // ==========================================================================
 
 
+var Task_Minify,
+    Task = require('./Task').Task;
+
+
+Task_Minify = exports.Task_Minify = function() {
+
+  /* Properties */
+  this.name = 'minifiy';
+
+};
+
+/**
+ * Get the run() function from Task
+ * @param framework
+ */
+Task_Minify.prototype = new Task;
+
+/**
+ * minifiy files, with google closure compiler
+ */
+Task_Minify.prototype.duty = function(framework,callback){
+
+    callback(framework);
+
+};
+
+
 /*
 sharedHandlers.add('minify', function() {
   var that = {};

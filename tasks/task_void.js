@@ -9,6 +9,13 @@
 // ==========================================================================
 
 
+/**
+ * This is a empty task, which does nothing at all.
+ * Every framework must provide al least one Task, so this would be the task if a framework needs
+ * no manipulation of it files. 
+ *
+ */
+
 var Task_Void,
     Task = require('./Task').Task;
 
