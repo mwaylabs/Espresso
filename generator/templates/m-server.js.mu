@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var espresso  = require('../../Espresso/core/espresso').Espresso;
 
 var server = new espresso.Server();

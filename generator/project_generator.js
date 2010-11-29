@@ -41,9 +41,10 @@ NewProjectGenerator = exports.NewProjectGenerator = function() {
   this.outputPath='';
   this.espressoPath='';  
 
-  this._tools =[];
+  this._tools =[]; // array with names of build tools, used in the a new project.
   this._tools.push('m-build.js');
   this._tools.push('m-server.js');
+  this._templatePath = './generator/templates';  // path to mustache templates.
 
 
 };
@@ -180,9 +181,8 @@ this.checkArguments(args);
 
    that._generateBuildFiles = function(files) {
      var _templateFile = files.shift();
-
-     /*Template sources*/
-     Mu.templateRoot = './generator/templates';
+     /*setting the template sources*/
+     Mu.templateRoot = self._templatePath; 
 
      var ctx = {
           appName: self.projectName
@@ -199,8 +199,13 @@ this.checkArguments(args);
                     _l.fs.writeFile(self.outputPath+'Apps/'+self.projectName+'/'+_templateFile, buffer, function (err) {
                       if (err){ throw err; }
                       _l.sys.puts(_templateFile+' generated!');
+                      /*Making the build tools executable */  
+                      _l.fs.chmod(self.outputPath+'Apps/'+self.projectName+'/'+_templateFile, 0777, function (err){
+                             if (err){ throw err; }
                         that._folderCounter -= 1;
                         that._generateBuildFiles(files);
+                      });
+
                     });
                   });
        });
@@ -224,12 +229,12 @@ this.checkArguments(args);
    };
 
    that._generateMainJS = function() {
-     /*Template sources*/
-     Mu.templateRoot = './generator/templates';
+     /*setting the template sources*/
+     Mu.templateRoot = self._templatePath;
 
      var _templateFile = 'main.js';
        if(self.isHelloWorldProject){
-         _templateFile = 'helloWorldmain.js';
+         _templateFile = 'hello_world_main.js';
        }
 
      var ctx = {

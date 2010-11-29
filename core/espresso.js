@@ -23,7 +23,7 @@ Espresso = exports.Espresso = function () {};
 
 Espresso.Server = require('./server').Server;
 
-Espresso.App = require('./m_app').App;
+Espresso.App = require('./app').App;
 
 
 

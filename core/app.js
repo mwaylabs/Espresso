@@ -294,8 +294,6 @@ _l.sys.puts('makeing output dir');
           // if(err){}
            that._folderCounter--;
            that.makeOutputDir(path+ self._outP.shift());
-
-
       });
       }
       that.callbackIfDone();

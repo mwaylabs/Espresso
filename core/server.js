@@ -11,7 +11,7 @@
 
 var Server;
     _l = {},
-    App = require('./m_app').App;
+    App = require('./app').App;
  
 
 _l.sys = require('sys');

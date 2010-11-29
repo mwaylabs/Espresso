@@ -20,9 +20,9 @@ ManagedTasks.Tasks = new Array();
 /*
  * The Tasks
  */
-ManagedTasks.Tasks['dependency'] =  require('./dependencyTask').Task_Dependency;
-ManagedTasks.Tasks['jslint'] =  require('./jslintTask').Task_JSLINT;
-ManagedTasks.Tasks['merge'] =  require('./mergeTask').Task_Merge;
-ManagedTasks.Tasks['void'] =  require('./voidTask').Task_Void;
+ManagedTasks.Tasks['dependency'] =  require('./task_dependency').Task_Dependency;
+ManagedTasks.Tasks['jslint'] =  require('./task_jslint').Task_JSLINT;
+ManagedTasks.Tasks['merge'] =  require('./task_merge').Task_Merge;
+ManagedTasks.Tasks['void'] =  require('./task_void').Task_Void;
 
 

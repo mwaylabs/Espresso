@@ -9,7 +9,7 @@
 // ==========================================================================
 
 
-var generator  = require('./generator/newProjectGen').NewProjectGenerator;
+var generator  = require('./generator/project_generator').NewProjectGenerator;
 
 var projectGenerator  = new generator();
 
