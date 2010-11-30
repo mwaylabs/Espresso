@@ -114,11 +114,14 @@ this.checkArguments(args);
 
     self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/Mproject/modules/core');
     self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/Mproject/modules/core/datastore');
+    self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/Mproject/modules/core/datastore/validators');
+
     self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/Mproject/modules/core/foundation');
     self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/Mproject/modules/core/utility');
     self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/Mproject/modules/core/utility/cypher_algorithms');
 
     self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/Mproject/modules/ui');
+    self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/Mproject/modules/ui/dialogs');
 
     self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/Mproject/modules/jquery');
 
@@ -355,17 +358,11 @@ this.checkArguments(args);
 
 
         }
-
-        //_l.sys.puts('All done!');
         return '';
     }
 
-    that._MProjectCopy = function() {
-     _l.sys.puts('Mproject path = '+ that._MprojectPath );
-
+     that._MProjectCopy = function() {
      that.browse(that._MprojectPath);
-
-    // that.callbackIfDone();
    }
 
  };

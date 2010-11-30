@@ -35,6 +35,22 @@ M.EventDispatcher = M.Object.create({
     },
 
     /**
+     * This method is called whenever an onClick event is triggered within the app. This is
+     * not the common way to catch events, but in some cases it might be necessary to use
+     * the onClick property. 
+     *
+     * @param {String} type The type of event that occured, e.g. 'click'.
+     * @param {String} id The id of the element that triggered the event.
+     * @param {Number} keyCode The keyCode property of the event, necessary for keypress event, e.g. keyCode is 13 when enter is pressed.
+     * @param {String} orientation The orientation of the device (only passed if an orientationChange event did happen).
+     */
+    onClickEventDidHappen: function(type, id, keyCode, orientation) {
+        if(!M.Application.viewManager.getViewById(id).inEditMode) {
+            this.delegateEvent(type, id, keyCode, orientation);
+        }
+    },
+
+    /**
      * This method looks for a corresponding event inside the view manager and
      * delegates the call directly to the responsible controller defined by the
      * target and action properties of the view.
@@ -42,6 +58,7 @@ M.EventDispatcher = M.Object.create({
      * @param {String} type The type of event that occured, e.g. 'click'.
      * @param {String} id The id of the element that triggered the event.
      * @param {Number} keyCode The keyCode property of the event, necessary for keypress event, e.g. keyCode is 13 when enter is pressed.
+     * @param {String} orientation The orientation of the device (only passed if an orientationChange event did happen).
      */
     delegateEvent: function(type, id, keyCode, orientation) {
         var view = M.Application.viewManager.getViewById(id);
@@ -77,6 +94,13 @@ M.EventDispatcher = M.Object.create({
                 M.Application.viewManager.getCurrentPage().orientationDidChange(orientation);
                 break;
         }
+    },
+
+    registerEvents: function(id, eventList) {
+        var that = this;
+        $('#' + id).bind(eventList, function(evt) {
+            that.eventDidHappen(evt);
+        });
     }
 
 });
