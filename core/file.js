@@ -29,7 +29,7 @@ File = exports.File = function(properties) {
   this.framework = '';
   this.children = '';
   this.isHtml = false;
-  this.content = '';
+  this.content; // is a Buffer Object
   this.contentType = '';
   this.requestPath ='';
 

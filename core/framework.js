@@ -149,8 +149,8 @@ var _FileBrowser = function(framework, callback) {
 
           } else {
 
-            _l.fs.readFile(path, encoding='utf8',function(err, data) {
-
+         //   _l.fs.readFile(path, encoding='utf8',function(err, data) {
+            _l.fs.readFile(path, function(err, data) { // data is a Buffer object! if no encoding is specified.
                 if (err){
                 throw err;
                }else{
