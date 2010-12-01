@@ -30,8 +30,10 @@ app.loadTheMProject();
 
 
 
-app.build(function (opt) {
-    server.run(opt);
+app.build(function (options) {
+    app.prepareForServer(function (opt){
+        server.run(opt);
+    })
 });
 
 

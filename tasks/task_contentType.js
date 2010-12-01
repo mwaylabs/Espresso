@@ -47,10 +47,10 @@ var self = this;
           _currentFile.contentType = (self.contentTypes[_currentFile.getFileExtension()]) ? self.contentTypes[_currentFile.getFileExtension()] :  'text/plain';
 
        if(_currentFile.isStylesheet()){
-           _currentFile.requestPath = '/'+'theme/'+_currentFile.getBaseName()+_currentFile.getFileExtension();
-           _currentFile.contentType = "text/css; charset=utf-8";
+          _currentFile.requestPath = '/'+'theme/'+_currentFile.getBaseName()+_currentFile.getFileExtension();
+          _currentFile.contentType = "text/css; charset=utf-8";
        }else if(_currentFile.isImage()){
-            _currentFile.requestPath = '/'+'theme/images/'+_currentFile.getBaseName()+_currentFile.getFileExtension();
+          _currentFile.requestPath = '/'+'theme/images/'+_currentFile.getBaseName()+_currentFile.getFileExtension();
        }else if (_currentFile.isHTML()){
           _currentFile.requestPath = '/'+framework.app.name;
        }else{
