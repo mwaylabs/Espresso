@@ -76,9 +76,15 @@ Server.prototype.deliver = function (response,file){
 
 };
 
-
+/**
+ * Execute a proxy request.
+ *
+ *
+ * @param request
+ * @param response
+ */
 Server.prototype.proxy = function (request, response){
-
+//TODO: Add error handling
 var that = this;
 
   request.addListener('end', function() {   
@@ -96,7 +102,7 @@ var that = this;
 
    });
 
-   _l.sys.puts("proxyHost = "+proxyHost);
+  _l.sys.puts("proxyHost = "+proxyHost);
 
   var proxyClient  =  _l.http.createClient(80, proxyHost);
   var proxyRequest =  proxyClient.request('GET', data,
@@ -156,7 +162,7 @@ Server.prototype.run = function(appName) {
     if(appName){
        _applicationName = appName;
     }
-     //      console.log(require('util').inspect(that.files, true, 1));
+     //      console.log(require('util').inspect(that.fgitiles, true, 1));
     _l.http.createServer(function (request, response) {
          var path = _l.url.parse(request.url).pathname.slice(1);
          //  _l.sys.puts(path);
