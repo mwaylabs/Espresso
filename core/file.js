@@ -42,7 +42,10 @@ File = exports.File = function(properties) {
   this.resourceExtensions = ['.png', '.jpg', '.gif', '.svg'];
 
   /* Adding the properties */
-  this.addProperties(properties);
+  if(properties){
+     this.addProperties(properties);
+  }
+
 
   
 
