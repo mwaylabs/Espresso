@@ -88,7 +88,7 @@ var that = this;
   request.addListener('end', function() {   
   var _proxy,
       _path = _l.url.parse(request.url).pathname.slice(1),
-      _pr=  _path.split('/')[0];
+      _pr = _path.split('/')[0];
 
     that.proxies.forEach(function(p){
         if(p.proxy === _pr){
@@ -115,7 +115,7 @@ var that = this;
         console.log('HOST RESPONDING');
         console.log('Status: ' + proxyResponse.statusCode);
         console.log('Content Type: ' + proxyResponse.headers['content-type']);
-   //     console.log('Headers: ' + JSON.stringify(proxyResponse.headers));
+   //   console.log('Headers: ' + JSON.stringify(proxyResponse.headers));
         response.writeHead(proxyResponse.statusCode, proxyResponse.headers);
         proxyResponse.on('data', function (chunk) {
           response.write(chunk);

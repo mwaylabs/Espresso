@@ -84,9 +84,8 @@ File.prototype.isVirtual = function(){
  * Getting the name of the File
  */
 File.prototype.getName = function(){
-
-      var filename =  this.name.split(this.frDelimiter);
-      return filename[1];
+      var _filename =  this.name.split(this.frDelimiter);
+      return _filename[1];
 };
 
 /**
@@ -94,14 +93,10 @@ File.prototype.getName = function(){
  * Returns the name of the File without the file extension.
  */
 File.prototype.getBaseName = function(){
-
   if (this.basename === undefined) {
     this.basename = _l.path.basename(this.path,_l.path.extname(this.path));
   }
-
   return this.basename;
-
-
 };
 
 /**
@@ -109,11 +104,9 @@ File.prototype.getBaseName = function(){
  * Returns the file extension.
  */
 File.prototype.getFileExtension = function() {
-
   if (this.extname === undefined) {
     this.extname = _l.path.extname(this.path);
   }
-
   return this.extname;
 };
 
@@ -173,7 +166,6 @@ var that = this;
  * @return {string} a readable presentations of this file object.
  */
 File.prototype.toString = function() {
-
     return 'Basename: '+this.name + '\n'
           +'Filepath: '+this.path + '\n';
 };

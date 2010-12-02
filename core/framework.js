@@ -38,10 +38,10 @@ Framework = exports.Framework = function(properties) {
 
   /* Build configuration */
   this.buildVersion = null;
-  this.combinedScripts = false;
-  this.combineStylesheets = true;
-  this.minifyScripts = false;
-  this.minifyStylesheets = false;
+//  this.combinedScripts = false;
+//  this.combineStylesheets = true;
+//  this.minifyScripts = false;
+//  this.minifyStylesheets = false;
   this.defaultLanguage = 'english';
   this.buildLanguage = 'english';
 
@@ -150,14 +150,12 @@ var _FileBrowser = function(framework, callback) {
                       if (subpath.match('\\.')) {that._folderCounter += 1;}
                       that.browse(_l.path.join(path, subpath)); 
                    }
-                    //that.browse(_l.path.join(path, subpath));
                 });
               }
             });
 
 
           } else {
-
          //   _l.fs.readFile(path, encoding='utf8',function(err, data) {
             _l.fs.readFile(path, function(err, data) { // data is a Buffer object! if no encoding is specified.
                 if (err){
@@ -281,8 +279,9 @@ Framework.prototype.save = function(callback){
 };
 
 /**
- * 
+ * Attaching the files of a framework to, the server.
  * @param server
+ * @param callback
  */
 Framework.prototype.prepareForServer = function(server,callback){
 

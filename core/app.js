@@ -30,7 +30,6 @@ var _l = {},
  *
  */
 _l.sys = require('sys');
-
 _l.fs = require('fs');
 
 
@@ -54,7 +53,6 @@ App = exports.App = function (build_options) {
   this.theme = 'm-deafult';
   this.outputFolder = 'build'; // name of the output folder, default is 'build'.
   this.jslintCheck = true;
- // this.pathName = "";
   this.execPath = "";  //  the a actually folder name, in which the application is located.
   this.taskChain = new Array(); 
 
@@ -63,9 +61,7 @@ App = exports.App = function (build_options) {
   this.frameworks = [];
 
 
-  if(!build_options){
-     this.loadJSONConfig();
-  } else{
+  if(build_options){
      this.addOptions(build_options);
   }
   _l.sys.puts(this.execPath);
@@ -132,11 +128,12 @@ App.prototype.loadTheApplication = function() {
   
     var that = this, _theApplication = [],_theApplicationResources;
 _l.sys.puts("Load App")
+// TODO: making the resources folder to be excluded. If the folder stays in the app folder.    
   _theApplication = ['app'].map(function(module) {
     var _frameworkOptions  = {};
         _frameworkOptions.path = that.execPath + '/' + module;
         _frameworkOptions.name = that.name+'_App';
-        _frameworkOptions.frDelimiter = that.execPath+'/';
+        _frameworkOptions.frDelimiter = that.execPath+'/'; 
         _frameworkOptions.app = that;
          /* Definition of standard build chain for The-M-Project«s core files*/
         _frameworkOptions.taskChain = new TaskManager(["dependency","merge","contentType"]).getTaskChain();
@@ -330,6 +327,10 @@ this.buildIndexHTML();
 
 var self = this;
 
+/* TODO: Sort frameworks before calling build.
+   The application should be build first, to check for used resources and APIs,
+   to exclude them later from the core framework
+*/
 
 var _AppBuilder = function(app, callback) {
     var that = this;
@@ -390,7 +391,7 @@ App.prototype.saveLocal = function(callback){
 
       app.frameworks.forEach(function(framework) {
         framework.save(function(fr) {
-          /* count  = -1 if a framework has been build. */
+          /* count  = -1 if a framework has been saved. */
           that._frameworkCounter -= 1;
           that.callbackIfDone();
         });
@@ -400,14 +401,17 @@ App.prototype.saveLocal = function(callback){
 
   return this.makeOutputFolder(function(){
         new _AppSaver(self, function(){
-              _l.sys.puts('saved application to filesystem!');
+         console.log('saved application to filesystem!');
         }).save();
   });
 
 
 };
 
-
+/**
+ * Prepare the frameworks and the files, to attache them to the server.
+ * @param callback
+ */
 App.prototype.prepareForServer = function(callback){
     var self = this;
 
@@ -428,8 +432,7 @@ App.prototype.prepareForServer = function(callback){
 
             app.frameworks.forEach(function(framework){
                 framework.prepareForServer(self.server, function(){
-
-                /* count  = -1 if a framework has been build. */
+                /* count  = -1 if a framework has been prepared for server. */
                 that._frameworkCounter -= 1;
                 that.callbackIfDone();
 
