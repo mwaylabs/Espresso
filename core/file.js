@@ -8,7 +8,7 @@
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
-/*
+/**
  * The file prototype.
  *
  */
@@ -20,7 +20,12 @@ _l.fs = require('fs');
 _l.path = require('path');
 _l.sys = require('sys');
 
-
+/**
+ * @description
+ * The constructor of the file prototype.
+ * @constructor
+ * @param properties
+ */
 File = exports.File = function(properties) {
  
    /* Properties */
@@ -45,14 +50,11 @@ File = exports.File = function(properties) {
   if(properties){
      this.addProperties(properties);
   }
-
-
-  
-
 };
 
 
 /**
+ * @description
  * Add the properties for File.
  * @param properties
  */
@@ -67,22 +69,29 @@ File.prototype.addProperties = function(properties){
 };
 
 /**
- * Returns the virtual stat of a file.
+ * @description
+ * True if file is virtual.
+ * A file is virtual, if it is generated during the build.
+ * @example
+ * index.html
  */
 File.prototype.isVirtual = function(){
       return this.virtual
 };
 
-
+/**
+ * @description
+ * Getting the name of the File
+ */
 File.prototype.getName = function(){
 
       var filename =  this.name.split(this.frDelimiter);
       return filename[1];
-   // return this.name;
 };
 
 /**
- * Getting the name of the File without the file extension.
+ * @description
+ * Returns the name of the File without the file extension.
  */
 File.prototype.getBaseName = function(){
 
@@ -96,7 +105,8 @@ File.prototype.getBaseName = function(){
 };
 
 /**
- * Getting the file extension.
+ * @description
+ * Returns the file extension.
  */
 File.prototype.getFileExtension = function() {
 
@@ -108,7 +118,8 @@ File.prototype.getFileExtension = function() {
 };
 
 /**
- * True if file is a stylesheet.
+ * @description
+ * Returns 'true' if file is a stylesheet.
  */
 File.prototype.isStylesheet = function() {
   return this.getFileExtension() === '.css';
@@ -116,6 +127,7 @@ File.prototype.isStylesheet = function() {
 
 
 /**
+ * @description
  * True if file is a stylesheet.
  */
 File.prototype.isHTML = function() {
@@ -123,15 +135,18 @@ File.prototype.isHTML = function() {
 };
 
 /**
- * True if file is JavaScript.
+ * @description
+ * Returns 'true' if file is JavaScript.
  */
 File.prototype.isJavaScript = function() {
-  return this.getFileExtension() === '.js'; // && !/tests\//.test(this.path);
+  return this.getFileExtension() === '.js'; 
 };
 
 /**
- * True if file is a Image.
- * Based on the possible resource extensions:
+ * @description
+ * Returns 'true' if file is a Image.
+ * Based on the possible resource extensions.
+ * @example
  *  .png,
  *  .jpg,
  *  .gif,
@@ -150,7 +165,12 @@ var that = this;
 
 
 /**
+ * @description
  * Override Object.toString()
+ * @exampleText
+ * Basename: main.js
+ * Filepath: /foo/bar/main.js
+ * @return {string} a readable presentations of this file object.
  */
 File.prototype.toString = function() {
 
