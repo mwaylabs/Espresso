@@ -8,6 +8,9 @@
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
+/*
+ * Prototype for a proxy object.
+ */
 
 var Proxy;
 
@@ -16,8 +19,10 @@ var Proxy;
 Proxy = exports.Proxy = function(properties) {
 
    /* Properties */
-   this.host = null;
-   this.proxy = null; 
+  this.host = null;
+  this.proxy = null;
+  this.requestMethod = null;
+  this.hostPort = '80';
 
 
   if(properties){

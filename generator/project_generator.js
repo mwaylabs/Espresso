@@ -108,6 +108,7 @@ this.checkArguments(args);
     self._outP = [];
     self._outP.push( self.outputPath+'Apps/'+self.projectName);
     self._outP.push( self.outputPath+'Apps/'+self.projectName+'/app');
+    self._outP.push( self.outputPath+'Apps/'+self.projectName+'/app/resources');
     self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks');
     self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/Mproject');
     self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/Mproject/modules');

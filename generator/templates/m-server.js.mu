@@ -19,6 +19,19 @@ app.loadTheApplication();
 
 app.loadTheMProject();
 
+/* Uncomment the following line, to use m-server as a proxy.
+ * Usage:
+ * host = the url to your server
+ * proxy = the proxy name of your server, used in the application
+ * requestMethod = GET / POST
+ * hostPort = port of the service on your server - default is '80'
+ */
+
+//server.addProxies([
+//    { "host":"your.server.com", "proxy": "myServer", "requestMethod": "GET", "hostPort": "80" }
+//]);
+
+
 app.build(function (options) {
     app.prepareForServer(function (opt){
         server.run("{{appName}}");

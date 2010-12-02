@@ -132,20 +132,29 @@ var _FileBrowser = function(framework, callback) {
           if (stats.isDirectory()) {
             _l.fs.readdir(path, function(err, subpaths) {
 
+               if (subpaths.length === 1 && (that.checkIfFileShouldBeExcluded(subpaths[0]))){
+                    console.log('path / subpaths.length '+path+' / '+subpaths[0]);
+                    that.callbackIfDone();
+               }
+                
               if (err){
                   throw err;
-              }else {
+              }
+
+              else {
                 subpaths.forEach(function(subpath) {
                    if(that.checkIfFileShouldBeExcluded(subpath)){
+                   //     that.callbackIfDone();
                    }else{
                       /* add 1 to the counter if sub file is NOT a folder*/
                       if (subpath.match('\\.')) {that._folderCounter += 1;}
                       that.browse(_l.path.join(path, subpath)); 
                    }
-
+                    //that.browse(_l.path.join(path, subpath));
                 });
-               }
+              }
             });
+
 
           } else {
 
@@ -169,7 +178,6 @@ var _FileBrowser = function(framework, callback) {
                 that.callbackIfDone();
              }
            });
-
           }
         }
       });

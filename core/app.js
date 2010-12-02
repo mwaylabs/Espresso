@@ -130,7 +130,7 @@ var that = this;
  */
 App.prototype.loadTheApplication = function() {
   
-    var that = this, _theApplication = [];
+    var that = this, _theApplication = [],_theApplicationResources;
 _l.sys.puts("Load App")
   _theApplication = ['app'].map(function(module) {
     var _frameworkOptions  = {};
@@ -143,7 +143,20 @@ _l.sys.puts("Load App")
        return new Framework(_frameworkOptions);
     });
 
- this.addFrameworks(_theApplication); 
+ this.addFrameworks(_theApplication);
+
+ _theApplicationResources = ['app/resources'].map(function(module) {
+    var _frameworkOptions  = {};
+        _frameworkOptions.path = that.execPath + '/' + module;
+        _frameworkOptions.name = that.name+'_AppResources';
+        _frameworkOptions.frDelimiter = that.execPath+'/';
+        _frameworkOptions.app = that;
+         /* Definition of standard build chain for The-M-Project«s core files*/
+        _frameworkOptions.taskChain = new TaskManager(["contentType"]).getTaskChain();
+       return new Framework(_frameworkOptions);
+    });
+
+ this.addFrameworks(_theApplicationResources);
 };
 
 /**
@@ -213,7 +226,8 @@ var _indexhtml = [];
         '<script src="core.js"></script>'+
         '<script src="ui.js"></script>'+
         '<link href="theme/jquery.mobile-1.0a2.min.css" rel="stylesheet" />'+
-        '<script language="JavaScript">var '+this.name+' = '+this.name+ '|| {};'+'</script>'+
+        '<link href="theme/style.css" rel="stylesheet" />'+
+        '<script language="JavaScript">var '+this.name+' = '+this.name+ '|| {}; M.Application.name="'+this.name+'";</script>'+
         '<script src="'+this.name+'_App.js"></script>'+
       '</head>'
     );
@@ -323,7 +337,7 @@ var _AppBuilder = function(app, callback) {
 
     /* amount of used frameworks, for this application. */
     that._frameworkCounter = app.frameworks.length ;
-     console.log(require('util').inspect(that._frameworkCounter, true, 1));
+    console.log(require('util').inspect(that._frameworkCounter, true, 1));
 
     /* callback checker, called if all frameworks are build. */
     that.callbackIfDone = function() {

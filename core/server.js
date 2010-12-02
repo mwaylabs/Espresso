@@ -18,10 +18,10 @@ var Server;
     App = require('./app').App;
  
 
-_l.sys = require('sys');
-_l.fs = require('fs');
-_l.http = require('http');
-_l.url = require('url');
+    _l.sys = require('sys');
+    _l.fs = require('fs');
+    _l.http = require('http');
+    _l.url = require('url');
 
 
 Server = exports.Server = function() {
@@ -57,7 +57,7 @@ Server.prototype.getNewApp = function(appOptions) {
  * @param response, the response, in which the file should be written.
  * @param file, the file to deliver
  */
-Server.prototype.deliver = function (response,file){
+Server.prototype.deliverThat = function (response,file){
 
   var status = 200; // = file found.
 
@@ -68,7 +68,6 @@ Server.prototype.deliver = function (response,file){
 
      if(file.isImage()){
        headers['Content-Length'] = file.content.length;
-
      }
      response.writeHead(status, headers);  // write the response header.
      response.write(file.content,'utf8');  // write the content of this resource.
@@ -83,51 +82,55 @@ Server.prototype.deliver = function (response,file){
  * @param request
  * @param response
  */
-Server.prototype.proxy = function (request, response){
-//TODO: Add error handling
+Server.prototype.proxyThat = function (request, response){
 var that = this;
 
   request.addListener('end', function() {   
-  var proxyHost
-  var path = _l.url.parse(request.url).pathname.slice(1);
-  var pr=  path.split('/')[0];
-  var data =  request.url.split(pr)[1];
-
- // _l.sys.puts("data = "+data);
+  var _proxy,
+      _path = _l.url.parse(request.url).pathname.slice(1),
+      _pr=  _path.split('/')[0];
 
     that.proxies.forEach(function(p){
-        if(p.proxy === pr){
-          proxyHost = p.host;
+        if(p.proxy === _pr){
+          _proxy = p;
         }
+    });
 
-   });
+   if(_proxy){
+       var _inquiredData =  request.url.split(_pr)[1];
+      _l.sys.puts("proxy request on = "+_proxy.host+_inquiredData);
+      var proxyClient  =  _l.http.createClient(_proxy.hostPort, _proxy.host);
 
-  _l.sys.puts("proxyHost = "+proxyHost);
+      proxyClient.addListener('error', function(err) {
+        console.log('ERROR: "' + err.message + '" for proxy request on ' + _proxy.host + ':' + _proxy.hostPort);
+        response.writeHead(404);
+        response.end();
+      });
 
-  var proxyClient  =  _l.http.createClient(80, proxyHost);
-  var proxyRequest =  proxyClient.request('GET', data,
-  {'host': proxyHost});
+      // making the proxy request.
+      var proxyRequest =  proxyClient.request(_proxy.requestMethod, _inquiredData,
+                                              {'host':  _proxy.host});
 
-
-
-
- proxyRequest.on('response', function (proxyResponse) {
-  console.log('STATUS: ' + proxyResponse.statusCode);
-  console.log('HEADERS: ' + JSON.stringify(proxyResponse.headers));
-  response.writeHead(proxyResponse.statusCode, proxyResponse.headers);
- // response.setEncoding('utf8');
-  proxyResponse.on('data', function (chunk) {
-      response.write(chunk);
-  });
-
-      proxyResponse.addListener('end', function() {
+      proxyRequest.on('response', function (proxyResponse) {
+        console.log('HOST RESPONDING');
+        console.log('Status: ' + proxyResponse.statusCode);
+        console.log('Content Type: ' + proxyResponse.headers['content-type']);
+   //     console.log('Headers: ' + JSON.stringify(proxyResponse.headers));
+        response.writeHead(proxyResponse.statusCode, proxyResponse.headers);
+        proxyResponse.on('data', function (chunk) {
+          response.write(chunk);
+        });
+        proxyResponse.addListener('end', function() {
           response.end();
-        });   
-});
- proxyRequest.end();
-});
-
-
+        });
+      });
+      proxyRequest.end();
+   }else{
+     console.log('ERROR: no proxy host entry found for: "'+_pr+'"');
+     response.writeHead(404);
+     response.end();
+   }
+ }); 
 };
 
 /**
@@ -156,27 +159,24 @@ var that = this;
  */
 Server.prototype.run = function(appName) {
 
-    var that = this;
-    var _file,_requestedURL,_applicationName = ' ';
+    var that = this,
+        _file,_requestedURL,
+        _applicationName =  (appName) ? appName : '';
 
-    if(appName){
-       _applicationName = appName;
-    }
-     //      console.log(require('util').inspect(that.fgitiles, true, 1));
     _l.http.createServer(function (request, response) {
          var path = _l.url.parse(request.url).pathname.slice(1);
          //  _l.sys.puts(path);
 
         _requestedURL = _l.url.parse(request.url);
-        _l.sys.puts(_requestedURL.pathname);
+      //  _l.sys.puts(_requestedURL.pathname);
         _file = that.files[_requestedURL.pathname];
 
         if (_file === undefined) {
-            that.proxy(request, response);
+            that.proxyThat(request, response);
            // response.writeHead(200, {'Content-Type': 'text/plain'});
            // response.write('Resource "' + _requestedURL.pathname+ '" not found on server!');
         } else {
-            that.deliver(response,_file);
+            that.deliverThat(response,_file);
         }          
     }).listen(that.port, that.hostname);
 

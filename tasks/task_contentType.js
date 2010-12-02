@@ -43,18 +43,18 @@ Task_ContentType.prototype = new Task;
 Task_ContentType.prototype.duty = function(framework,callback){
 var self = this;
 
-  framework.files.forEach(function(_currentFile){
-          _currentFile.contentType = (self.contentTypes[_currentFile.getFileExtension()]) ? self.contentTypes[_currentFile.getFileExtension()] :  'text/plain';
+  framework.files.forEach(function(currentFile){
+          currentFile.contentType = (self.contentTypes[currentFile.getFileExtension()]) ? self.contentTypes[currentFile.getFileExtension()] :  'text/plain';
 
-       if(_currentFile.isStylesheet()){
-          _currentFile.requestPath = '/'+'theme/'+_currentFile.getBaseName()+_currentFile.getFileExtension();
-          _currentFile.contentType = "text/css; charset=utf-8";
-       }else if(_currentFile.isImage()){
-          _currentFile.requestPath = '/'+'theme/images/'+_currentFile.getBaseName()+_currentFile.getFileExtension();
-       }else if (_currentFile.isHTML()){
-          _currentFile.requestPath = '/'+framework.app.name;
+       if(currentFile.isStylesheet()){
+          currentFile.requestPath = '/'+'theme/'+currentFile.getBaseName()+currentFile.getFileExtension();
+          currentFile.contentType = "text/css; charset=utf-8";
+       }else if(currentFile.isImage()){
+          currentFile.requestPath = '/'+'theme/images/'+currentFile.getBaseName()+currentFile.getFileExtension();
+       }else if (currentFile.isHTML()){
+          currentFile.requestPath = '/'+framework.app.name;
        }else{
-          _currentFile.requestPath = '/'+_currentFile.getBaseName()+_currentFile.getFileExtension();
+          currentFile.requestPath = '/'+currentFile.getBaseName()+currentFile.getFileExtension();
        }
   });
 
