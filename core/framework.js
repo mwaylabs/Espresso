@@ -38,7 +38,7 @@ Framework = exports.Framework = function(properties) {
 
   /* Build configuration */
   this.buildVersion = null;
-//  this.combinedScripts = false;
+  this.combinedScripts = false;
 //  this.combineStylesheets = true;
 //  this.minifyScripts = false;
 //  this.minifyStylesheets = false;
@@ -132,6 +132,10 @@ var _FileBrowser = function(framework, callback) {
           if (stats.isDirectory()) {
             _l.fs.readdir(path, function(err, subpaths) {
 
+             if(subpaths.length < 1)   {
+                  that.callbackIfDone();
+             }
+
                if (subpaths.length === 1 && (that.checkIfFileShouldBeExcluded(subpaths[0]))){
                     console.log('path / subpaths.length '+path+' / '+subpaths[0]);
                     that.callbackIfDone();
@@ -193,7 +197,7 @@ Framework.prototype.build = function(callback){
 var that = this;
 _l.sys.puts('\n****** calling build for "'+this.name+'" ******');
 
-    if(that.isVirtual()){
+    if(that.isVirtual()){ // default = false.
        that.taskChain.run(that,callback);
     }else{
        this.loadFiles(that.path, function(files) {
