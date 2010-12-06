@@ -28,7 +28,7 @@ app.loadTheMProject();
  */
 
 //server.addProxies([
-//    { "host":"your.server.com", "proxy": "myServer", "requestMethod": "GET", "hostPort": "80" }
+//    { "host":"your.server.com", "proxyAlias": "myServer", "requestMethod": "GET", "hostPort": "80" }
 //]);
 
 

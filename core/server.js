@@ -24,7 +24,7 @@ var Server;
     _l.url = require('url');
 
 
-Server = exports.Server = function() {
+Server = exports.Server = function(properties) {
 
   /*Properties*/
   this.hostname = '127.0.0.1'; //default address
@@ -34,6 +34,23 @@ Server = exports.Server = function() {
   this.hostedApps = [];   /* = the applications managed by this server */
   this.files = {};  /* = the files, that should be served by  this server */
 
+  if(properties){
+    this.addProperties(properties);
+  }
+
+};
+
+/**
+ * Add the properties.
+ * @param properties, the proprties
+ */
+Server.prototype.addProperties = function(properties){
+
+ var that = this;
+
+ Object.keys(properties).forEach(function (key) {
+   that[key] = properties[key];
+ });
 };
 
 /**
@@ -91,7 +108,7 @@ var that = this;
       _pr = _path.split('/')[0];
 
     that.proxies.forEach(function(p){
-        if(p.proxy === _pr){
+        if(p.proxyAlias === _pr){
           _proxy = p;
         }
     });

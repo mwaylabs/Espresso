@@ -15,14 +15,18 @@
 var Proxy;
 
 
-
+/**
+ * @constructor
+ * @param properties
+ */
 Proxy = exports.Proxy = function(properties) {
 
    /* Properties */
   this.host = null;
-  this.proxy = null;
-  this.requestMethod = null;
   this.hostPort = '80';
+  this.proxyAlias = null;
+  this.requestMethod = null;
+
 
 
   if(properties){
@@ -31,7 +35,10 @@ Proxy = exports.Proxy = function(properties) {
 
 };
 
-
+/**
+ * Adds the given properties, to the proxy object.
+ * @param properties
+ */
 Proxy.prototype.addProperties = function(properties){
 
     var that = this;
@@ -42,7 +49,14 @@ Proxy.prototype.addProperties = function(properties){
 
 };
 
-
+/**
+ * @description
+ * Override Object.toString()
+ * @exampleText
+ * Host: www.yourService.com
+ * Proxy: your_service
+ * @return {string} a readable presentations of this proxy object.
+ */
 Proxy.prototype.toString = function(){
      return 'Host: '+this.host + '\n'
           +'Proxy: '+this.proxy + '\n';
