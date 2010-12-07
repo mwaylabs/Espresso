@@ -37,33 +37,47 @@ _l.fs = require('fs');
 /**
  * Constructor function.
  * Sets the build options for the app (project) to be build.
- *
- * @param build_options  the options to customize the build process
+ * @constructor
+ * @param build_options, the options to customize the build process
  */
 
-App = exports.App = function (build_options) {
+App = exports.App = function (applicationDirectory,server) {
 
   /* Properties */
 
   /* Build configuration */
   this.name = 'defaultName';
-  this.server = null;
+  this.clear = '';     
+  this.server = server;
   this.buildVersion = new Date().getTime(); // timestamp of the build.
   this.buildLanguage = 'english';
   this.theme = 'm-deafult';
   this.outputFolder = 'build'; // name of the output folder, default is 'build'.
   this.jslintCheck = true;
   this.execPath = "";  //  the a actually folder name, in which the application is located.
-  this.taskChain = new Array(); 
+  this.taskChain = new Array();
+  this.proxies = [];  
 
   /* Properties used by App */
-
   this.frameworks = [];
+  this.manifest = {
+    "cache" : [],
+    "network" :[],
+    "fallback" :[]  
+  };
 
+  this.excludeFromCaching;  
 
+  if(applicationDirectory){
+      this.execPath = applicationDirectory;
+      this.loadJSONConfig();
+  }
+/*
   if(build_options){
      this.addOptions(build_options);
-  }
+  }else{
+      this.loadJSONConfig();
+  }*/
   _l.sys.puts(this.execPath);
 
 };
@@ -74,7 +88,6 @@ App = exports.App = function (build_options) {
  * @param build_options the options to customize the build process
  */
 App.prototype.addOptions = function(build_options){
-
     var that = this;
 
     Object.keys(build_options).forEach(function (key) {
@@ -84,19 +97,25 @@ App.prototype.addOptions = function(build_options){
 };
 
 /**
- * Loads the appconfig file, passed in JSON syntax.
- * The appconfig.json should be in the root folder of the project to build.
- * 
+ * Loads the config file, passed in JSON syntax.
+ * The 'config.json', should be in the root folder of the project to build.
  */
 App.prototype.loadJSONConfig = function() {
-
-    var config = JSON.parse(_l.fs.readFileSync(this.pathName+'appconfig.json', 'utf8'));
-    this.addOptions(config);
-
+    try{
+        var config = JSON.parse(_l.fs.readFileSync(this.execPath+'/config.json', 'utf8'));
+        this.addOptions(config);
+        if(config.proxy){
+           this.server.proxies = config.proxy.proxies; //adding proxies, if present.
+        }
+    }catch(ex){
+       console.log('ERROR in "config.json" '+ex.message);
+       process.exit(1); /* exit the process, reason: error in config.json*/
+    }
 };
 
 /**
  * Adding the task chain to the app.
+ * @deprecated
  */
 App.prototype.addTaskChain = function() {
 
@@ -128,7 +147,7 @@ App.prototype.loadTheApplication = function() {
   
     var that = this, _theApplication = [],_theApplicationResources;
 _l.sys.puts("Load App")
-// TODO: making the resources folder to be excluded. If the folder stays in the app folder.    
+// TODO: making the resources folder to be excluded - if the folder stays in the app folder.    
   _theApplication = ['app'].map(function(module) {
     var _frameworkOptions  = {};
         _frameworkOptions.path = that.execPath + '/' + module;
@@ -136,7 +155,7 @@ _l.sys.puts("Load App")
         _frameworkOptions.frDelimiter = that.execPath+'/'; 
         _frameworkOptions.app = that;
          /* Definition of standard build chain for The-M-Project«s core files*/
-        _frameworkOptions.taskChain = new TaskManager(["dependency","merge","contentType"]).getTaskChain();
+        _frameworkOptions.taskChain = new TaskManager(["dependency","merge","contentType","manifest"]).getTaskChain();
        return new Framework(_frameworkOptions);
     });
 
@@ -149,7 +168,7 @@ _l.sys.puts("Load App")
         _frameworkOptions.frDelimiter = that.execPath+'/';
         _frameworkOptions.app = that;
          /* Definition of standard build chain for The-M-Project«s core files*/
-        _frameworkOptions.taskChain = new TaskManager(["contentType"]).getTaskChain();
+        _frameworkOptions.taskChain = new TaskManager(["contentType","manifest"]).getTaskChain();
        return new Framework(_frameworkOptions);
     });
 
@@ -168,7 +187,6 @@ var that = this, _theMProject, _theMProjectResources;
   * Getting all The-M-Project core files
   * and generate Framework objects.
   */
-    //'datastore','foundation','utility'
  _theMProject = ['core','ui'].map(function(module) {
     var _frameworkOptions  = {};
         _frameworkOptions.path = that.execPath+'/frameworks/Mproject/modules/' + module;
@@ -176,7 +194,7 @@ var that = this, _theMProject, _theMProjectResources;
         _frameworkOptions.app = that;
         _frameworkOptions.frDelimiter = 'modules/';
          /* Definition of standard build chain for The-M-Project«s core files*/ 
-        _frameworkOptions.taskChain = new TaskManager(["dependency","merge","contentType"]).getTaskChain();
+        _frameworkOptions.taskChain = new TaskManager(["dependency","merge","contentType","manifest"]).getTaskChain();
        return new Framework(_frameworkOptions);
     });
 
@@ -184,7 +202,7 @@ var that = this, _theMProject, _theMProjectResources;
 
   /*
    * Getting the The-M-Project resources and third party frameworks,
-   * like jquery and jquery_mobile. 
+   * like: jquery.js or underscore.js
    */
   _theMProjectResources = ['jquery','jquery_mobile','underscore','themes'].map(function(module) {
     var _frameworkOptions  = {};
@@ -192,7 +210,7 @@ var that = this, _theMProject, _theMProjectResources;
         _frameworkOptions.name = module;
         _frameworkOptions.app = that;
         _frameworkOptions.frDelimiter = 'modules/'; 
-        _frameworkOptions.taskChain = new TaskManager(["contentType"]).getTaskChain();
+        _frameworkOptions.taskChain = new TaskManager(["contentType","manifest"]).getTaskChain();
        return new Framework(_frameworkOptions);
     });
 
@@ -211,19 +229,19 @@ var _indexhtml = [];
 
     _indexhtml.push(
       '<!DOCTYPE html>',
-      '<html>',
+      '<html manifest="cache.manifest">',
       '<head>',
         '<meta name="apple-mobile-web-app-capable" content="yes">'+
         '<meta name="apple-mobile-web-app-status-bar-style" content="default">'+
         '<meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">'+
         '<title>'+this.name+'</title>'+
+        '<link href="theme/jquery.mobile-1.0a2.min.css" rel="stylesheet" />'+
+        '<link href="theme/style.css" rel="stylesheet" />'+
         '<script src="jquery-1.4.4.min.js"></script>'+
         '<script src="jquery.mobile-1.0a2.min.js"></script>'+
         '<script src="underscore-min.js"></script>'+
         '<script src="core.js"></script>'+
         '<script src="ui.js"></script>'+
-        '<link href="theme/jquery.mobile-1.0a2.min.css" rel="stylesheet" />'+
-        '<link href="theme/style.css" rel="stylesheet" />'+
         '<script language="JavaScript">var '+this.name+' = '+this.name+ '|| {}; M.Application.name="'+this.name+'";</script>'+
         '<script src="'+this.name+'_App.js"></script>'+
       '</head>'
@@ -252,7 +270,7 @@ var _indexhtml = [];
         _frameworkOptions.virtual = true;
         _frameworkOptions.frDelimiter = '/';
      //     Definition of standard build chain for The-M-Project«s core files
-        _frameworkOptions.taskChain = new TaskManager(["contentType"]).getTaskChain();
+        _frameworkOptions.taskChain = new TaskManager(["contentType","manifest"]).getTaskChain();
     var fr = new Framework(_frameworkOptions);
 
         fr.files.push(
@@ -270,6 +288,77 @@ var _indexhtml = [];
   var ar = [];
       ar.push(fr);
   this.addFrameworks(ar); 
+};
+
+/**
+ * Build a HTML5 valid cache.manifest file.
+ * @param callback
+ */
+App.prototype.buildManifest = function(callback){
+var self = this, _cacheManifest = [];
+
+ /* adding entries for the Explicit CACHE section*/
+ _cacheManifest.push(
+   'CACHE MANIFEST',
+   '#Application:'+this.name+', Version:'+this.version+', Timestamp:'+this.buildVersion,   //adding 'header' information.
+   '\n',
+   '# Explicitly cached entries',
+   'CACHE:'
+ );
+ this.manifest.cache.forEach(function(expliFile){
+   _cacheManifest.push(expliFile);
+ });
+  
+
+ /* adding entries for the NETWORK section*/
+ _cacheManifest.push(
+   '\n',
+   '# Resources that require the device/user to be online.',
+   'NETWORK:'
+ );
+ this.manifest.network.forEach(function(networkFile){ // Files, exclude from explicitly section by user.
+   _cacheManifest.push(networkFile);
+ });
+ this.server.proxies.forEach(function(proxy){   // Proxy entries.
+   _cacheManifest.push(proxy.proxyAlias);
+ });
+ _cacheManifest.push('*'); // enable wildcard.
+
+ /* adding entries for the FALLBACK section*/
+ _cacheManifest.push(
+   '\n',
+   '# Fallback resources ',
+   'FALLBACK:'
+ );
+ this.manifest.fallback.forEach(function(fallbackFile){
+   _cacheManifest.push(fallbackFile);
+ });
+
+
+ var _frameworkOptions  = {};
+     _frameworkOptions.path = this.execPath;
+     _frameworkOptions.name = 'chacheManifest';
+     _frameworkOptions.app = this;
+     _frameworkOptions.virtual = true;
+     _frameworkOptions.frDelimiter = '/';
+     _frameworkOptions.taskChain = new TaskManager(["void"]).getTaskChain();
+ var fr = new Framework(_frameworkOptions);
+     fr.files.push(
+              new File({
+                       frDelimiter: fr.frDelimiter,
+                       virtual: true,
+                       name:'/cache.manifest',
+                       path:'/cache.manifest',
+                       contentType : 'text/cache-manifest',
+                       requestPath :'/cache.manifest',
+                       framework: fr, /* the framework, this file belongs to.*/
+                       content: _cacheManifest.join('\n')
+                       })
+        );
+  var ar = [];
+      ar.push(fr);
+  this.addFrameworks(ar); 
+  callback();
 };
 
 /**
@@ -348,7 +437,6 @@ var _AppBuilder = function(app, callback) {
     };
 
     that.build = function() {
-
       app.frameworks.forEach(function(framework) {
         framework.build(function(fr) {
           /* count  = -1 if a framework has been build. */
@@ -361,7 +449,18 @@ var _AppBuilder = function(app, callback) {
     };
   };
 
-  new _AppBuilder(self, callback).build();
+  /*
+   *  build batch:
+   *  1) Build the Application
+   *  11) Build each framework
+   *  2) Build the cache manifest, after all frameworks has been build.
+   *     This is done by calling 'buildManifest()' as callback after
+   *     '_AppBuilder.build()' is done.
+   *  3) Call callback, which leads to the next step of the build OR server process.
+   *
+   */
+  new _AppBuilder(self, function(){self.buildManifest(callback)}).build();
+
 };
 
 
@@ -404,8 +503,6 @@ App.prototype.saveLocal = function(callback){
          console.log('saved application to filesystem!');
         }).save();
   });
-
-
 };
 
 /**
@@ -414,7 +511,6 @@ App.prototype.saveLocal = function(callback){
  */
 App.prototype.prepareForServer = function(callback){
     var self = this;
-
     var _AppPreparer = function(app, callback){
         var that  = this;
 
@@ -438,17 +534,8 @@ App.prototype.prepareForServer = function(callback){
 
                 });
             });
-
         };
-
     }
-
-
     new _AppPreparer(self,callback).prepareForServer();
 
 };
-
-
-
-
-

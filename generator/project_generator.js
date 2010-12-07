@@ -44,6 +44,7 @@ NewProjectGenerator = exports.NewProjectGenerator = function() {
   this._tools =[]; // array with names of build tools, used in the a new project.
   this._tools.push('m-build.js');
   this._tools.push('m-server.js');
+  this._tools.push('config.json');  
   this._templatePath = './generator/templates';  // path to mustache templates.
 
 
@@ -175,7 +176,7 @@ this.checkArguments(args);
      */
  var _BuildToolsGenerator = function(callback) {
    var that = this;
-   that._folderCounter = 2;
+   that._folderCounter = 3;
 
    that.callbackIfDone = function() {
      if (that._folderCounter === 0){

@@ -59,10 +59,10 @@ Server.prototype.addProperties = function(properties){
  *
  * @param appOptions the option/properties for the new App object.
  */
-Server.prototype.getNewApp = function(appOptions) {
+Server.prototype.getNewApp = function(applicationDirectory) {
 
- var _app = new App(appOptions); /* getting a new App object, passing over the appOptions (if there is any) */
-     _app.server = this;   /* let the new app know about its server. */
+ var _app = new App(applicationDirectory,this); /* getting a new App object, passing over the appOptions (if there is any)
+                                                   and let the new app know about its server.*/
  this.hostedApps.push(_app); /* saving the app in local array */
 
  return _app;
@@ -165,7 +165,7 @@ var that = this;
       });
   }
    that.proxies.forEach(function(p){
-       _l.sys.puts(p.host+' -> '+p.proxy);
+       _l.sys.puts(p.host+' -> '+p.proxyAlias);
    });
 
 };
@@ -185,7 +185,7 @@ Server.prototype.run = function(appName) {
          //  _l.sys.puts(path);
 
         _requestedURL = _l.url.parse(request.url);
-      //  _l.sys.puts(_requestedURL.pathname);
+         _l.sys.puts('requesting : '+_requestedURL.pathname);
         _file = that.files[_requestedURL.pathname];
 
         if (_file === undefined) {
@@ -195,7 +195,7 @@ Server.prototype.run = function(appName) {
         } else {
             that.deliverThat(response,_file);
         }          
-    }).listen(that.port, that.hostname);
+    }).listen(that.port);
 
     _l.sys.puts('Server running at http://'+that.hostname+':' + that.port+'/'+_applicationName);
 
