@@ -28,8 +28,7 @@ Task_Void = exports.Task_Void = function() {
 };
 
 /**
- * Get the run() function from Task
- * @param framework
+ * Get the run() function from Task.
  */
 Task_Void.prototype = new Task;
 

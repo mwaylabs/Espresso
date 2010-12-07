@@ -21,12 +21,13 @@ Task_ContentType = exports.Task_ContentType = function() {
   this.contentTypes = {
     ".js": "text/javascript; charset=utf-8",
     ".css": "text/css; charset=utf-8",
+    ".manifest": "text/cache-manifest",
     ".html": "text/html",
     ".png": "image/png",
     ".jpg": "image/jpeg",
     ".gif": "image/gif",
-    ".json": "application/json",
-    ".svg": "image/svg+xml"
+    ".svg": "image/svg+xml",
+    ".json": "application/json"
   };
      
 
@@ -59,7 +60,7 @@ var self = this;
   });
 
 
-  callback();
+  callback(framework);
 
 
 };

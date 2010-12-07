@@ -25,5 +25,6 @@ ManagedTasks.Tasks['jslint'] =  require('./task_jslint').Task_JSLINT;
 ManagedTasks.Tasks['merge'] =  require('./task_merge').Task_Merge;
 ManagedTasks.Tasks['void'] =  require('./task_void').Task_Void;
 ManagedTasks.Tasks['contentType'] =  require('./task_contentType').Task_ContentType;
+ManagedTasks.Tasks['manifest'] =  require('./task_manifest').Task_Manifest;
 
 
