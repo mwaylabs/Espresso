@@ -59,6 +59,6 @@ Proxy.prototype.addProperties = function(properties){
  */
 Proxy.prototype.toString = function(){
      return 'Host: '+this.host + '\n'
-          +'Proxy: '+this.proxy + '\n';
+          +'Proxy: '+this.proxyAlias + '\n';
 
 }
