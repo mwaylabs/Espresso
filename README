@@ -3,7 +3,12 @@ Espresso : The-M-Projects build tools using node.js.
 Using:
 
 1.) Install node.js. see description here: http://nodejs.org/#download
-2.) Browse to the espresso folder and run: node m-server.js
+2.) Checkout Espresso
+2.) Browse to the espresso folder and run: node m-init.js -projectHelloWorld:myFirstApp on the shell.
+    a new MProject was generated. Type in:
+    cd ..
+    cd Apps/myFirstApp
+    node m-server.js
 3.) copy & paste the url into your browser
 
 
