@@ -9,20 +9,15 @@
 // ==========================================================================
 
 
-
-/**
- * @class
- * The task prototype. This is the prototype of every task used in Espresso.
- * This prototype is definition of the core feature of a task.
- */
-
-
 var _l = {}, Task;
     _l.sys = require('sys');
 
 /**
- * Constructor of a new task
- * @constructor
+ * @class
+ * 
+ * The Task prototype. This is the prototype of every task used in Espresso.
+ * This prototype is definition of the core feature of a task.
+ *
  */
 Task = exports.Task = function() {
 

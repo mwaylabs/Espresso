@@ -8,18 +8,6 @@
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
-/**
- * @class
- * The server prototype of Espresso build-in development server.
- * This server can hosting the application for the reason  of development.
- * Also handling proxy requests to remote services.
- *
- * The Server has a link to the App, so the server is aware of the application he serves.
- * The Server is holding the application in its memory, so there is no need for the sever
- * to read the files from the files system. The Server can serves as a proxy to test remote service calls.
- * For that reason, the server holds several Proxy objects.
- */
-
 var Server;
     _l = {},
     Proxy = require('./proxy').Proxy;
@@ -32,7 +20,17 @@ var Server;
     _l.url = require('url');
 
 /**
- * @constructor
+ * @class
+ *
+ * The server prototype of Espresso build-in development server.
+ * This server can hosting the application for the reason  of development.
+ * Also handling proxy requests to remote services.
+ *
+ * The Server has a link to the App, so the server is aware of the application he serves.
+ * The Server is holding the application in its memory, so there is no need for the sever
+ * to read the files from the files system. The Server can serves as a proxy to test remote service calls.
+ * For that reason, the server holds several Proxy objects.
+ *
  * @param properties, the properties
  */
 Server = exports.Server = function(properties) {

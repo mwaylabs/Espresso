@@ -8,21 +8,6 @@
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
-/**
- * @class
- * Definition of App class. App is Espresso«s core component.
- * App holds all information about the "The-M-Project" application that is build via Espresso.
- * Containing properties of the application and to control the build itself.
- * App takes care of the build process by hooking in the needed resources (Frameworks and Files)
- * and calling build on each resource(s).
- * For doing all this cool stuff, App needs some data/information to work with.
- * Those thinks are implemented in extra components.
- * App can contain multiple references to Framework (e.g. The-M-Project core files or the application itself).
- * By loading new Frameworks, App is adding a defined task chain to each Framework.
- * The task chain is prepared by the TaskManager.
- */
-
-
 var _l = {},
     App,
     TaskManager = require('./task_manager').TaskManager,
@@ -33,8 +18,6 @@ var _l = {},
  *
  * sys    = node.js system module
  * fs     = filesystem
- * jslint = JavaScript source code validation.
- *
  */
 _l.sys = require('sys');
 _l.fs = require('fs');
@@ -42,10 +25,19 @@ _l.fs = require('fs');
 
 
 /**
- * @description
- * Constructor function.
- * Sets the build options for the app (project) to be build.
- * @constructor
+ * @class
+ *
+ * Definition of App class. App is Espresso«s core component.
+ * App holds all information about the "The-M-Project" application that is build via Espresso.
+ * Containing properties of the application and to control the build itself.
+ * App takes care of the build process by hooking in the needed resources (Frameworks and Files)
+ * and calling build on each resource(s).
+ * For doing all this cool stuff, App needs some data/information to work with.
+ * Those thinks are implemented in extra components.
+ * App can contain multiple references to Framework (e.g. The-M-Project core files or the application itself).
+ * By loading new Frameworks, App is adding a defined task chain to each Framework.
+ * The task chain is prepared by the TaskManager.
+ *
  * @param build_options, the options to customize the build process
  */
 
@@ -79,7 +71,7 @@ App = exports.App = function (applicationDirectory,server) {
       this.execPath = applicationDirectory;
       this.loadJSONConfig();
   }
-  console.log(this.execPath);
+  console.log("\n");
 };
 
 /**
@@ -134,9 +126,7 @@ var that = this;
  * The project is equals the application.
  */
 App.prototype.loadTheApplication = function() {
-  
-    var that = this, _theApplication = [],_theApplicationResources;
-_l.sys.puts("Load App")
+var that = this, _theApplication = [],_theApplicationResources;
 // TODO: making the resources folder to be excluded - if the folder stays in the app folder.    
   _theApplication = ['app'].map(function(module) {
     var _frameworkOptions  = {};
@@ -250,7 +240,6 @@ var _indexhtml = [];
 
     _indexhtml = _indexhtml.join('\n');
 
-
     var _frameworkOptions  = {};
         _frameworkOptions.path = this.execPath;
         _frameworkOptions.name = 'IndexHtml';
@@ -352,7 +341,7 @@ var self = this, _cacheManifest = [];
 /**
  * @description
  * Function to generate the projects output folders. 
- * @param callback, the function that should be called after the output folders are made.
+ * @param {function}, the function that should be called after the output folders are made.
  */
 App.prototype.makeOutputFolder = function(callback){
 var self = this;
@@ -417,8 +406,7 @@ var _AppBuilder = function(app, callback) {
 
     /* amount of used frameworks, for this application. */
     that._frameworkCounter = app.frameworks.length ;
-    console.log(require('util').inspect(that._frameworkCounter, true, 1));
-
+  
     /* callback checker, called if all frameworks are build. */
     that.callbackIfDone = function() {
       if (callback && that._frameworkCounter <= 0){
@@ -427,6 +415,7 @@ var _AppBuilder = function(app, callback) {
     };
 
     that.build = function() {
+      console.log("Building components");   
       app.frameworks.forEach(function(framework) {
         framework.build(function(fr) {
           /* count  = -1 if a framework has been build. */
@@ -438,6 +427,8 @@ var _AppBuilder = function(app, callback) {
       });
     };
   };
+
+ console.log("Building application: "+this.name); 
 
   /*
    *  build batch:
@@ -491,7 +482,8 @@ App.prototype.saveLocal = function(callback){
 
   return this.makeOutputFolder(function(){
         new _AppSaver(self, function(){
-         console.log('saved application to filesystem!');
+         console.log('Saved application to filesystem!');
+         console.log("\n");   
         }).save();
   });
 };

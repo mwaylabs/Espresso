@@ -8,18 +8,15 @@
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
-
-/**
- * @class Task_Manifest
- * @description
- * This Task checks files in a framework, if some files are exclude
- * from caching the files on the device.
- */
 var Task_Manifest,
     Task = require('./Task').Task;
 
 /**
- * @constructor
+ * @class
+ * This Task checks files in a framework, if some files are exclude
+ * from caching the files on the device.
+ *
+ * @extends Task
  */
 Task_Manifest = exports.Task_Manifest = function() {
   /* Properties */
@@ -44,7 +41,7 @@ var that = this,
     _manifestExclude = (framework.app.excludedFromCaching) ? framework.app.excludedFromCaching : false,
     _app = framework.app;
 
-     if(_manifestExclude && _manifestExclude.length !== 0){
+     if(_manifestExclude){
          framework.files.forEach(function(file){
              if(_manifestExclude.indexOf(file.getBaseName()+file.getFileExtension()) === -1){
                _app.manifest.cache.push(file.requestPath);

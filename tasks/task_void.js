@@ -9,21 +9,17 @@
 // ==========================================================================
 
 
-/**
- * @description
- * This is a empty task, which does nothing at all.
- * Every framework must provide al least one Task, so this would be the task if a framework needs
- * no manipulation of it files. 
- *
- */
-
 var Task_Void,
     Task = require('./Task').Task;
 
 /**
- * @constructor
- * @param framework
- * @param callback
+ * @class
+ *
+ * This is a empty task, which does nothing at all.
+ * Every framework must provide al least one Task, so this would be the task if a framework needs
+ * no manipulation of it files.
+ * 
+ * @extends Task
  */
 Task_Void = exports.Task_Void = function() {
 
@@ -35,7 +31,6 @@ Task_Void = exports.Task_Void = function() {
 /**
  * @description
  * Get the run() function from Task.
- * @property
  */
 Task_Void.prototype = new Task;
 

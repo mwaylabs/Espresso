@@ -9,16 +9,6 @@
 // ==========================================================================
 
 
-/**
- * @class
- * The framework prototype.
- *
- * A Framework is the JavaScript object representation of a collection of File objects.
- * A typically Framework would be "The-M-Project" core data or the application that is implemented with it.
- * A Framework is responsible for loading all files, that belongs to this framework.
- * Each Framework contains information of how to build its files.
- * This information is shipped over from the App object which the Framework belongs to.
- */
 
 var _l = {},
     Framework,
@@ -38,9 +28,14 @@ _l.path = require('path');
 
 
 /**
- * @description 
- * The constructor for the framework prototype.
- * @constructor
+ * @class
+ *
+ * A Framework is the JavaScript object representation of a collection of File objects.
+ * A typically Framework would be "The-M-Project" core data or the application that is implemented with it.
+ * A Framework is responsible for loading all files, that belongs to this framework.
+ * Each Framework contains information of how to build its files.
+ * This information is shipped over from the App object which the Framework belongs to.
+ * 
  * @param properties, the properties for the framework
  */
 Framework = exports.Framework = function(properties) {
@@ -148,30 +143,26 @@ var _FileBrowser = function(framework, callback) {
           if (stats.isDirectory()) {
             _l.fs.readdir(path, function(err, subpaths) {
 
+             if (err){ throw err;}
+
              if(subpaths.length < 1)   {
                   that.callbackIfDone();
              }
 
-               if (subpaths.length === 1 && (that.checkIfFileShouldBeExcluded(subpaths[0]))){
-                    console.log('path / subpaths.length '+path+' / '+subpaths[0]);
-                    that.callbackIfDone();
-               }
-                
-              if (err){
-                  throw err;
-              }
-
-              else {
-                subpaths.forEach(function(subpath) {
-                   if(that.checkIfFileShouldBeExcluded(subpath)){
+             if (subpaths.length === 1 && (that.checkIfFileShouldBeExcluded(subpaths[0]))){
+               console.log('path / subpaths.length '+path+' / '+subpaths[0]);
+               that.callbackIfDone();
+             } else {
+               subpaths.forEach(function(subpath) {
+                 if(that.checkIfFileShouldBeExcluded(subpath)){
                    //     that.callbackIfDone();
-                   }else{
+                 }else{
                       /* add 1 to the counter if sub file is NOT a folder*/
-                      if (subpath.match('\\.')) {that._folderCounter += 1;}
-                      that.browse(_l.path.join(path, subpath)); 
-                   }
-                });
-              }
+                   if (subpath.match('\\.')) {that._folderCounter += 1;}
+                   that.browse(_l.path.join(path, subpath)); 
+                 }
+               });
+             }
             });
 
 
@@ -194,7 +185,7 @@ var _FileBrowser = function(framework, callback) {
                   );
                 that._folderCounter -= 1;
                 that.callbackIfDone();
-             }
+               }
            });
           }
         }
@@ -213,8 +204,7 @@ return new _FileBrowser(this, callback).browse(path);
  */
 Framework.prototype.build = function(callback){
 var that = this;
-_l.sys.puts('\n****** calling build for "'+this.name+'" ******');
-
+//console.log('\n****** calling build for "'+this.name+'" ******');
     if(that.isVirtual()){ // default = false.
        that.taskChain.run(that,callback);
     }else{
@@ -232,8 +222,9 @@ _l.sys.puts('\n****** calling build for "'+this.name+'" ******');
  */
 Framework.prototype.save = function(callback){
 // TODO: made some refactoring here, to make the save function more "well-arranged".
- var _outputPath = this.app.execPath+'/'+this.app.outputFolder;
- var self = this;
+ var self = this,
+     _outputPath = this.app.execPath+'/'+this.app.outputFolder;
+
  var _FileSaver = function(filesLength, callback) {
  var that = this;
 
@@ -293,7 +284,6 @@ Framework.prototype.save = function(callback){
         that.callbackIfDone();
     }
  };
-
  new _FileSaver(this.files.length, callback).save(this.files);
 };
 

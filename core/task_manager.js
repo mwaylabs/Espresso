@@ -9,15 +9,6 @@
 // ==========================================================================
 
 
-/**
- * @class
- * Definition of Task Manager prototype.
- * The TaskManager is responsible for building a chain of tasks specified in a config file.
- * The TaskManager queues the tasks up, and takes care of the task execution chain.
- * Which means hooking up the Tasks, so they can execute themselves and pass the result to next Task.
- */
-
-
 var _l = {},
     TaskManager,
     ManagedTasks = require('../tasks/managed_tasks').ManagedTasks.Tasks,
@@ -35,19 +26,22 @@ _l.sys = require('sys');
 
 
 /**
- * @constructor
+ * @class
+ *
+ * Definition of Task Manager prototype.
+ * The TaskManager is responsible for building a chain of tasks specified in a config file.
+ * The TaskManager queues the tasks up, and takes care of the task execution chain.
+ * Which means hooking up the Tasks, so they can execute themselves and pass the result to next Task.
+ *
  * @param Tasks, the task that the manager should hook up.
  */
 TaskManager = exports.TaskManager = function(Tasks) {
-
-
   /* Properties */
   this.tasksChain = new Array();
 
-  if(!(Tasks === undefined)){
+  if(Tasks !== undefined){
     this.loadNewTaskChain(Tasks);
   }
-
 };
 
 /**
@@ -55,39 +49,32 @@ TaskManager = exports.TaskManager = function(Tasks) {
  * @param Task the task defined in the managed_tasks.js.
  */
 TaskManager.prototype.loadNewTaskChain = function (Tasks){
-var that = this;
+var that = this,
+    _i, _firstTask, _current, _nextTask;
 
-  if(!(Tasks === undefined)){
-
-    var i, firstTask, current, nextTask;
-
-    for (i = 0; i < Tasks.length; ++i) {
-
-      if(!ManagedTasks[Tasks[i]]){
-          _l.sys.puts("ERROR: Task '"+Tasks[i]+"' not found! ");
+    for (_i = 0; _i < Tasks.length; ++_i) {
+      if(!ManagedTasks[Tasks[_i]]){
+          _l.sys.puts("ERROR: Task '"+Tasks[_i]+"' not found! ");
           _l.sys.puts("Hint: make sure, the task is defined and has an entry in /tasks/managed_tasks.js");
           _l.sys.puts("Hint: check spelling");
           process.exit(1); /* exit the process, reason: task not found!*/
       }else{
+        _nextTask = new ManagedTasks[Tasks[_i]];
 
-        nextTask = new ManagedTasks[Tasks[i]];
-      
-        if (firstTask === undefined) {
-          firstTask = nextTask;
+        if (_firstTask === undefined) {
+          _firstTask = _nextTask;
         } else {
-          current.next = nextTask;
+          _current.next = _nextTask;
         }
-        current = nextTask;
+        _current = _nextTask;
      }     
-  }
-   if(firstTask){
-       that.tasksChain.push(firstTask);
+   }
+   if(_firstTask){
+       that.tasksChain.push(_firstTask);
    }else{
      _l.sys.puts("ERROR: No Task defined");
      process.exit(1); /* exit the process, reason: not task was defined*/
    }
-
-  }
 };
 
 /**
@@ -95,7 +82,7 @@ var that = this;
  * @return the first element of the task chain.
  */
 TaskManager.prototype.getTaskChain = function (){
-
-  return this.tasksChain[0];
-
+  if(this.tasksChain[0]){
+    return this.tasksChain[0];
+  }
 };

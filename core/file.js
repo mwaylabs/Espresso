@@ -9,16 +9,7 @@
 // ==========================================================================
 
 /**
- * @class
- * The file prototype.
- *
- * File is the representation of single resource in a Framework.
- * This could be a JavaScript file, a image or a CSS file.
- * Each file is a JavaScript object representation of such a resource.
- * File contains all needed information of the resource like:
- * name, path inside the framework folder or the content, the raw data.
- *
- * Files are organized in a Framework.
+
  */
 
 var _l = {},
@@ -29,9 +20,15 @@ _l.path = require('path');
 _l.sys = require('sys');
 
 /**
- * @description
- * The constructor of the file prototype.
- * @constructor
+ * @class
+ * 
+ * File is the representation of single resource in a Framework.
+ * This could be a JavaScript file, a image or a CSS file.
+ * Each file is a JavaScript object representation of such a resource.
+ * File contains all needed information of the resource like:
+ * name, path inside the framework folder or the content, the raw data.
+ *
+ * Files are organized in a Framework.
  * @param properties
  */
 File = exports.File = function(properties) {

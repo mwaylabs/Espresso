@@ -8,29 +8,6 @@
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
-
-/**
- * @class
- * Definition of NewProjectGenerator prototype.
- *
- * @description
- * NewProjectGenerator is part of Espressos generators to support
- * a developer with generators for new projects and files.
- *
- * @example
- *
- * Usage:
- *
- * call node m-init.js from inside the Espresso folder
- * There are two parameters, that can be attached:
- *
- * -project:<name of the project>
- *  This will generate a new and empty project
- *
- * -projectHelloWorld::<name of the project>
- * This will generate a new HelloWorld project, ready to build.
- */
-
 var _l = {},
     File = require('../core/file').File,
     NewProjectGenerator;
@@ -50,8 +27,24 @@ var Mu = require('../lib/mu');
 
 
 /**
- * @constructor
- * @param args
+ * @class
+ *
+ * Definition of NewProjectGenerator prototype.
+ * NewProjectGenerator is part of Espressos generators to support
+ * a developer with generators for new projects and files.
+ *
+ * @example
+ *
+ * Usage:
+ *
+ * call node m-init.js from inside the Espresso folder
+ * There are two parameters, that can be attached:
+ *
+ * -project:<name of the project>
+ *  This will generate a new and empty project
+ *
+ * -projectHelloWorld::<name of the project>
+ * This will generate a new HelloWorld project, ready to build.
  */
 NewProjectGenerator = exports.NewProjectGenerator = function() {
 

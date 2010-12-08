@@ -8,7 +8,6 @@
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
-
 var _l = {},
     Task_Merge,
     File = require('../core/file').File;
@@ -21,7 +20,13 @@ _l.sys = require('sys');
 _l.fs = require('fs');
 
 
-
+/**
+ * @class
+ * This Task combines all files of a framework, into a single file.
+ * The merged files replaces all the several single files in a framework.
+ *
+ * @extends Task
+ */
 Task_Merge = exports.Task_Merge = function() {
 
   /* Properties */
@@ -31,18 +36,19 @@ Task_Merge = exports.Task_Merge = function() {
 };
 
 /**
+ * @description
  * Get the run() function from Task
  * @param framework
  */
 Task_Merge.prototype = new Task;
 
 /**
+ * @description
  * Combining all the files, contained in the result of merging process
  * @param framework the reference to the framework this task is working with.
  */
 Task_Merge.prototype.duty = function(framework,callback){
 
-  _l.sys.puts('Running Task: "merge"');  
   var that = this;
   that.files = [];
 

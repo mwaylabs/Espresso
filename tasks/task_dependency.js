@@ -9,11 +9,6 @@
 // ==========================================================================
 
 
-/**
- * Definition of Task_Dependency.
- *
- */
-
 
 var _l = {},
     Task_Dependency,
@@ -32,13 +27,39 @@ _l.fs = require('fs');
 
 
 
+/**
+ * @class
+ * 
+ * The Dependency Task is responsible for calculating dependencies between the JavaScript files
+ * contained in the framework ('core' and 'ui') and the concrete Application.
+ * Therefor each file, that has some dependencies to one or more other files must provide a special tag, which indicates the dependencies.
+ * In JavaScript functions and objects used in file must be specified some where above the first execution.
+ * @example
+ * function a (){
+ *   alert('function a');
+ * }
+ *
+ * a(); // will work.
+ * b(); // will probably not work.
+ *
+ * function b (){
+ *   alert('function b');
+ * }
+ *
+ * @description
+ * So the business of the dependency task is to take care, that the JavaScript files of both, the project and the framework
+ * are included in the right sequence. The information about the sequence is carried in each file.
+ * Its done by adding:
+ * m_require('name_to_dependency.js');
+ * at the top of a JavaScript file. To place m_require at the very begin of a file is not mandatory,
+ * the Dependency Task will find it any way, but it makes developing much easier when looking for dependencies.
+ *
+ * @extends Task
+ */
 Task_Dependency = exports.Task_Dependency = function() {
-
-
   /* Properties */
   this.name = 'dependencie_task';
   this.deps = [];
-
 };
 
 /**
@@ -54,7 +75,6 @@ Task_Dependency.prototype = new Task;
  */
 Task_Dependency.prototype.duty = function(framework,cb) {
 var that = this;
-_l.sys.puts('Running Task: "dependency"');
 
 this.TaskSequencer.sequenceThat(
        /*Resolve all dependencies for all JavaScript files, contained in a framework*/

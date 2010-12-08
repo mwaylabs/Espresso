@@ -9,16 +9,19 @@
 // ==========================================================================
 
 /**
- *@class
- *Prototype for a proxy object.
- *Every Proxy object belongs to one Server. A Proxy object contains all information about a proxy entry.
+ *
+
  */
 
 var Proxy;
 
 
 /**
- * @constructor
+ * @class
+ *
+ * Prototype for a proxy object.
+ * Every Proxy object belongs to one Server. A Proxy object contains all information about a proxy entry.
+ *
  * @param properties
  */
 Proxy = exports.Proxy = function(properties) {

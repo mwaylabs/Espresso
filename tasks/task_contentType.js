@@ -13,7 +13,13 @@
 var Task_ContentType,
     Task = require('./Task').Task;
 
-
+/**
+ * @class
+ * Determine the content type for every file contained in a framework.
+ * The content type is attached ot the files directly.
+ *
+ * @extends Task
+ */
 Task_ContentType = exports.Task_ContentType = function() {
 
   /* Properties */
@@ -34,13 +40,14 @@ Task_ContentType = exports.Task_ContentType = function() {
 
 };
 
-/**
- * Get the run() function from Task
- * @param framework
- */
 Task_ContentType.prototype = new Task;
 
 
+/**
+ *
+ * @param framework
+ * @param callback
+ */
 Task_ContentType.prototype.duty = function(framework,callback){
 var self = this;
 
