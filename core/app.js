@@ -66,7 +66,7 @@ App = exports.App = function (applicationDirectory,server) {
     "fallback" :[]  
   };
 
-  this.excludeFromCaching;  
+  this.excludedFromCaching;  
 
   if(applicationDirectory){
       this.execPath = applicationDirectory;
@@ -105,7 +105,7 @@ App.prototype.loadJSONConfig = function() {
         var config = JSON.parse(_l.fs.readFileSync(this.execPath+'/config.json', 'utf8'));
         this.addOptions(config);
         if(config.proxy){
-           this.server.proxies = config.proxy.proxies; //adding proxies, if present.
+           this.server.proxies = config.proxies; //adding proxies, if present.
         }
     }catch(ex){
        console.log('ERROR in "config.json" '+ex.message);

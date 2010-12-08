@@ -31,7 +31,7 @@ Task_Manifest.prototype = new Task;
  */
 Task_Manifest.prototype.duty = function(framework,callback){
 var that = this,
-    _manifestExclude = (framework.app.excludeFromCaching) ? framework.app.excludeFromCaching.excludedFiles : false;
+    _manifestExclude = (framework.app.excludedFromCaching) ? framework.app.excludedFromCaching : false;
     _app = framework.app;
 
      if(_manifestExclude && _manifestExclude.length !== 0){
