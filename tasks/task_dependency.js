@@ -84,119 +84,104 @@ this.TaskSequencer.sequenceThat(
       },
        /*Tree based sort*/
       function buildDependencyTrees(err, fr) {
-
          if (err){throw err;}
 
-          var that = this;
+         var that = this,_roots = [];   // _roots = object to hold the root nodes.
+        /**
+         * Helper object to generate nodes.
+         *
+         * @param nodeName - the node«s name
+         * @param file - the file, represented by this node.
+         */
+         var _TreeNode = function(nodeName,file) {
+            var that = this;
+            that.name = nodeName;
+            that.file = file; /*The file attached to this node*/
+            that.children = [];
 
-           /*object to hold the root nodes.*/
-           var _roots = [];
-
-          /**
-           * Helper object to generate nodes.
-           *
-           * @param nodeName - the node«s name
-           * @param file - the file, represented by this node.
-           */
-            var _TreeNode = function(nodeName,file) {
-                var that = this;
-                that.name = nodeName;
-                that.file = file; /*The file attached to this node*/
-                that.children = [];
-
-                that.addChildeNode = function(childNode){
+            that.addChildeNode = function(childNode){
                     that.children.push(childNode);
-                }
-
-                that.getChildeNodes = function(){
-                   return that.children;
-                }
             }
 
+            that.getChildeNodes = function(){
+                   return that.children;
+            }
+         }
 
-           /* find and add the root nodes first!*/
-           fr.files.forEach(function (file){
-                if(file.isJavaScript() && file.dependencies.length === 0){
-                   _roots.push(new _TreeNode(file.getName(),file));
-                }
-           });
+         /* find and add the root nodes first!*/
+         fr.files.forEach(function (file){
+            if(file.isJavaScript() && file.dependencies.length === 0){
+              _roots.push(new _TreeNode(file.getName(),file));
+            }
+         });
 
-          /**
-           * Helper object to compute a tree of all files, according to there dependencies.
-           * 
-           * @param f the framework
-           */
+        /**
+         * Helper object to compute a tree of all files,
+         * according to there dependencies.
+         * @param f, the framework
+         */
          var _TreeBuilder = function(f) {
             var that = this;
-                that.files =  f;
+                that.files = f;
             /**
              * Function of _TreeBuilder, to build ... wait for it ... the tree.
              * @param node the current node to check, starts with root node.
              */
-            that.buildTree = function(node){
-                 that.files.forEach(function(file){
-                     file.dependencies.forEach(function (dep){
-                          if(file.getName() !== node.name){ /* don«t use itself as a dependency*/
-                             if(dep === node.name){
-                                 /* adding child nodes, looking for children of that child node as well. */
-                                 node.addChildeNode(that.buildTree(new _TreeNode(file.getName(),file)));
-                             }
-   
-                          }
-                     })
+           that.buildTree = function(node){
+               that.files.forEach(function(file){
+                 file.dependencies.forEach(function (dep){
+                   if(file.getName() !== node.name){ /* don«t use itself as a dependency*/
+                     if(dep === node.name){
+                       /* adding child nodes, looking for children of that child node as well. */
+                        node.addChildeNode(that.buildTree(new _TreeNode(file.getName(),file)));
+                     }
+                   }
+                 })
 
-                 });
-
-                 return node
-
-             }
+               });
+             return node
+           }
 
          };
 
-          _roots.forEach(function (rootNode){
-              /*setting the dependency tree to the framework*/
-                fr.dependencyTrees.push(new _TreeBuilder(fr.files).buildTree(rootNode));
-          });
+         /* setting the dependency tree to the framework*/
+         _roots.forEach(function (rootNode){
+            fr.dependencyTrees.push(new _TreeBuilder(fr.files).buildTree(rootNode));
+         });
 
-         /*shifting the framework to the next step in the sequencer*/
-         return fr;
+         return fr; // shifting the framework to the next step in the sequencer
 
       },
-        /*Sort the found dependencies*/
+      /*Sort the found dependencies*/
       function sortDependencies(er,fr) {
+        var _queue  = []; // the queue, needed for the tree sort algorithm.
+        var _sortedFiles = []; // holds the sort result.
+          /*
+          function print(node,string){
+                      string += '+';
+                      var it = node.name+' \n'
+                     if (node.children){
+                          node.children.forEach(function (child){
+                            it += print(child,string);
+                         });
+                     }
+                     return string+' '+it;
+          }
 
-      var _queue  = []; // the queue, needed for the tree sort algorithm.
-      var _sortedFiles = []; // holds the sort result.
+          fr.dependencyTrees.forEach(function (tree){
 
+                     _l.sys.puts(print(tree,''));
+           });
 
-      /*  
-      function print(node,string){
-                  string += '+';
-                  var it = node.name+' \n'
-                 if (node.children){
-                      node.children.forEach(function (child){
-                        it += print(child,string);
-                     });
-                 }
-                 return string+' '+it;
-      }
-
-      fr.dependencyTrees.forEach(function (tree){
-
-                 _l.sys.puts(print(tree,''));
-       });
-
-      */
+          */
       
 
-      /**
+      /*
        * Helper object, to traverse the dependency tree based on the 'Breadth-first' search algorithm.
        * See at: http://en.wikipedia.org/wiki/Breadth-first_search
        *
        * The result of the merge function is a list in which sequencer the files of a framework
        * should be include in the single-final output file.
-       *
-       * @param tree the root node of the framework«s dependency tree.
        */
       var _Merger = function(done) {
              var that = this;
@@ -261,11 +246,9 @@ this.TaskSequencer.sequenceThat(
 
       /* Merge files for every  formed dependency tree.*/
       fr.dependencyTrees.forEach(function (tree){
-          /*Reset _queue for each tree*/
-          _queue = [];
-          /*Pushing the root node on the the queue.*/
-          _queue.push(tree);
-              /*Merge the files*/
+          _queue = []; //  reset _queue for each tree
+          _queue.push(tree); // pushing the root node on the the queue.
+         /*Merge the files*/
          var _done = _merger.merge([],_queue);
              _done.forEach(function(d){
                    _sortedFiles.push(d.file);

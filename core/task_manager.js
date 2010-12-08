@@ -10,8 +10,11 @@
 
 
 /**
- * Definition of Task Manager
- *
+ * @class
+ * Definition of Task Manager prototype.
+ * The TaskManager is responsible for building a chain of tasks specified in a config file.
+ * The TaskManager queues the tasks up, and takes care of the task execution chain.
+ * Which means hooking up the Tasks, so they can execute themselves and pass the result to next Task.
  */
 
 
@@ -23,15 +26,18 @@ var _l = {},
 /*
  * The required modules for Task Manager.
  *
- * sys    = node.js system module
- * fs     = filesystem
+ * sys = node.js system module
+ * fs  = filesystem
  *
  */
 _l.fs = require('fs');
 _l.sys = require('sys');
 
 
-
+/**
+ * @constructor
+ * @param Tasks, the task that the manager should hook up.
+ */
 TaskManager = exports.TaskManager = function(Tasks) {
 
 
@@ -85,7 +91,8 @@ var that = this;
 };
 
 /**
- * Return the task chain.
+ * Returning the hooked-up task of a Task Manager.
+ * @return the first element of the task chain.
  */
 TaskManager.prototype.getTaskChain = function (){
 

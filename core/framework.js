@@ -9,8 +9,15 @@
 // ==========================================================================
 
 
-/*
+/**
+ * @class
  * The framework prototype.
+ *
+ * A Framework is the JavaScript object representation of a collection of File objects.
+ * A typically Framework would be "The-M-Project" core data or the application that is implemented with it.
+ * A Framework is responsible for loading all files, that belongs to this framework.
+ * Each Framework contains information of how to build its files.
+ * This information is shipped over from the App object which the Framework belongs to.
  */
 
 var _l = {},
@@ -30,7 +37,12 @@ _l.sys = require('sys');
 _l.path = require('path');
 
 
-
+/**
+ * @description 
+ * The constructor for the framework prototype.
+ * @constructor
+ * @param properties, the properties for the framework
+ */
 Framework = exports.Framework = function(properties) {
 
 
@@ -39,9 +51,6 @@ Framework = exports.Framework = function(properties) {
   /* Build configuration */
   this.buildVersion = null;
   this.combinedScripts = false;
-//  this.combineStylesheets = true;
-//  this.minifyScripts = false;
-//  this.minifyStylesheets = false;
   this.defaultLanguage = 'english';
   this.buildLanguage = 'english';
 
@@ -67,28 +76,35 @@ Framework = exports.Framework = function(properties) {
 
 /**
  * Sets the Properties for Framework
- * @param properties
+ * @param properties, the properties for the framework
  */
 Framework.prototype.addProperties = function(properties){
-
     var that = this;
 
     Object.keys(properties).forEach(function (key) {
          that[key] = properties[key];
     });
-
-
 };
 
+/**
+ * @description
+ * Check if the this framework is virtual, which means it contains only 'virtual' files.
+ * Virtual files, are generated during the build process, and have no 'real' data
+ * on the hard disk. 
+ *
+ * @return true, if this framework is virtual.
+ */
 Framework.prototype.isVirtual = function(){
-
   return this.virtual;
-
 }
 
 
 /**
+ * @description
  * Browse throw all resources containing in the Framework.
+ * Load the found files and attache them to this framework
+ * @param path, the path to look for resources.
+ * @param callback, the function, that is called after all resources haven been loaded.
  */
 Framework.prototype.loadFiles = function(path,callback){
 
@@ -189,9 +205,11 @@ return new _FileBrowser(this, callback).browse(path);
 };
 
 
-
 /**
+ * @description
  * Building the framework, included all files.
+ * This function loads all resources, and runs the task chain on this files.
+ * @param callback, the function, that is called after all resources haven been build.
  */
 Framework.prototype.build = function(callback){
 var that = this;
@@ -208,11 +226,11 @@ _l.sys.puts('\n****** calling build for "'+this.name+'" ******');
 };
 
 /**
+ * @description
  * Save framework to local file system.
  * @param callback, function to be called after all files had been saved.
  */
 Framework.prototype.save = function(callback){
-
 // TODO: made some refactoring here, to make the save function more "well-arranged".
  var _outputPath = this.app.execPath+'/'+this.app.outputFolder;
  var self = this;
@@ -272,24 +290,20 @@ Framework.prototype.save = function(callback){
            }
 
         }
-          that.callbackIfDone();
+        that.callbackIfDone();
     }
-
  };
 
  new _FileSaver(this.files.length, callback).save(this.files);
-    
-
 };
 
 /**
+ * @description
  * Attaching the files of a framework to, the server.
- * @param server
- * @param callback
+ * @param server, the server to prepare the files for.
+ * @param callback, the function, that is executed after the prepareForServer() is done.
  */
 Framework.prototype.prepareForServer = function(server,callback){
-
-
     this.files.forEach(function(file){
         server.files[file.requestPath] = file;
     });
@@ -299,10 +313,14 @@ Framework.prototype.prepareForServer = function(server,callback){
 
 
 /**
+ * @description
  * Override Object.toString()
+ * @exampleText
+ * Name: core
+ * Path: /user/foo/bar/.../core
+ * @return {string} a readable presentations of this framework object.
  */
 Framework.prototype.toString = function() {
-
     return 'Name: '+this.name + '\n'
           +'Path: '+this.path + '\n';
 };

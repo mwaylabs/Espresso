@@ -10,7 +10,25 @@
 
 
 /**
+ * @class
  * Definition of NewProjectGenerator prototype.
+ *
+ * @description
+ * NewProjectGenerator is part of Espressos generators to support
+ * a developer with generators for new projects and files.
+ *
+ * @example
+ *
+ * Usage:
+ *
+ * call node m-init.js from inside the Espresso folder
+ * There are two parameters, that can be attached:
+ *
+ * -project:<name of the project>
+ *  This will generate a new and empty project
+ *
+ * -projectHelloWorld::<name of the project>
+ * This will generate a new HelloWorld project, ready to build.
  */
 
 var _l = {},
@@ -31,9 +49,11 @@ _l.path = require('path');
 var Mu = require('../lib/mu');
 
 
-
+/**
+ * @constructor
+ * @param args
+ */
 NewProjectGenerator = exports.NewProjectGenerator = function() {
-
 
   /* Properties */
   this.projectName = '';
@@ -46,11 +66,10 @@ NewProjectGenerator = exports.NewProjectGenerator = function() {
   this._tools.push('m-server.js');
   this._tools.push('config.json');  
   this._templatePath = './generator/templates';  // path to mustache templates.
-
-
 };
 
 /**
+ * @description
  * Make sure, that the arguments ale valid.
  * @param args, the command line arguments to check
  */
@@ -88,6 +107,7 @@ var that = this;
 
 
 /**
+ * @description
  * Generator 'main' function, generates a new project withe the given name via. command line argument:
  * -project:<project name>
  * @param args, the command line arguments.
@@ -96,11 +116,6 @@ NewProjectGenerator.prototype.gen = function(args,current_Dir){
 var self = this;
 
 this.checkArguments(args);
-/*
-   args.forEach(function (val, index, array) {
-     console.log(index + ': ' + val);
-   });*/
-
 
     self.outputPath = current_Dir.split('Espresso')[0];
 

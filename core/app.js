@@ -9,10 +9,17 @@
 // ==========================================================================
 
 /**
- * Definition of App class.
- *
- * Representation of the project.
- *
+ * @class
+ * Definition of App class. App is Espresso«s core component.
+ * App holds all information about the "The-M-Project" application that is build via Espresso.
+ * Containing properties of the application and to control the build itself.
+ * App takes care of the build process by hooking in the needed resources (Frameworks and Files)
+ * and calling build on each resource(s).
+ * For doing all this cool stuff, App needs some data/information to work with.
+ * Those thinks are implemented in extra components.
+ * App can contain multiple references to Framework (e.g. The-M-Project core files or the application itself).
+ * By loading new Frameworks, App is adding a defined task chain to each Framework.
+ * The task chain is prepared by the TaskManager.
  */
 
 
@@ -35,6 +42,7 @@ _l.fs = require('fs');
 
 
 /**
+ * @description
  * Constructor function.
  * Sets the build options for the app (project) to be build.
  * @constructor
@@ -57,34 +65,26 @@ App = exports.App = function (applicationDirectory,server) {
   this.execPath = "";  //  the a actually folder name, in which the application is located.
   this.taskChain = new Array();
   this.proxies = [];  
-
+  this.excludedFromCaching;
+    
   /* Properties used by App */
   this.frameworks = [];
   this.manifest = {
-    "cache" : [],
+    "cache"   :[],
     "network" :[],
-    "fallback" :[]  
+    "fallback":[]
   };
-
-  this.excludedFromCaching;  
 
   if(applicationDirectory){
       this.execPath = applicationDirectory;
       this.loadJSONConfig();
   }
-/*
-  if(build_options){
-     this.addOptions(build_options);
-  }else{
-      this.loadJSONConfig();
-  }*/
-  _l.sys.puts(this.execPath);
-
+  console.log(this.execPath);
 };
 
 /**
+ * @description
  * Sets the build options for the app (project) to be build.
- * 
  * @param build_options the options to customize the build process
  */
 App.prototype.addOptions = function(build_options){
@@ -97,6 +97,7 @@ App.prototype.addOptions = function(build_options){
 };
 
 /**
+ * @description
  * Loads the config file, passed in JSON syntax.
  * The 'config.json', should be in the root folder of the project to build.
  */
@@ -114,17 +115,7 @@ App.prototype.loadJSONConfig = function() {
 };
 
 /**
- * Adding the task chain to the app.
- * @deprecated
- */
-App.prototype.addTaskChain = function() {
-
-  // this.taskChain = new TaskManager(["dependency"]).getTaskChain();
-
-};
-
-
-/**
+ * @description
  * Adding a Framework to the current build.
  */
 App.prototype.addFrameworks = function(frameworks) {
@@ -135,11 +126,10 @@ var that = this;
         that.frameworks.push(framework);
     });
   }
-
-
 };
 
 /**
+ * @description
  * Load the projects related files.
  * The project is equals the application.
  */
@@ -176,6 +166,7 @@ _l.sys.puts("Load App")
 };
 
 /**
+ * @description
  * Called when adding The-M-Project to the current build.
  * Loads the files for the core system.
  * @param options
@@ -219,9 +210,8 @@ var that = this, _theMProject, _theMProjectResources;
 };
 
 /**
+ * @description
  * Builds the index.html page. Used for loading the application.
- * @param htmlStylesheets
- * @param htmlScripts
  */
 App.prototype.buildIndexHTML = function() {
 
@@ -246,8 +236,6 @@ var _indexhtml = [];
         '<script src="'+this.name+'_App.js"></script>'+
       '</head>'
     );
-
-   // html.push('<script language="JavaScript">var '+this.name+' = '+this.name+ '|| {};'+'</script>' );
 
     _indexhtml.push(
       '<body>'
@@ -284,13 +272,13 @@ var _indexhtml = [];
                            })
 
                   );
-//_l.sys.puts(fr.files[0].getName());
   var ar = [];
       ar.push(fr);
   this.addFrameworks(ar); 
 };
 
 /**
+ * @description
  * Build a HTML5 valid cache.manifest file.
  * @param callback
  */
@@ -362,6 +350,7 @@ var self = this, _cacheManifest = [];
 };
 
 /**
+ * @description
  * Function to generate the projects output folders. 
  * @param callback, the function that should be called after the output folders are made.
  */
@@ -407,6 +396,7 @@ new _OutputDirMaker(callback).makeOutputDir(self._outP.shift());
 };
 
 /**
+ * @description
  * The function tat builds the application.
  * @param callback that should be called after the build.
  */
@@ -465,6 +455,7 @@ var _AppBuilder = function(app, callback) {
 
 
 /**
+ * @description
  * Saves the application to the filesystem. Inside the app folder, specified by the
  * outputFolder property.
  * @param callback that should be called after the build.
@@ -506,11 +497,13 @@ App.prototype.saveLocal = function(callback){
 };
 
 /**
+ * @description
  * Prepare the frameworks and the files, to attache them to the server.
  * @param callback
  */
 App.prototype.prepareForServer = function(callback){
     var self = this;
+    
     var _AppPreparer = function(app, callback){
         var that  = this;
 
@@ -536,6 +529,6 @@ App.prototype.prepareForServer = function(callback){
             });
         };
     }
+    
     new _AppPreparer(self,callback).prepareForServer();
-
 };

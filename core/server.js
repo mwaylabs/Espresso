@@ -8,8 +8,16 @@
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
-/*
- * The server prototype.
+/**
+ * @class
+ * The server prototype of Espresso build-in development server.
+ * This server can hosting the application for the reason  of development.
+ * Also handling proxy requests to remote services.
+ *
+ * The Server has a link to the App, so the server is aware of the application he serves.
+ * The Server is holding the application in its memory, so there is no need for the sever
+ * to read the files from the files system. The Server can serves as a proxy to test remote service calls.
+ * For that reason, the server holds several Proxy objects.
  */
 
 var Server;
@@ -23,7 +31,10 @@ var Server;
     _l.http = require('http');
     _l.url = require('url');
 
-
+/**
+ * @constructor
+ * @param properties, the properties
+ */
 Server = exports.Server = function(properties) {
 
   /*Properties*/
@@ -41,8 +52,9 @@ Server = exports.Server = function(properties) {
 };
 
 /**
+ * @description
  * Add the properties.
- * @param properties, the proprties
+ * @param properties, the properties
  */
 Server.prototype.addProperties = function(properties){
 
@@ -54,50 +66,50 @@ Server.prototype.addProperties = function(properties){
 };
 
 /**
+ * @description
  * Getting a new App object, and set the Apps server reference to this,
  * so the new app wil be aware of its server.
- *
- * @param appOptions the option/properties for the new App object.
+ * Getting a new App object, passing over the appOptions (if there is any)
+ * and let the new app know about its server.
+ * @param appOptions, the option/properties for the new App object.
  */
 Server.prototype.getNewApp = function(applicationDirectory) {
-
- var _app = new App(applicationDirectory,this); /* getting a new App object, passing over the appOptions (if there is any)
-                                                   and let the new app know about its server.*/
+ var _app = new App(applicationDirectory,this);
  this.hostedApps.push(_app); /* saving the app in local array */
-
  return _app;
 };
 
 /**
- * Deliver a file/resource.
- *
+ * @description
+ * Deliver a file/resource from server cache.
  * @param response, the response, in which the file should be written.
  * @param file, the file to deliver
  */
 Server.prototype.deliverThat = function (response,file){
-
   var status = 200; // = file found.
 
   var headers = {};
+      // TODO: maybe set the expire-date header ?!
       headers['Content-Type'] = file.contentType; // get the content type for this resource.
       //headers['Last-Modified'] = res.lastModified.format('httpDateTime');
-     //_l.sys.puts('file.contentType =  '  +file.contentType);
-
-     if(file.isImage()){
-       headers['Content-Length'] = file.content.length;
-     }
-     response.writeHead(status, headers);  // write the response header.
-     response.write(file.content,'utf8');  // write the content of this resource.
-     response.end();
-
+  if(file.isImage()){
+    headers['Content-Length'] = file.content.length;
+  }
+    
+  response.writeHead(status, headers);  // write the response header.
+  response.write(file.content,'utf8');  // write the content of this resource.
+  response.end();
 };
 
 /**
- * Execute a proxy request.
- *
- *
- * @param request
- * @param response
+ * @description
+ * Execute a proxy request. Looking in all attached proxies for a entry, that match
+ * the requested resource. If a proxy for the request was found, extract the inquired data
+ * from the request and attache them to the proxy request.
+ * Also make the actual proxy request, wait for some proxy-response and pass it one to the client
+ * via the repsonse object.
+ * @param request, the request object.
+ * @param response, the response object
  */
 Server.prototype.proxyThat = function (request, response){
 var that = this;
@@ -106,14 +118,14 @@ var that = this;
   var _proxy,
       _path = _l.url.parse(request.url).pathname.slice(1),
       _pr = _path.split('/')[0];
-
-    that.proxies.forEach(function(p){
+    //TODO: can this done better ?!
+    that.proxies.forEach(function(p){  // looking for proxy entries.
         if(p.proxyAlias === _pr){
           _proxy = p;
         }
     });
 
-   if(_proxy){
+   if(_proxy){ // if proxy entry was found.
        var _inquiredData =  request.url.split(_pr)[1];
       _l.sys.puts("proxy request on = "+_proxy.host+_inquiredData);
       var proxyClient  =  _l.http.createClient(_proxy.hostPort, _proxy.host);
@@ -142,7 +154,7 @@ var that = this;
         });
       });
       proxyRequest.end();
-   }else{
+   }else{ // nor proxy entry found!
      console.log('ERROR: no proxy host entry found for: "'+_pr+'"');
      response.writeHead(404);
      response.end();
@@ -151,8 +163,9 @@ var that = this;
 };
 
 /**
- * Add proxy entries.
- * @param proxies, the proxies, that should be used
+ * @description
+ * Add proxies.
+ * @param proxies, the proxies that should be used.
  */
 Server.prototype.addProxies = function(proxies){
 var that = this;
@@ -171,7 +184,8 @@ var that = this;
 };
 
 /**
- * Run the server!
+ * @description 
+ * Run the server, and waiting for requests.
  * @param appName, name of the application.
  */
 Server.prototype.run = function(appName) {

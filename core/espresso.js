@@ -8,11 +8,10 @@
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
-/**
-* Definition for all espresso related functions.
-* Each file using espresso or parts of it, should include espresso.js via 'require('./espresso');'
-*
-*/
+/*
+ * Definition for all espresso related functions.
+ * Each file using espresso or parts of it, should include espresso.js via 'require('./espresso');.
+ */
 
 var Espresso
 
@@ -20,9 +19,7 @@ var Espresso
  * ESPRESSO
  */
 Espresso = exports.Espresso = function () {};
-
 Espresso.Server = require('./server').Server;
-
 Espresso.App = require('./app').App;
 
 

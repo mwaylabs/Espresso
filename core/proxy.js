@@ -8,8 +8,10 @@
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
-/*
- * Prototype for a proxy object.
+/**
+ *@class
+ *Prototype for a proxy object.
+ *Every Proxy object belongs to one Server. A Proxy object contains all information about a proxy entry.
  */
 
 var Proxy;
@@ -27,8 +29,6 @@ Proxy = exports.Proxy = function(properties) {
   this.proxyAlias = null;
   this.requestMethod = null;
 
-
-
   if(properties){
     this.addProperties(properties);
   }
@@ -40,7 +40,6 @@ Proxy = exports.Proxy = function(properties) {
  * @param properties
  */
 Proxy.prototype.addProperties = function(properties){
-
     var that = this;
 
     Object.keys(properties).forEach(function (key) {
