@@ -49,7 +49,7 @@ App = exports.App = function (applicationDirectory,server) {
   this.name = 'defaultName';
   this.clear = '';     
   this.server = server;
-  this.buildVersion = new Date().getTime(); // timestamp of the build.
+  this.buildVersion = Date.now(); //new Date.getTime(); // timestamp of the build.
   this.buildLanguage = 'english';
   this.theme = 'm-deafult';
   this.outputFolder = 'build'; // name of the output folder, default is 'build'.
@@ -58,6 +58,7 @@ App = exports.App = function (applicationDirectory,server) {
   this.taskChain = new Array();
   this.proxies = [];  
   this.excludedFromCaching;
+  this.excludeFiles = [];
     
   /* Properties used by App */
   this.frameworks = [];
@@ -97,7 +98,7 @@ App.prototype.loadJSONConfig = function() {
     try{
         var config = JSON.parse(_l.fs.readFileSync(this.execPath+'/config.json', 'utf8'));
         this.addOptions(config);
-        if(config.proxy){
+        if(config.proxies){
            this.server.proxies = config.proxies; //adding proxies, if present.
         }
     }catch(ex){
@@ -127,12 +128,13 @@ var that = this;
  */
 App.prototype.loadTheApplication = function() {
 var that = this, _theApplication = [],_theApplicationResources;
-// TODO: making the resources folder to be excluded - if the folder stays in the app folder.    
+
   _theApplication = ['app'].map(function(module) {
     var _frameworkOptions  = {};
         _frameworkOptions.path = that.execPath + '/' + module;
         _frameworkOptions.name = that.name+'_App';
-        _frameworkOptions.frDelimiter = that.execPath+'/'; 
+        _frameworkOptions.frDelimiter = that.execPath+'/';
+        _frameworkOptions.excludedFolders = ['resources'];
         _frameworkOptions.app = that;
          /* Definition of standard build chain for The-M-Project«s core files*/
         _frameworkOptions.taskChain = new TaskManager(["dependency","merge","contentType","manifest"]).getTaskChain();
@@ -331,7 +333,7 @@ var self = this, _cacheManifest = [];
                        framework: fr, /* the framework, this file belongs to.*/
                        content: _cacheManifest.join('\n')
                        })
-        );
+     );
   var ar = [];
       ar.push(fr);
   this.addFrameworks(ar); 
@@ -365,23 +367,17 @@ var _outputPath = this.execPath+'/'+this.outputFolder;
     };
 
     that.makeOutputDir = function(path) {
-
       if(that._folderCounter >=1){
-      _l.fs.mkdir(path, 0777 ,function(err){
-          // if(err){}
-           that._folderCounter--;
-           that.makeOutputDir(path+ self._outP.shift());
-      });
+        _l.fs.mkdir(path, 0777 ,function(err){
+              // if(err){}
+          that._folderCounter--;
+          that.makeOutputDir(path+ self._outP.shift());
+        });
       }
       that.callbackIfDone();
-
     }
-
   };
-
-
-new _OutputDirMaker(callback).makeOutputDir(self._outP.shift());
-
+ new _OutputDirMaker(callback).makeOutputDir(self._outP.shift());
 };
 
 /**
@@ -390,10 +386,9 @@ new _OutputDirMaker(callback).makeOutputDir(self._outP.shift());
  * @param callback that should be called after the build.
  */
 App.prototype.build = function(callback){
-
-this.buildIndexHTML();
-
 var self = this;
+    
+this.buildIndexHTML();
 
 /* TODO: Sort frameworks before calling build.
    The application should be build first, to check for used resources and APIs,
@@ -402,8 +397,6 @@ var self = this;
 
 var _AppBuilder = function(app, callback) {
     var that = this;
-
-
     /* amount of used frameworks, for this application. */
     that._frameworkCounter = app.frameworks.length ;
   
@@ -415,12 +408,13 @@ var _AppBuilder = function(app, callback) {
     };
 
     that.build = function() {
-      console.log("Building components");   
+      console.log("Building components:");   
       app.frameworks.forEach(function(framework) {
         framework.build(function(fr) {
           /* count  = -1 if a framework has been build. */
           that._frameworkCounter -= 1;
-           //  console.log(require('util').inspect(fr.files_with_Dependencies, true, 1));
+          console.log('build() done for: "'+fr.name+'"');  
+           //console.log(require('util').inspect(fr.files_with_Dependencies, true, 1));
           /* check if callback can be called, the condition ist that all frameworks has been build. */
           that.callbackIfDone();
         });
@@ -428,7 +422,7 @@ var _AppBuilder = function(app, callback) {
     };
   };
 
- console.log("Building application: "+this.name); 
+ console.log('Building application: "'+this.name+'"'); 
 
   /*
    *  build batch:
@@ -480,6 +474,13 @@ App.prototype.saveLocal = function(callback){
     };
   };
 
+  /*
+   *  build batch:
+   *  1) make output folder structure first.
+   *  2) Call AppSaver to write the application data, into the
+   *     just generated file structure.
+   *  3) Call callback, which prompts the massage: 'Saved application to filesystem!'.
+   */
   return this.makeOutputFolder(function(){
         new _AppSaver(self, function(){
          console.log('Saved application to filesystem!');
@@ -510,7 +511,6 @@ App.prototype.prepareForServer = function(callback){
         };
 
         that.prepareForServer = function (){
-
             app.frameworks.forEach(function(framework){
                 framework.prepareForServer(self.server, function(){
                 /* count  = -1 if a framework has been prepared for server. */

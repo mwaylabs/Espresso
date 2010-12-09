@@ -8,9 +8,6 @@
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
-/**
-
- */
 
 var _l = {},
     File;
@@ -43,7 +40,6 @@ File = exports.File = function(properties) {
   this.contentType = '';
   this.requestPath ='';
 
-  this.url = '';
   this.extname;
   this.basename;
   this.frDelimiter;
@@ -64,13 +60,11 @@ File = exports.File = function(properties) {
  * @param properties
  */
 File.prototype.addProperties = function(properties){
-
     var that = this;
 
     Object.keys(properties).forEach(function (key) {
          that[key] = properties[key];
     });
-
 };
 
 /**
@@ -174,5 +168,3 @@ File.prototype.toString = function() {
     return 'Basename: '+this.name + '\n'
           +'Filepath: '+this.path + '\n';
 };
-
-

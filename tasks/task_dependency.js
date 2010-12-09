@@ -8,8 +8,6 @@
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
-
-
 var _l = {},
     Task_Dependency,
     Task = require('./Task').Task;
@@ -103,9 +101,7 @@ this.TaskSequencer.sequenceThat(
       return framework;
       },
        /*Tree based sort*/
-      function buildDependencyTrees(err, fr) {
-         if (err){throw err;}
-
+      function buildDependencyTrees(err,fr) {
          var that = this,_roots = [];   // _roots = object to hold the root nodes.
         /**
          * Helper object to generate nodes.
@@ -173,7 +169,7 @@ this.TaskSequencer.sequenceThat(
 
       },
       /*Sort the found dependencies*/
-      function sortDependencies(er,fr) {
+      function sortDependencies(err,fr) {
         var _queue  = []; // the queue, needed for the tree sort algorithm.
         var _sortedFiles = []; // holds the sort result.
           /*

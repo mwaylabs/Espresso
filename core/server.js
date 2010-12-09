@@ -94,7 +94,7 @@ Server.prototype.deliverThat = function (response,file){
     headers['Content-Length'] = file.content.length;
   }
     
-  response.writeHead(status, headers);  // write the response header.
+  response.writeHead(status, headers);  // write the response header. 
   response.write(file.content,'utf8');  // write the content of this resource.
   response.end();
 };

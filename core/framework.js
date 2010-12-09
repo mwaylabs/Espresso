@@ -54,8 +54,8 @@ Framework = exports.Framework = function(properties) {
   this.virtual = false;  
   this.path = '';
   this.name = '';
-  this.url  = '';
   this.frDelimiter;
+  this.excludedFolders = [];  
   this.files = [];
   this.mergedFiles=[];
   this.dependencyTrees = [];
@@ -102,91 +102,93 @@ Framework.prototype.isVirtual = function(){
  * @param callback, the function, that is called after all resources haven been loaded.
  */
 Framework.prototype.loadFiles = function(path,callback){
-
+var self = this;
     
 var _FileBrowser = function(framework, callback) {
     var that = this;
     that._filesToExclude = ['.DS_Store']; /*Files that should be excluded*/
-    
+    // String.search(regEx) != -1
      /* keep in track of the files, to load. Execute callback only if all resources are loaded*/
     that._folderCounter = 0;
 
-    that.callbackIfDone = function() {
+    that.callbackIfDone = function(){
       if (that._folderCounter <= 0){
           callback(framework.files);
       }
     };
 
-    /**
+    /*
      * Check if a file path contains a file that should not be in the final build.
      * @param path, the path to check.
      */
     that.checkIfFileShouldBeExcluded = function (path){
-
         var fileBaseName = path.split('/');
-
+        if(that.checkIfFolderShouldBeExcluded(path)){
+            return true;
+        }
         if(that._filesToExclude.indexOf(fileBaseName[fileBaseName.length-1]) === -1){
             return false;
         }else{
             return true;
         }
+    };
 
-    }
-
+    /*
+     * Check if a file path contains a folder, that should be excluded. 
+     */
+    that.checkIfFolderShouldBeExcluded = function (path){
+        var exclude = false;
+        self.excludedFolders.forEach(function(folder){
+             if(path.search('/'+folder+'/') !== -1){
+                exclude = true;
+             }
+        });
+        return exclude;
+    };
+    /*
+     * The function, that actually browses thru the files, reads and add them. 
+     */
     that.browse = function(path) {
       _l.fs.stat(path, function(err, stats) {
-
         if (err){
-            throw err;   
-        }else {
-
+          throw err;   
+        }else{
           if (stats.isDirectory()) {
             _l.fs.readdir(path, function(err, subpaths) {
+                if (err){ throw err;}
+                // if folder is empty.
+                if(subpaths.length < 1) { that.callbackIfDone(); }
 
-             if (err){ throw err;}
-
-             if(subpaths.length < 1)   {
-                  that.callbackIfDone();
-             }
-
-             if (subpaths.length === 1 && (that.checkIfFileShouldBeExcluded(subpaths[0]))){
-               console.log('path / subpaths.length '+path+' / '+subpaths[0]);
-               that.callbackIfDone();
-             } else {
-               subpaths.forEach(function(subpath) {
-                 if(that.checkIfFileShouldBeExcluded(subpath)){
-                   //     that.callbackIfDone();
-                 }else{
-                      /* add 1 to the counter if sub file is NOT a folder*/
-                   if (subpath.match('\\.')) {that._folderCounter += 1;}
-                   that.browse(_l.path.join(path, subpath)); 
-                 }
-               });
-             }
-            });
-
-
+                subpaths.forEach(function(subpath) {
+                /* add 1 to the counter if sub file is NOT a folder*/
+                    if (subpath.match('\\.')) {that._folderCounter += 1;}
+                    that.browse(_l.path.join(path, subpath));
+                });
+             });
           } else {
-         //   _l.fs.readFile(path, encoding='utf8',function(err, data) {
-            _l.fs.readFile(path, function(err, data) { // data is a Buffer object! if no encoding is specified.
-                if (err){
-                throw err;
+            if(that.checkIfFileShouldBeExcluded(path)){
+               that._folderCounter -= 1;
+               that.callbackIfDone();
+            }else{
+               _l.fs.readFile(path, function(err, data) { // data is a buffer object, if no encoding was specified!
+               if (err){
+                 throw err;
                }else{
+                 framework.files.push(
+                      new File({
+                                 frDelimiter: framework.frDelimiter,
+                                 name: path,
+                                 path: path,
+                                 framework: framework,
+                                 content: data
+                                })
 
-                framework.files.push(
-                  new File({
-                             frDelimiter: framework.frDelimiter,
-                             name: path,
-                             path: path,
-                             framework: framework,
-                             content: data
-                            })
-
-                  );
-                that._folderCounter -= 1;
-                that.callbackIfDone();
-               }
-           });
+                      );
+                 that._folderCounter -= 1;
+                 that.callbackIfDone();
+                }
+               });
+            }
           }
         }
       });
@@ -204,7 +206,7 @@ return new _FileBrowser(this, callback).browse(path);
  */
 Framework.prototype.build = function(callback){
 var that = this;
-//console.log('\n****** calling build for "'+this.name+'" ******');
+console.log('calling build() for: "'+this.name+'"');
     if(that.isVirtual()){ // default = false.
        that.taskChain.run(that,callback);
     }else{
@@ -227,7 +229,7 @@ Framework.prototype.save = function(callback){
 
  var _FileSaver = function(filesLength, callback) {
  var that = this;
-
+     
     that._fileCounter = filesLength;
     that.callbackIfDone = function() {
       if (that._fileCounter === 0){
@@ -297,7 +299,6 @@ Framework.prototype.prepareForServer = function(server,callback){
     this.files.forEach(function(file){
         server.files[file.requestPath] = file;
     });
-
     callback();
 };
 
