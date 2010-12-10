@@ -1,6 +1,6 @@
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: ©2010 M-Way Solutions GmbH. All rights reserved.
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      09.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -11,19 +11,45 @@
 /**
  * @class
  *
- * The root of all toggle views.
+ * M.ToggleView defines the prototype of any toggle view. A toggle view accepts exactly
+ * two child views and provides an easy mechanism to toggle between these two views. An
+ * easy example would be to define two different button views that can be toggled, a more
+ * complex scenario would be to define two content views (M.ScrollView) with own child views
+ * and toggle between them.
  *
+ * @extends M.View
  */
-M.ToggleView = M.View.extend({
+M.ToggleView = M.View.extend(
+/** @scope M.ToggleView.prototype */ {
 
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
     type: 'M.ToggleView',
 
+    /**
+     * States whether the toggle view currently displays its first child view or its second
+     * child view.
+     *
+     * @type Boolean
+     */
     isInFirstState: YES,
 
+    /**
+     * Determines whether to toggle the view on click. This might be useful if the child views
+     * are e.g. buttons.
+     *
+     * @type Boolean
+     */
     toggleOnClick: NO,
 
     /**
      * Renders a ToggleView and its child views.
+     *
+     * @private
+     * @returns {String} The toggle view's html representation.
      */
     render: function() {
         this.html += '<div id="' + this.id + '">';
@@ -31,14 +57,12 @@ M.ToggleView = M.View.extend({
         this.renderChildViews();
 
         this.html += '</div>';
-
-        this.isInFirstState = !this.isInFirstState;
         
         return this.html;
     },
 
     /**
-     * This method renders the first child view of the toggle view, based on the isInFirstState
+     * This method renders one child view of the toggle view, based on the isInFirstState
      * property: YES = first child view, NO = second child view.
      */
     renderChildViews: function() {
@@ -59,7 +83,9 @@ M.ToggleView = M.View.extend({
     },
 
     /**
-     * This method toggles the child views.
+     * This method is called out of the toggleView method. It basically empties the html
+     * representation of the toggle view and then renders the proper child view based on
+     * the isInFirstState property: YES = first child view, NO = second child view.
      */
     renderUpdateChildViews: function() {
         if(this.childViews) {
@@ -84,12 +110,18 @@ M.ToggleView = M.View.extend({
      * and then rendering the next child view by calling renderUpdateChildViews().
      */
     toggleView: function() {
+        this.isInFirstState = !this.isInFirstState;
         $('#' + this.id).empty();
         $('#' + this.id).html(this.renderUpdateChildViews());
         this.theme();
-        this.isInFirstState = !this.isInFirstState;
     },
 
+    /**
+     * Triggers the rendering engine, jQuery mobile, to style the toggle view respectively
+     * its child views.
+     *
+     * @private
+     */
     theme: function() {
         this.themeChildViews();
     }

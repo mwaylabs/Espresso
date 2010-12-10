@@ -13,48 +13,54 @@ m_require('ui/dialog.js');
 /**
  * @class
  *
- * The root object for AlertDialogView.
+ * This is the prototype for any alert dialog view. It is derived from M.DialogView
+ * and mainly used for implementing a alert dialog view specific render method.
  *
+ * @extends M.DialogView
  */
-M.AlertDialogView = M.DialogView.extend({
+M.AlertDialogView = M.DialogView.extend(
+/** @scope M.AlertDialogView.prototype */ {
 
     /**
      * The type of this object.
      *
-     * @property {String}
+     * @type String
      */
     type: 'M.AlertDialogView',
 
     /**
      * The default title of an alert dialog.
      *
-     * @property {String}
+     * @type String
      */
     title: 'Alert',
 
     /**
      * The default message of an alert dialog.
      *
-     * @property {String}
+     * @type String
      */
     message: '',
 
     /**
      * The default transition of an alert dialog.
      *
-     * @property {String}
+     * @type String
      */
     transition: M.TRANSITION.POP,
 
     /**
-     * Determines whether the dialog gets a default ok button.
+     * Determines whether the alert dialog gets a default ok button.
      *
-     * @property {Boolean}
+     * @type Boolean
      */
     hasOkButton: YES,
 
     /**
-     * Renders a button as an input tag. Input is automatically converted by jQuery mobile.
+     * Renders an alert dialog as a pop-up page.
+     *
+     * @private
+     * @returns {String} The alert dialog view's html representation.
      */
     render: function() {
         this.html = '<div data-role="dialog" id="' + this.id + '">';
@@ -65,8 +71,9 @@ M.AlertDialogView = M.DialogView.extend({
             var button = M.ButtonView.design({
                 value: 'OK',
                 cssClass: 'b',
-                target: this.onOk.target,
-                action: this.onOk.action
+                target: this,
+                action: 'dialogWillClose',
+                role: 'onOk'
             });
             this.buttonIds.push(button.id);
             this.html += button.render();

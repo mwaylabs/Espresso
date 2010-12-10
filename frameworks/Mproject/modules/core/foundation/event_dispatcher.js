@@ -15,13 +15,15 @@ m_require('core/utility/logger.js');
  *
  * Object for dispatching all incoming events.
  *
+ * @extends M.Object
  */
-M.EventDispatcher = M.Object.create({
+M.EventDispatcher = M.Object.create(
+/** @scope M.EventDispatcher.prototype */ {
 
     /**
      * The type of this object.
      *
-     * @property {String}
+     * @type String
      */
     type: 'M.EventDispatcher',
 
@@ -65,30 +67,30 @@ M.EventDispatcher = M.Object.create({
 
         switch(type) {
             case 'click':
-                if(view && view.target && view.action && view.type !== 'M.TextFieldView') {
-                    view.target[view.action](id, view.modelId);
-                }
                 if(view && view.internalTarget && view.internalAction) {
                     view.internalTarget[view.internalAction](id, view.modelId);
                 }
+                if(view && view.target && view.action && view.type !== 'M.TextFieldView' && view.type !== 'M.SearchBarView') {
+                    view.target[view.action](id, view.modelId);
+                }
                 break;
             case 'change':
-                view.setValueFromDOM();    
+                view.setValueFromDOM(type);
                 break;
             case 'keyup':
-                if(keyCode === 13 && view.type === 'M.TextFieldView') {
+                if(keyCode === 13 && view.triggerActionOnEnter && (view.type === 'M.TextFieldView' || view.type === 'M.SearchBarView')) {
                     if(view && view.target && view.action) {
                         view.target[view.action](id);
                     }
-                } else if(view.type === 'M.TextFieldView') {
-                    view.setValueFromDOM();
+                } else if(view.type === 'M.TextFieldView' || view.type === 'M.SearchBarView') {
+                    view.setValueFromDOM(type);
                 }
                 break;
             case 'focusin':
-                view.gotFocus();
+                view.gotFocus(type);
                 break;
             case 'focusout':
-                view.lostFocus();
+                view.lostFocus(type);
                 break;
             case 'orientationchange':
                 M.Application.viewManager.getCurrentPage().orientationDidChange(orientation);
@@ -96,6 +98,11 @@ M.EventDispatcher = M.Object.create({
         }
     },
 
+    /**
+     * Registers events given from eventList to a view defined by an id. Can be used to register events after application load.
+     * @param {String} id The View Id, e.g. m_123
+     * @param {String} eventList The Events one after another in a string divided by whitespace.
+     */
     registerEvents: function(id, eventList) {
         var that = this;
         $('#' + id).bind(eventList, function(evt) {

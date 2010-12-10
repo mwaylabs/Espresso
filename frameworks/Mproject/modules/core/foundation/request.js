@@ -10,17 +10,40 @@
 
 m_require('core/foundation/object.js');
 
-M.Request = M.Object.extend({
+/**
+ * @class
+ *
+ * The root class for every request. Makes ajax requests. Is used e.g. for querying REST web services.
+ * First M.Request.init needs to be called, then send.
+ *
+ * @extends M.Object
+ */
+M.Request = M.Object.extend(
+/** @scope M.Request.prototype */ {
 
     /**
      * The type of this object.
      *
-     * @property {String}
+     * @type String
      */
     type: 'M.Request',
-    
+
+    /**
+     * Initializes a request. Sets the parameter of this request object with the passed values.
+     * 
+     * @param {Object} obj The parameter object. Includes:
+     * * method: the http method to use, e.g. 'POST'
+     * * url: the request url, e.g. 'twitter.com/search.json' (needs a proxy to be set because of Same-Origin-Policy)
+     * * isAsync: defines whether request should be made async or not. defaults to YES. Should be YES.
+     * * isJSON: defines whether to process request and response as JSON
+     * * timout: defines timeout in milliseconds
+     * * data: the data to be transmitted
+     * * beforeSend: callback that is called before request is sent
+     * * onError: callback that is called when an error occured
+     * * onSuccess: callback that is called when request was successful
+     */
     init: function(obj){
-        this.type = obj['type'] ? obj['type'] : this.type;
+        this.method = obj['method'] ? obj['method'] : this.method;
         this.url = obj['url'] ? obj['url'] : this.url;
         this.isAsync = obj['isAsync'] ? obj['isAsync'] : this.isAsync;
         this.isJSON = obj['isJSON'] ? obj['isJSON'] : this.isJSON;
@@ -37,14 +60,14 @@ M.Request = M.Object.extend({
      *
      * Defaults to GET.
      *
-     * @property {String}
+     * @type String
      */
-    type: 'GET',
+    method: 'GET',
 
     /**
      * The URL this request is sent to.
      *
-     * @property {String}
+     * @type String
      */
     url: null,
 
@@ -55,7 +78,7 @@ M.Request = M.Object.extend({
      *
      * Defaults to YES.
      *
-     * @property {Boolean}
+     * @type Boolean
      */
     isAsync: YES,
 
@@ -65,14 +88,14 @@ M.Request = M.Object.extend({
      *
      * Defaults to NO.
      *
-     * @property {Boolean}
+     * @type Boolean
      */
     isJSON: NO,
 
     /**
      * Optional timeout value of the request in milliseconds.
      *
-     * @property {Number}
+     * @type Number
      */
     timeout: null,
 
@@ -109,10 +132,11 @@ M.Request = M.Object.extend({
 
     /**
      * Sends an Ajax request by using jQuery's $.ajax().
+     * Needs init first!
      */
     send: function(){
         $.ajax({
-            type: this.type,
+            type: this.method,
             url: this.url,
             async: this.isAsync,
             dataType: this.isJSON ? 'json' : 'text',

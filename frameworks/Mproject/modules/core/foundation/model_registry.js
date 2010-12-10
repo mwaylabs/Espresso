@@ -17,14 +17,16 @@ m_require('core/utility/logger.js');
  *
  * Model Registry is a central point for all models to get their Global Unique Identifier,
  * which is important for storage (guid is primary key as default).
- * 
+ *
+ * @extends M.Object
  */
-M.ModelRegistry = M.Object.extend({
+M.ModelRegistry = M.Object.extend(
+/** @scope M.ModelRegistry.prototype */ {
 
     /**
      * The type of this object.
      *
-     * @property {String}
+     * @type String
      */
     type: 'M.ModelRegistry',
 
@@ -32,6 +34,7 @@ M.ModelRegistry = M.Object.extend({
     /**
      * An array containing objects that save the model's name and their next GUId.
      * Acts globally.
+     * @type Array|Object
      */
     registry: [],
 
@@ -39,6 +42,7 @@ M.ModelRegistry = M.Object.extend({
      * Calculates the next ID for a model named by modelName.
      *
      * @param {String} modelName The name of the model, e.g. 'Person'.
+     * @returns {Number} The next internal model id for the model identified by modelName parameter.
      */
     getNextId: function(modelName) {
         for(i in this.registry){

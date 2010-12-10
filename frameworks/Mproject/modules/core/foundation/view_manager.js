@@ -19,13 +19,15 @@ m_require('core/foundation/view.js');
  * It is used by various other components (e.g. controller: switchToPage) to connect from javascript objects to their
  * HTML representation. 
  *
+ * @extends M.Object
  */
-M.ViewManager = M.Object.extend({
+M.ViewManager = M.Object.extend(
+/** @scope M.ViewManager.prototype */ {
 
     /**
      * The type of this object.
      *
-     * @property {String}
+     * @type String
      */
     type: 'M.ViewManager',
 
@@ -33,41 +35,42 @@ M.ViewManager = M.Object.extend({
      * The nextId delivered to a view (used as html id attribute value) with prefix m_.
      * Initial state is 0, will be incremeneted by 1 on each call.
      *
-     * @property {Number}
+     * @type Number
      */
     nextId: 0,
 
     /**
      * Prefix for Id.
      *
-     * @property {String} 
+     * @type String
      */
     idPrefix: 'm_',
 
     /**
      * Array containing all views used in the application.
      *
-     * @property {Object}
+     * @type Object
      */
     viewList: [],
 
     /**
      * A reference to the currently displayed page.
      *
-     * @property {Object}
+     * @type Object
      */
     currentPage: null,
 
     /**
-     * A reference to the currently displayed dialog.
+     * A reference to the latest found view which is necessary for the findView() method.
      *
-     * @property {Object}
+     * @type Object
      */
-    currentDialog: null,
+    foundView: null,
 
     /**
      * Returns the next Id build from nextId property incremented by 1 and the prefix.
      * The id is used as the value for the HTML attribute id.
+     * @returns {String} The next id for a view, e.g. 'm_123' (if last id was 'm_122').
      */
     getNextId: function() {
         this.nextId = this.nextId + 1;
@@ -84,10 +87,11 @@ M.ViewManager = M.Object.extend({
     },
 
     /**
-     * Returns the view object from the viewlist array identified
+     * Returns the view object from the view list array identified
      * by the value of its id attribute.
      *
      * @param {String} id
+     * @returns {Object} The view object from the view list identified by id.
      */
     getViewById: function(id) {
         var view = _.detect(this.viewList, function(v) {
@@ -100,13 +104,87 @@ M.ViewManager = M.Object.extend({
      * Returns the id for a given view.
      *
      * @param {Object} view. The view for which the id value is wanted.
+     * @returns {String} The id of a view object.
      */
     getIdByView: function(view) {
         return view.id;
     },
 
     /**
+     * Returns the view object from the view list array identified by the view's
+     * name and its page. If there are multiple views with the same name on the
+     * same page, the first result is returned.
+     *
+     * Note: Try to use unique names for your views within the same page!
+     *
+     * @param {String, Object} parentView. The name of the parent view or the parent view itself.
+     * @param {String} targetView. The name of the view to be returned.
+     * @returns {Object} The view object from the view list identified by the view's name and the page where it's on.
+     */
+    getView: function(parentView, targetView) {
+        if(typeof(parentView) !== 'object') {
+            parentView = M.Application.pages[parentView];  
+        }
+        var view = null;
+
+        /* reset previously found views before searching again */
+        this.foundView = null;
+        if(parentView) {
+            view = this.findView(parentView, targetView);
+        }
+
+        if(!view) {
+            M.Logger.log('view \'' + targetView + '\' not found on page \'' + targetView + '\'', M.WARN);
+        }
+        return view;
+    },
+
+    /**
+     * Searches for a certain view within a given parent view. If it is found, the result
+     * is returned. Otherwise the search algorithm checks for possible child views and then
+     * recursively searches within these child views for the target view.
+     *
+     * This method is mainly used by the getView() method to find a view within a page.
+     *
+     * @param {Object} parentView. The parent view to search in.
+     * @param {String} targetView. The name of the view to be returned.
+     * @returns {Object} The last found view.
+     */
+    findView: function(parentView, targetView) {
+        if(parentView.childViews) {
+            var childViews = $.trim(parentView.childViews).split(' ');
+            for(var i in childViews) {
+                if(targetView === childViews[i]) {
+                    this.foundView =  parentView[targetView];
+                } else {
+                    this.findView(parentView[childViews[i]], targetView);
+                }
+            }
+        }
+        return this.foundView;
+    },
+
+    /**
+     * Returns the page object from the view list array identified by its name. If
+     * there are multiple pages with the same name, the first result is returned.
+     *
+     * Note: Try to use unique names for your pages!
+     *
+     * @param {String} pageName. The name of the page to be returned.
+     * @returns {Object} M.Page object identified by its name.
+     */
+    getPage: function(pageName) {
+        var page = M.Application.pages[pageName];
+
+        if(!page) {
+            M.Logger.log('page \'' + pageName + '\' not found', M.WARN);
+        }
+        return page;
+    },
+
+    /**
      * Returns the currently displayed page.
+     * @returns {Object} The currently displayed page.
      */
     getCurrentPage: function() {
         return this.currentPage;
@@ -114,6 +192,7 @@ M.ViewManager = M.Object.extend({
 
     /**
      * Sets the currently displayed page.
+     * @param {Object} page The page to be set as current page.
      */
     setCurrentPage: function(page) {
         this.currentPage = page;
@@ -121,6 +200,7 @@ M.ViewManager = M.Object.extend({
 
     /**
      * Debug method to print out all content from the viewlist array to the console.
+     * @private
      */
     dumpViewList: function() {
       _.each(this.viewList, function(view){

@@ -27,13 +27,15 @@ m_require('core/foundation/observable.js');
  *
  * Controllers, respectively their properties, are observables. Views can observe them.
  *
+ * @extends M.Object
  */
-M.Controller = M.Object.extend({
+M.Controller = M.Object.extend(
+/** @scope M.Controller.prototype */ {
 
     /**
      * The type of this object.
      *
-     * @property {String}
+     * @type String
      */
     type: 'M.Controller',
 
@@ -62,21 +64,20 @@ M.Controller = M.Object.extend({
     switchToPage: function(page, transition, isBack, changeLoc) {
         var id = M.Application.viewManager.getIdByView(page);
         var isTabBarViewTopPage = NO;
-        
+
         if(id) {
             if(page.hasTabBarView) {
                 if(page.tabBarView.childViews) {
                     var tabItemViews = $.trim(page.tabBarView.childViews).split(' ');
                     for(var i in tabItemViews) {
                         var tabItemView = page.tabBarView[tabItemViews[i]];
-                        if(eval(tabItemView.page) === page) {
+                        if(M.ViewManager.getPage(tabItemView.page) === page) {
                             page.tabBarView.setActiveTab(tabItemView.page, M.Application.viewManager.getIdByView(tabItemView));
                             isTabBarViewTopPage = YES;
                         }
                     }
                 }
             }
-
             /* If the new page is a real tabBarViewPage (has a tabBarView and is no sub view), use no transition. */
             if(isTabBarViewTopPage) {
                 transition = page.tabBarView.transition ? page.tabBarView.transition : M.TRANSITION.NONE;

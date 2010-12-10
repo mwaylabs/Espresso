@@ -15,13 +15,15 @@ m_require('core/utility/logger.js');
  *
  * The observable knows all observers, mainly views, and pushes updates if necessary.
  *
+ * @extends M.Object
  */
-M.Observable = M.Object.extend({
+M.Observable = M.Object.extend(
+/** @scope M.Observable.prototype */ {
 
     /**
      * The type of this object.
      *
-     * @property {String}
+     * @type String
      */
     type: 'M.Observable',
 
@@ -29,6 +31,7 @@ M.Observable = M.Object.extend({
      * List that contains pairs of an observer with an observable. An observer is tightened to one
      * observable, but one observable can have multiple observers.
      *
+     * @type Array|Object
      */
     bindingList: [],
 

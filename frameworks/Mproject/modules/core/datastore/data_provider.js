@@ -11,46 +11,40 @@
 m_require('core/utility/logger.js');
 
 /**
- * available data source types
- */
-M.FIXTURE = 'fixture';
-M.LOCALSTORAGE = 'localStorage';
-M.WEBSQL = 'webSql';
-M.REMOTE = 'remote';
-
-/**
  * @class
  *
  * Wraps access to any defined data source and is the only interface for a model to
  * access this data.
  *
+ * @extends M.Object
  */
-M.DataProvider = M.Object.extend({
+M.DataProvider = M.Object.extend(
+/** @scope M.DataProvider.prototype */ {
 
     /**
      * The type of this object.
      *
-     * @property {String}
+     * @type String
      */
     type: 'M.DataProvider',
 
     /**
      * Interface method.
      * Implemented by specific data provider.
-     *
-     * @param {String} query The query string.
      */
     find: function(query) {
     },
 
     /**
-     * 
+     * Interface method.
+     * Implemented by specific data provider.
      */
     save: function() {
     },
 
     /**
-     *
+     * Interface method.
+     * Implemented by specific data provider.
      */
     del: function() {
 
@@ -61,6 +55,7 @@ M.DataProvider = M.Object.extend({
      *
      * @param {obj} obj The object to check.
      * @param {String} prop The property to check for.
+     * @returns {Booleans} Returns YES (true) if object has property and NO (false) if not.
      */
     check: function(obj, prop) {
        return obj[prop] ? YES : NO;

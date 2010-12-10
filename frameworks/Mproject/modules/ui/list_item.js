@@ -1,6 +1,6 @@
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: ©2010 M-Way Solutions GmbH. All rights reserved.
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      03.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -13,13 +13,27 @@ m_require('ui/button.js');
 /**
  * @class
  *
- * The root object for ListItemViews.
+ * This is the prototype for any list item view. It can only be used as child view of a list
+ * view (M.ListView).
  *
+ * @extends M.View
  */
-M.ListItemView = M.View.extend({
+M.ListItemView = M.View.extend(
+/** @scope M.ListItemView.prototype */ {
 
+    /**
+     * The type of this object.
+     *
+     * @type String
+     */
     type: 'M.ListItemView',
 
+    /**
+     * States whether the list view item is currently in edit mode or not. This is mainly used by
+     * the built-in toggleRemove() functionality of list views.
+     *
+     * @type Boolean
+     */
     inEditMode: NO,
 
     /**
@@ -27,38 +41,85 @@ M.ListItemView = M.View.extend({
      * once there is a click anywhere inside the list item or if there are specific actions
      * defined for single ui elements within one list item.
      *
-     * property {Boolean}
+     * @type Boolean
      */
     hasSingleAction: YES,
 
+    /**
+     * This property contains the list item's delete button that is automatically shown if the
+     * list view's built-in toggleRemove() functionality is used.
+     *
+     * @type M.ButtonView
+     */
     deleteButton: M.ButtonView.design({
         icon: 'delete',
-        renderToDOM: NO,
-        useOnClick: YES,
         target: null,
         action: '',
         value: ''
     }),
 
-    render: function() {
-        this.html = '<li id="' + this.id + '"';
+    /**
+     * This property is used to specify an internal target for an automatically called action, e.g.
+     * this is used by the built-in toggleRemove() functionality.
+     *
+     * @type Object
+     */
+    internalTarget: null,
 
-        if(this.hasSingleAction && this.target && this.action) {
-            this.html += ' onclick="M.EventDispatcher.onClickEventDidHappen(\'click\', \'' + this.id + '\');"';
+    /**
+     * This property is used to specify an internal action for an automatically called action, e.g.
+     * this is used by the built-in toggleRemove() functionality.
+     *
+     * @type Object
+     */
+    internalAction: 'setActiveListItem',
+
+    /**
+     * This property reffers to the list item's parent list view..
+     *
+     * @type M.ListView
+     */
+    listView: null,
+
+    /**
+     * This property determines whether the list item is a divider or not.
+     *
+     * @type Boolean
+     */
+    isDivider: NO,
+
+    /**
+     * Renders a list item as an li-tag. The rendering is initiated by the parent list view.
+     *
+     * @private
+     * @returns {String} The list item view's html representation.
+     */
+    render: function() {
+        this.html = '<li id="' + this.id + '"' + this.style();
+
+        this.html += ' onclick="M.EventDispatcher.onClickEventDidHappen(\'click\', \'' + this.id + '\');"';
+        this.internalTarget = this.listView;
+
+        if(this.isDivider) {
+            this.html += ' data-role="list-divider"';
         }
 
         this.html += '>';
 
-        if(this.inEditMode) {
-            this.html += '<a href="#">';
-            this.renderChildViews();
-            this.html += '</a>';
-            
-            this.html += this.deleteButton.render();
-        } else {
-            this.html += '<a href="#">';
-            this.renderChildViews();
-            this.html += '</a>';
+        if(this.childViews) {
+            if(this.inEditMode) {
+                this.html += '<a href="#">';
+                this.renderChildViews();
+                this.html += '</a>';
+
+                this.html += this.deleteButton.render();
+            } else {
+                this.html += '<a href="#">';
+                this.renderChildViews();
+                this.html += '</a>';
+            }
+        } else if(this.value) {
+            this.html += this.value;
         }
 
         this.html += '</li>';
@@ -66,19 +127,18 @@ M.ListItemView = M.View.extend({
         return this.html;
     },
 
-    renderUpdate: function() {
-
-    },
-
     /**
-     * Triggers render() on all children and returns their render result.
+     * Applies some style-attributes to the list item.
+     *
+     * @private
+     * @returns {String} The list item's styling as html representation.
      */
-    renderChildViews: function() {
-        var childViews = $.trim(this.childViews).split(' ');
-        for(var i in childViews) {
-            this.html += this[childViews[i]].render();
+    style: function() {
+        var html = '';
+        if(this.cssClass) {
+            html += ' class="' + this.cssClass + '"';
         }
-        return this.html;
+        return html;
     }
 
 });

@@ -1,6 +1,6 @@
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: (c)2010 M-Way Solutions GmbH. All rights reserved.
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      16.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -11,37 +11,40 @@
 /**
  * @class
  *
- * The root object for TabBarViews.
+ * The is the prototype of any tab bar view. A tab bar view is a special variant of a toolbar
+ * at the top or bottom of a page, that consists of up to five horizontally aligned tabs. An
+ * M.TabBarView can be used the top navigation level for an application since it is always
+ * visible an indicates the currently selected tab.
  *
  */
-M.TabBarView = M.View.extend({
+M.TabBarView = M.View.extend(
+/** @scope M.TabBarView.prototype */ {
 
     /**
      * The type of this object.
      *
-     * @property {String}
+     * @type String
      */
     type: 'M.TabBarView',
     
      /**
-     * Defines the position of the TabBar.
+     * Defines the position of the TabBar. Possible values are:
      *
-     * default: M.BOTTOM => is a footer bar
+     * - M.BOTTOM => is a footer tab bar
+     * - M.TOP => is a header tab bar
      *
-     * @property {String}
+     * @type String
      */
     anchorLocation: M.BOTTOM,
 
     /**
-     * Defines whether this TabBar is only rendered once for every view that uses
-     * this TabBar.
+     * Renders a tab bar as an unordered list.
      *
-     * @property {Boolean}
+     * @private
+     * @returns {String} The tab bar view's html representation.
      */
-    isSingelton: YES,
-
     render: function() {
-        if(this.isSingelton && !this.html) {
+        if(!this.html) {
             this.html = '';
 
             this.html += '<div id="' + this.id + '" data-id="' + this.name + '" data-role="' + this.anchorLocation + '" data-position="fixed"><div data-role="navbar"><ul>';
@@ -53,6 +56,11 @@ M.TabBarView = M.View.extend({
         return this.html;
     },
 
+    /**
+     * Triggers render() on all children of type M.TabBarItemView.
+     *
+     * @private
+     */
     renderChildViews: function() {
         if(this.childViews) {
             var childViews = $.trim(this.childViews).split(' ');
@@ -71,11 +79,16 @@ M.TabBarView = M.View.extend({
         }
     },
 
-    setActiveTab: function(page, tab) {
+    /**
+     * This method activates a tab bar item based on a given page.
+     *
+     * @param {String, M.PageView} page The page to the corresponding tab that is to be set active.
+     */
+    setActiveTab: function(page) {
         if(this.childViews) {
             var childViews = $.trim(this.childViews).split(' ');
             var previousPage = M.Application.viewManager.getCurrentPage();
-            var nextPage = page.type ? page : eval(page);
+            var nextPage = page.type === 'M.PageView' ? page : M.ViewManager.getPage(page);
             for(var i in childViews) {
                 var view = this[childViews[i]];
                 if(view.page === page) {

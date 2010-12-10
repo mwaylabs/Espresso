@@ -13,45 +13,45 @@ m_require('core/datastore/validator.js')
 /**
  * @class
  *
- * Validates a String if it represents a valid e-mail adress.
+ * Validates if value represents a valid URL.
  *
  * @extends M.Validator
  */
-M.EmailValidator = M.Validator.extend(
-/** @scope M.EmailValidator.prototype */ {
+M.UrlValidator = M.Validator.extend(
+/** @scope M.UrlValidator.prototype */ {
 
     /**
      * The type of this object.
      *
      * @type String
      */
-    type: 'M.EmailValidator',
+    type: 'M.UrlValidator',
 
     /**
-     * @type {RegExp} The regular expression for a valid e-mail address
+     * @type {RegExp} The regular expression for a valid web URL
      */
-    pattern: /^((?:(?:(?:\w[\.\-\+]?)*)\w)+)\@((?:(?:(?:\w[\.\-\+]?){0,62})\w)+)\.(\w{2,6})$/,
+    pattern: /^(http[s]\:\/\/)?[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?$/,
 
     /**
-     * Validation method. Executes e-mail regex pattern to string. 
+     * Validation method. Executes urk regex pattern to string. 
      *
-     * @param obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
+     * @param {Object} obj Parameter object. Contains the value to be validated, the {@link M.ModelAttribute} object of the property and the model record's id.
      * @returns {Boolean} Indicating whether validation passed (YES|true) or not (NO|false).
      */
     validate: function(obj) {
         if (typeof(obj.value !== 'string')) {
             return NO;
         }
-        
+
         if (this.pattern.exec(obj.value)) {
             return YES;
         }
         this.validationErrors.push({
-            msg: obj.value + ' is not a valid email adress.',
+            msg: obj.value + ' is not a valid url.',
             modelId: obj.modelId,
             property: obj.property,
             viewId: obj.viewId,
-            validator: 'EMAIL',
+            validator: 'PHONE',
             onSuccess: obj.onSuccess,
             onError: obj.onError
         });

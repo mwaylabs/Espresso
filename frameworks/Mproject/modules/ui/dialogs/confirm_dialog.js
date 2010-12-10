@@ -13,55 +13,61 @@ m_require('ui/dialog.js');
 /**
  * @class
  *
- * The root object for AlertDialogView.
+ * This is the prototype for any confirm dialog view. It is derived from M.DialogView
+ * and mainly used for implementing a confirm dialog view specific render method.
  *
+ * @extends M.DialogView
  */
-M.ConfirmDialogView = M.DialogView.extend({
+M.ConfirmDialogView = M.DialogView.extend(
+/** @scope M.ConfirmDialogView.prototype */ {
 
     /**
      * The type of this object.
      *
-     * @property {String}
+     * @type String
      */
     type: 'M.ConfirmDialogView',
 
     /**
-     * The default title of an alert dialog.
+     * The default title of an confirm dialog.
      *
-     * @property {String}
+     * @type String
      */
-    title: 'Alert',
+    title: 'Confirm',
 
     /**
-     * The default message of an alert dialog.
+     * The default message of an confirm dialog.
      *
-     * @property {String}
+     * @type String
      */
     message: '',
 
     /**
      * The default transition of an confirm dialog.
      *
-     * @property {String}
+     * @type String
      */
     transition: M.TRANSITION.POP,
 
     /**
-     * Determines whether the dialog gets a default ok button.
+     * Determines whether the confirm dialog gets a default ok button.
      *
-     * @property {Boolean}
+     * @type Boolean
      */
     hasOkButton: YES,
 
     /**
-     * Determines whether the dialog gets a default cancel button.
+     * Determines whether the confirm dialog gets a default cancel button.
      *
-     * @property {Boolean}
+     * @type Boolean
      */
     hasCancelButton: YES,
 
     /**
-     * Renders a button as an input tag. Input is automatically converted by jQuery mobile.
+     * Renders an confirm dialog as a pop-up page.
+     *
+     * @private
+     * @returns {String} The confirm dialog view's html representation.
      */
     render: function() {
         this.html = '<div data-role="dialog" id="' + this.id + '">';
@@ -72,8 +78,9 @@ M.ConfirmDialogView = M.DialogView.extend({
             var button = M.ButtonView.design({
                 value: 'OK',
                 cssClass: 'b',
-                target: this.onOk.target,
-                action: this.onOk.action
+                target: this,
+                action: 'dialogWillClose',
+                role: 'onOk'
             });
             this.buttonIds.push(button.id);
             this.html += button.render();
@@ -83,8 +90,9 @@ M.ConfirmDialogView = M.DialogView.extend({
             var button = M.ButtonView.design({
                 value: 'Cancel',
                 cssClass: 'c',
-                target: this.onCancel.target,
-                action: this.onCancel.action
+                target: this,
+                action: 'dialogWillClose',
+                role: 'onCancel'
             });
             this.buttonIds.push(button.id);
             this.html += button.render();

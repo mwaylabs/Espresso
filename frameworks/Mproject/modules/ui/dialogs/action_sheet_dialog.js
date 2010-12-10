@@ -13,41 +13,47 @@ m_require('ui/dialog.js');
 /**
  * @class
  *
- * The root object for ActionSheetDialogView.
+ * This is the prototype for any action sheet dialog view. It is derived from M.DialogView
+ * and mainly used for implementing a action sheet dialog view specific render method.
  *
+ * @extends M.DialogView 
  */
-M.ActionSheetDialogView = M.DialogView.extend({
+M.ActionSheetDialogView = M.DialogView.extend(
+/** @scope M.ActionSheetDialogView.prototype */ {
 
     /**
      * The type of this object.
      *
-     * @property {String}
+     * @type String
      */
     type: 'M.ActionSheetDialogView',
 
     /**
      * The default title of an action sheet dialog.
      *
-     * @property {String}
+     * @type String
      */
     title: 'ActionSheet',
 
     /**
      * The default transition of an action sheet dialog.
      *
-     * @property {String}
+     * @type String
      */
     transition: M.TRANSITION.SLIDEUP,
 
     /**
-     * Determines whether the dialog gets a default cancel button.
+     * Determines whether the action sheet dialog gets a default cancel button.
      *
-     * @property {Boolean}
+     * @type Boolean
      */
     hasCancelButton: YES,
 
     /**
-     * Renders a button as an input tag. Input is automatically converted by jQuery mobile.
+     * Renders an action sheet dialog as a slide-up page.
+     *
+     * @private
+     * @returns {String} The action sheet dialog view's html representation.
      */
     render: function() {
         this.html = '<div data-role="dialog" id="' + this.id + '">';
@@ -58,8 +64,9 @@ M.ActionSheetDialogView = M.DialogView.extend({
             for(var buttonName in this.buttons) {
                 var button = M.ButtonView.design({
                     value: this.buttons[buttonName].title,
-                    target: this.buttons[buttonName].target,
-                    action: this.buttons[buttonName].action,
+                    target: this,
+                    action: 'dialogWillClose',
+                    role: buttonName,
                     cssClass: this.buttons[buttonName].cssClass ? this.buttons[buttonName].cssClass : (buttonName === 'cancel' ? 'c' : 'b')
                 });
                 this.buttonIds.push(button.id);
@@ -71,8 +78,9 @@ M.ActionSheetDialogView = M.DialogView.extend({
             var button = M.ButtonView.design({
                 value: 'Cancel',
                 cssClass: 'c',
-                target: this.onCancel.target,
-                action: this.onCancel.action
+                target: this,
+                action: 'dialogWillClose',
+                role: 'onCancel'
             });
             this.buttonIds.push(button.id);
             this.html += button.render();
