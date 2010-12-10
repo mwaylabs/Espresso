@@ -21,7 +21,7 @@ var _l = {},
  */
 _l.sys = require('sys');
 _l.fs = require('fs');
-
+var style = require('../lib/color');
 
 
 /**
@@ -50,7 +50,7 @@ App = exports.App = function (applicationDirectory,server) {
   this.clear = '';     
   this.server = server;
   this.buildVersion = Date.now(); //new Date.getTime(); // timestamp of the build.
-  this.buildLanguage = 'english';
+  this.buildLanguages = [];
   this.theme = 'm-deafult';
   this.outputFolder = 'build'; // name of the output folder, default is 'build'.
   this.jslintCheck = true;
@@ -58,6 +58,7 @@ App = exports.App = function (applicationDirectory,server) {
   this.taskChain = new Array();
   this.proxies = [];  
   this.excludedFromCaching;
+  this.excludedFolders = [];
   this.excludeFiles = [];
     
   /* Properties used by App */
@@ -74,6 +75,10 @@ App = exports.App = function (applicationDirectory,server) {
   }
   console.log("\n");
 };
+
+
+App.prototype.supportedLanguages  = ['de_de','en_us'];
+
 
 /**
  * @description
@@ -102,7 +107,7 @@ App.prototype.loadJSONConfig = function() {
            this.server.proxies = config.proxies; //adding proxies, if present.
         }
     }catch(ex){
-       console.log('ERROR in "config.json" '+ex.message);
+       console.log(style.red('ERROR:')+style.cyan(' - while reading "config.json", error message: '+ex.message));
        process.exit(1); /* exit the process, reason: error in config.json*/
     }
 };
@@ -134,7 +139,7 @@ var that = this, _theApplication = [],_theApplicationResources;
         _frameworkOptions.path = that.execPath + '/' + module;
         _frameworkOptions.name = that.name+'_App';
         _frameworkOptions.frDelimiter = that.execPath+'/';
-        _frameworkOptions.excludedFolders = ['resources'];
+        _frameworkOptions.excludedFolders = ['resources'].concat(that.excludedFolders);
         _frameworkOptions.app = that;
          /* Definition of standard build chain for The-M-Project«s core files*/
         _frameworkOptions.taskChain = new TaskManager(["dependency","merge","contentType","manifest"]).getTaskChain();
@@ -208,6 +213,12 @@ var that = this, _theMProject, _theMProjectResources;
 App.prototype.buildIndexHTML = function() {
 
 var _indexhtml = [];
+
+
+   /*
+    document.write("<script src='i18n/de_de.i18n'></script>");
+    document.write("<script src='i18n/en_us.i18n'></script>");
+    */
 
     _indexhtml.push(
       '<!DOCTYPE html>',
@@ -351,6 +362,7 @@ var _outputPath = this.execPath+'/'+this.outputFolder;
     self._outP = [];
     self._outP.push(_outputPath);
     self._outP.push('/'+this.buildVersion);
+
     self._outP.push('/theme');
     self._outP.push('/images');
 
@@ -358,11 +370,11 @@ var _outputPath = this.execPath+'/'+this.outputFolder;
  var _OutputDirMaker = function(callback) {
     var that = this;
 
-    that._folderCounter = 4; /*make 4 folders*/
+    that._folderCounter = 5; /*make 4 folders*/
 
     that.callbackIfDone = function() {
       if (that._folderCounter === 0){
-          callback();
+          callback()
       }
     };
 
@@ -408,12 +420,13 @@ var _AppBuilder = function(app, callback) {
     };
 
     that.build = function() {
-      console.log("Building components:");   
+      console.log(style.green("Building components:"));  
       app.frameworks.forEach(function(framework) {
         framework.build(function(fr) {
           /* count  = -1 if a framework has been build. */
           that._frameworkCounter -= 1;
-          console.log('build() done for: "'+fr.name+'"');  
+          console.log(style.magenta(fr.name)+style.green(': ')+style.cyan('done'));   
+         // console.log('build() done for: "'+fr.name+'"');  
            //console.log(require('util').inspect(fr.files_with_Dependencies, true, 1));
           /* check if callback can be called, the condition ist that all frameworks has been build. */
           that.callbackIfDone();
@@ -422,7 +435,7 @@ var _AppBuilder = function(app, callback) {
     };
   };
 
- console.log('Building application: "'+this.name+'"'); 
+ console.log(style.green('Building application: "')+style.magenta(this.name)+style.green('"')); 
 
   /*
    *  build batch:

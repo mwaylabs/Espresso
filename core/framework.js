@@ -13,7 +13,7 @@
 var _l = {},
     Framework,
     File = require('./file').File;
-
+var style = require('../lib/color');
 
 /*
  * The required modules for Framework.
@@ -122,11 +122,11 @@ var _FileBrowser = function(framework, callback) {
      * @param path, the path to check.
      */
     that.checkIfFileShouldBeExcluded = function (path){
-        var fileBaseName = path.split('/');
+        var _fileBaseName = path.split('/');
         if(that.checkIfFolderShouldBeExcluded(path)){
             return true;
         }
-        if(that._filesToExclude.indexOf(fileBaseName[fileBaseName.length-1]) === -1){
+        if(that._filesToExclude.indexOf(_fileBaseName[_fileBaseName.length-1]) === -1){
             return false;
         }else{
             return true;
@@ -137,13 +137,13 @@ var _FileBrowser = function(framework, callback) {
      * Check if a file path contains a folder, that should be excluded. 
      */
     that.checkIfFolderShouldBeExcluded = function (path){
-        var exclude = false;
+        var _exclude = false;
         self.excludedFolders.forEach(function(folder){
              if(path.search('/'+folder+'/') !== -1){
-                exclude = true;
+                _exclude = true;
              }
         });
-        return exclude;
+        return _exclude;
     };
     /*
      * The function, that actually browses thru the files, reads and add them. 
@@ -206,7 +206,7 @@ return new _FileBrowser(this, callback).browse(path);
  */
 Framework.prototype.build = function(callback){
 var that = this;
-console.log('calling build() for: "'+this.name+'"');
+console.log(style.green('calling build() for: "')+style.magenta(this.name)+style.green('"'));
     if(that.isVirtual()){ // default = false.
        that.taskChain.run(that,callback);
     }else{
@@ -267,10 +267,10 @@ Framework.prototype.save = function(callback){
                            that.save(files);
                          });
 
-             }else{
-                 var fileName =  (self.combinedScripts) ? self.name+'.js' : _currentFile.getBaseName()+_currentFile.getFileExtension();
+            }else{
+                 var _fileName =  (self.combinedScripts) ? self.name+'.js' : _currentFile.getBaseName()+_currentFile.getFileExtension();
 
-                 _l.fs.writeFile(_outputPath+'/'+self.app.buildVersion+'/'+fileName, _currentFile.content ,
+                 _l.fs.writeFile(_outputPath+'/'+self.app.buildVersion+'/'+_fileName, _currentFile.content ,
                    function(err){
                     if(err) {throw err}
                     that._fileCounter--;

@@ -134,6 +134,15 @@ File.prototype.isJavaScript = function() {
   return this.getFileExtension() === '.js'; 
 };
 
+
+/**
+ * @description
+ * Returns 'true' if file is JavaScript.
+ */
+File.prototype.isManifest = function() {
+  return this.getFileExtension() === '.manifest'; 
+};
+
 /**
  * @description
  * Returns 'true' if file is a Image.
