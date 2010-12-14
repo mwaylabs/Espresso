@@ -59,7 +59,7 @@ App = exports.App = function (applicationDirectory,server) {
   this.proxies = [];  
   this.excludedFromCaching;
   this.excludedFolders = [];
-  this.excludeFiles = [];
+  this.excludedFiles = [];
     
   /* Properties used by App */
   this.frameworks = [];
@@ -140,9 +140,10 @@ var that = this, _theApplication = [],_theApplicationResources;
         _frameworkOptions.name = that.name+'_App';
         _frameworkOptions.frDelimiter = that.execPath+'/';
         _frameworkOptions.excludedFolders = ['resources'].concat(that.excludedFolders);
+        _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
         _frameworkOptions.app = that;
          /* Definition of standard build chain for The-M-Project«s core files*/
-        _frameworkOptions.taskChain = new TaskManager(["dependency","merge","contentType","manifest"]).getTaskChain();
+        _frameworkOptions.taskChain = new TaskManager(["preSort","dependency","merge","contentType","manifest"]).getTaskChain();
        return new Framework(_frameworkOptions);
     });
 
@@ -153,6 +154,8 @@ var that = this, _theApplication = [],_theApplicationResources;
         _frameworkOptions.path = that.execPath + '/' + module;
         _frameworkOptions.name = that.name+'_AppResources';
         _frameworkOptions.frDelimiter = that.execPath+'/';
+        _frameworkOptions.excludedFolders = that.excludedFolders;
+        _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
         _frameworkOptions.app = that;
          /* Definition of standard build chain for The-M-Project«s core files*/
         _frameworkOptions.taskChain = new TaskManager(["contentType","manifest"]).getTaskChain();
@@ -181,6 +184,8 @@ var that = this, _theMProject, _theMProjectResources;
         _frameworkOptions.name = module;
         _frameworkOptions.app = that;
         _frameworkOptions.frDelimiter = 'modules/';
+        _frameworkOptions.excludedFolders = that.excludedFolders;
+        _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
          /* Definition of standard build chain for The-M-Project«s core files*/ 
         _frameworkOptions.taskChain = new TaskManager(["dependency","merge","contentType","manifest"]).getTaskChain();
        return new Framework(_frameworkOptions);
@@ -197,7 +202,9 @@ var that = this, _theMProject, _theMProjectResources;
         _frameworkOptions.path = that.execPath+'/frameworks/Mproject/modules/' + module;
         _frameworkOptions.name = module;
         _frameworkOptions.app = that;
-        _frameworkOptions.frDelimiter = 'modules/'; 
+        _frameworkOptions.frDelimiter = 'modules/';
+        _frameworkOptions.excludedFolders = that.excludedFolders;
+        _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
         _frameworkOptions.taskChain = new TaskManager(["contentType","manifest"]).getTaskChain();
        return new Framework(_frameworkOptions);
     });
@@ -212,20 +219,15 @@ var that = this, _theMProject, _theMProjectResources;
  */
 App.prototype.buildIndexHTML = function() {
 
-var _indexhtml = [];
+var _indexHtml = [];
 
-
-   /*
-    document.write("<script src='i18n/de_de.i18n'></script>");
-    document.write("<script src='i18n/en_us.i18n'></script>");
-    */
-
-    _indexhtml.push(
+    _indexHtml.push(
       '<!DOCTYPE html>',
       '<html manifest="cache.manifest">',
       '<head>',
         '<meta name="apple-mobile-web-app-capable" content="yes">'+
         '<meta name="apple-mobile-web-app-status-bar-style" content="default">'+
+        '<link rel="apple-touch-icon" href="/theme/images/apple-touch-icon.png"/>'+       
         '<meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">'+
         '<title>'+this.name+'</title>'+
         '<link href="theme/jquery.mobile-1.0a2.min.css" rel="stylesheet" />'+
@@ -234,24 +236,35 @@ var _indexhtml = [];
         '<script src="jquery.mobile-1.0a2.min.js"></script>'+
         '<script src="underscore-min.js"></script>'+
         '<script src="core.js"></script>'+
-        '<script src="ui.js"></script>'+
+        '<script src="ui.js"></script>'
+    );
+
+    if(this.supportedLanguages.length >= 1){
+        this.supportedLanguages.forEach(function(lang){
+           _indexHtml.push(
+                   '<script src="'+lang+'.js"></script>'
+           );
+        });
+    }
+
+    _indexHtml.push(
         '<script language="JavaScript">var '+this.name+' = '+this.name+ '|| {}; M.Application.name="'+this.name+'";</script>'+
         '<script src="'+this.name+'_App.js"></script>'+
       '</head>'
     );
 
-    _indexhtml.push(
+    _indexHtml.push(
       '<body>'
     );
 
-    _indexhtml.push('<script language="JavaScript">'+this.name+'.app.main();'+'</script>' );
+    _indexHtml.push('<script language="JavaScript">'+this.name+'.app.main();'+'</script>' );
 
-    _indexhtml.push(
+    _indexHtml.push(
     	  '</body>',
       '</html>'
     );
 
-    _indexhtml = _indexhtml.join('\n');
+    _indexHtml = _indexHtml.join('\n');
 
     var _frameworkOptions  = {};
         _frameworkOptions.path = this.execPath;
@@ -270,7 +283,7 @@ var _indexhtml = [];
                             name:'/index.html',
                             path:'/index.html',
                             framework: fr, /* the framework, this file belongs to.*/
-                            content: _indexhtml
+                            content: _indexHtml
                            })
 
                   );
@@ -362,7 +375,6 @@ var _outputPath = this.execPath+'/'+this.outputFolder;
     self._outP = [];
     self._outP.push(_outputPath);
     self._outP.push('/'+this.buildVersion);
-
     self._outP.push('/theme');
     self._outP.push('/images');
 
@@ -370,7 +382,7 @@ var _outputPath = this.execPath+'/'+this.outputFolder;
  var _OutputDirMaker = function(callback) {
     var that = this;
 
-    that._folderCounter = 5; /*make 4 folders*/
+    that._folderCounter = 4; /*make 4 folders*/
 
     that.callbackIfDone = function() {
       if (that._folderCounter === 0){

@@ -80,20 +80,26 @@ this.TaskSequencer.sequenceThat(
           framework.files.forEach(function(file) {
               if(file.isJavaScript()){
                  var _re, _match, _path;
-                 var deps = [];
-                  /*RegExp = all string match: m_require('someFile.js');*/
-                  _re = new RegExp("[^//]m_require\\([\"'](.*?)[\"']\\)", "g");
+                 var _deps = [];
+                  /*RegExp = all string match: m_require('someFile.js');
+                  * ^[/\*]+\s*m_require
+                  * */
+                  _re = new RegExp("m_require\\([\"'](.*?)[\"']\\)", "g");
 
+   //console.log('File :'+file.getBaseName()); //+ ' bytes = ' + file.content.toString('utf-8', 0, 50)); //+ ' reg ex = ' + _re.exec(file.content));
+                  var f = file.content.toString();
                   while (_match = _re.exec(file.content)) {
+                 //     console.log('match : '+_match);
                     _path = _match[1];
                     if (!/\.js$/.test(_path)){
                         _path += '.js';
                     }
-                      deps.push(_path)
+                      _deps.push(_path)
                   }
-                  if(deps.length >= 1){
+                  if(_deps.length >= 1){
                       /*Add the found dependencies to the file.*/
-                      file.dependencies = deps;
+                   //   console.log(_deps);
+                      file.dependencies = _deps;
                   }
               }
             });
@@ -172,7 +178,7 @@ this.TaskSequencer.sequenceThat(
       function sortDependencies(err,fr) {
         var _queue  = []; // the queue, needed for the tree sort algorithm.
         var _sortedFiles = []; // holds the sort result.
-          /*
+          
           function print(node,string){
                       string += '+';
                       var it = node.name+' \n'
@@ -189,8 +195,6 @@ this.TaskSequencer.sequenceThat(
                      _l.sys.puts(print(tree,''));
            });
 
-          */
-      
 
       /*
        * Helper object, to traverse the dependency tree based on the 'Breadth-first' search algorithm.
@@ -279,5 +283,3 @@ this.TaskSequencer.sequenceThat(
     }
  );
 };
-
- 

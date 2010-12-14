@@ -56,6 +56,7 @@ Framework = exports.Framework = function(properties) {
   this.name = '';
   this.frDelimiter;
   this.excludedFolders = [];  
+  this.excludedFiles = [];  
   this.files = [];
   this.mergedFiles=[];
   this.dependencyTrees = [];
@@ -103,10 +104,10 @@ Framework.prototype.isVirtual = function(){
  */
 Framework.prototype.loadFiles = function(path,callback){
 var self = this;
-    
+
 var _FileBrowser = function(framework, callback) {
     var that = this;
-    that._filesToExclude = ['.DS_Store']; /*Files that should be excluded*/
+    //console.log(self.excludedFiles);
     // String.search(regEx) != -1
      /* keep in track of the files, to load. Execute callback only if all resources are loaded*/
     that._folderCounter = 0;
@@ -126,7 +127,7 @@ var _FileBrowser = function(framework, callback) {
         if(that.checkIfFolderShouldBeExcluded(path)){
             return true;
         }
-        if(that._filesToExclude.indexOf(_fileBaseName[_fileBaseName.length-1]) === -1){
+        if(self.excludedFiles.indexOf(_fileBaseName[_fileBaseName.length-1]) === -1){
             return false;
         }else{
             return true;
@@ -144,7 +145,7 @@ var _FileBrowser = function(framework, callback) {
              }
         });
         return _exclude;
-    };
+    };                          
     /*
      * The function, that actually browses thru the files, reads and add them. 
      */
