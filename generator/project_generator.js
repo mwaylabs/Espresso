@@ -8,23 +8,8 @@
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
-var _l = {},
-    File = require('../core/file').File,
+var Generator = require('./generator').Generator,
     NewProjectGenerator;
-
-
-/*
- * The required modules for NewProjectGenerator.
- *
- * sys    = node.js system module
- * fs     = filesystem
- *
- */
-_l.fs = require('fs');
-_l.sys = require('sys');
-_l.path = require('path');
-var Mu = require('../lib/mu');
-
 
 /**
  * @class
@@ -52,14 +37,17 @@ NewProjectGenerator = exports.NewProjectGenerator = function() {
   this.projectName = '';
   this.isHelloWorldProject = false;
   this.outputPath='';
-  this.espressoPath='';  
+  this.espressoPath='';    
 
   this._tools =[]; // array with names of build tools, used in the a new project.
   this._tools.push('m-build.js');
   this._tools.push('m-server.js');
-  this._tools.push('config.json');  
-  this._templatePath = './generator/templates';  // path to mustache templates.
+  this._tools.push('m-gen.js');  
+  this._tools.push('config.json');
 };
+
+
+NewProjectGenerator.prototype = new Generator;
 
 /**
  * @description
@@ -73,7 +61,8 @@ var that = this;
             if(args[2].indexOf('-project:') !== -1){
                var projectName = args[2].split('-project:')[1];
                if(!projectName){
-                  _l.sys.puts('No project name given');
+                  that._l.sys.puts(that.style.red('ERROR:')+that.style.magenta(' no project name given'));
+                  that._l.sys.puts(that.style.cyan('Usage: "-project:\<application name\>"'));
                   process.exit(1);
                }else{
                    that.projectName = projectName;
@@ -81,20 +70,27 @@ var that = this;
             }else if(args[2].indexOf('-projectHelloWorld:') !== -1){
                var projectName = args[2].split('-projectHelloWorld:')[1];
                if(!projectName){
-                  _l.sys.puts('No project name given');
+                  that._l.sys.puts(that.style.red('ERROR:')+that.style.magenta(' no project name given'));
+                  that._l.sys.puts(that.style.cyan('Usage: "-projectHelloWorld:\<application name\>"'));
                   process.exit(1);
                }else{
                    that.isHelloWorldProject = true;
                    that.projectName = projectName;
                }               
             }else{
-               _l.sys.puts('Unknown argument: "'+args[2]+'"');
+               that._l.sys.puts(that.style.red('ERROR:')+that.style.magenta(' unknown argument: "'+args[2]+'"'));
+               that._l.sys.puts(that.style.cyan('Usage: "-project:\<application name\>"'));
                 process.exit(1);
             }
         }else{
-          _l.sys.puts('No arguments given');
+          that._l.sys.puts(that.style.red('ERROR:')+that.style.magenta(' no arguments given'));
+          that._l.sys.puts(that.style.cyan('Usage: "-project:\<application name\>"'));
           process.exit(1);
         }
+    }else{
+      that._l.sys.puts(that.style.red('ERROR:')+' no arguments given');
+      that._l.sys.puts('\n Usage: "-project:\<application name\>"');  
+      process.exit(1);
     }
 };
 
@@ -160,10 +156,10 @@ this.checkArguments(args);
 
    that.makeOutputDir = function(path) {
      if(that._folderCounter >=1){
-       _l.fs.mkdir(path, 0777 ,function(err){
+       self._l.fs.mkdir(path, 0777 ,function(err){
          if(err){
            if(err.errno === 17){ /* 17 = error code for: File exists!*/
-             _l.sys.puts('Project with name: "'+self.projectName+'" already exists!');
+             self._l.sys.puts(self.style.cyan('Project with name: ')+self.style.magenta('"'+self.projectName+'"')+self.style.cyan(' already exists!'));
              process.exit(1);
            }else{
              throw err;
@@ -184,7 +180,7 @@ this.checkArguments(args);
      */
  var _BuildToolsGenerator = function(callback) {
    var that = this;
-   that._folderCounter = 3;
+   that._folderCounter = 4;
 
    that.callbackIfDone = function() {
      if (that._folderCounter === 0){
@@ -195,25 +191,25 @@ this.checkArguments(args);
    that._generateBuildFiles = function(files) {
      var _templateFile = files.shift();
      /*setting the template sources*/
-     Mu.templateRoot = self._templatePath; 
+    self.Mu.templateRoot = self._templatePath;
 
      var ctx = {
           appName: self.projectName
       };
 
      if(that._folderCounter >=1){
-       Mu.render(_templateFile, ctx, {}, function (err, output) {
+      self.Mu.render(_templateFile, ctx, {}, function (err, output) {
             if (err) {
                 throw err;
             }
             var buffer = '';
             output.addListener('data', function (c) {buffer += c; })
                   .addListener('end', function () {
-                    _l.fs.writeFile(self.outputPath+'Apps/'+self.projectName+'/'+_templateFile, buffer, function (err) {
+                   self._l.fs.writeFile(self.outputPath+'Apps/'+self.projectName+'/'+_templateFile, buffer, function (err) {
                       if (err){ throw err; }
-                      _l.sys.puts(_templateFile+' generated!');
+                     self._l.sys.puts(_templateFile+' generated!');
                       /*Making the build tools executable */  
-                      _l.fs.chmod(self.outputPath+'Apps/'+self.projectName+'/'+_templateFile, 0777, function (err){
+                      self._l.fs.chmod(self.outputPath+'Apps/'+self.projectName+'/'+_templateFile, 0777, function (err){
                              if (err){ throw err; }
                         that._folderCounter -= 1;
                         that._generateBuildFiles(files);
@@ -243,7 +239,7 @@ this.checkArguments(args);
 
    that._generateMainJS = function() {
      /*setting the template sources*/
-     Mu.templateRoot = self._templatePath;
+     self.Mu.templateRoot = self._templatePath;
 
      var _templateFile = 'main.js';
        if(self.isHelloWorldProject){
@@ -255,7 +251,7 @@ this.checkArguments(args);
      };
 
      if(that._folderCounter >=1){
-       Mu.render(_templateFile, ctx, {}, function (err, output) {
+       self.Mu.render(_templateFile, ctx, {}, function (err, output) {
             if (err) {
                 throw err;
             }
@@ -263,9 +259,9 @@ this.checkArguments(args);
             var buffer = '';
             output.addListener('data', function (c) {buffer += c; })
                   .addListener('end', function () {
-                    _l.fs.writeFile(self.outputPath+'Apps/'+self.projectName+'/app/main.js', buffer, function (err) {
+                    self._l.fs.writeFile(self.outputPath+'Apps/'+self.projectName+'/app/main.js', buffer, function (err) {
                       if (err){ throw err; }
-                      _l.sys.puts('main.js generated!');
+                      self._l.sys.puts('main.js generated!');
                         that._folderCounter -= 1;
                         that._generateMainJS();
                     });
@@ -308,14 +304,14 @@ this.checkArguments(args);
    }
 
    that.browse = function(path) {
-      _l.fs.stat(path, function(err, stats) {
+      self._l.fs.stat(path, function(err, stats) {
 
         if (err){
             throw err;
         }else {
 
           if (stats.isDirectory()) {
-            _l.fs.readdir(path, function(err, subpaths) {
+            self._l.fs.readdir(path, function(err, subpaths) {
 
               if (err){
                   throw err;
@@ -326,7 +322,7 @@ this.checkArguments(args);
                       /* add 1 to the counter if sub file is NOT a folder*/
                       if (subpath.match('\\.')) {that._folderCounter += 1;
                            }
-                      that.browse(_l.path.join(path, subpath));
+                      that.browse(self._l.path.join(path, subpath));
                    }
 
                 });
@@ -335,7 +331,7 @@ this.checkArguments(args);
 
           } else {
                  that._MprojectFile.push(
-                  new File({
+                  new self.File({
                              name: path,
                              path: path
                             })
@@ -356,8 +352,8 @@ this.checkArguments(args);
         if(current_File !== undefined ){
             var fileTarget = current_File.path.split('frameworks/')[1];
             fileTarget = fileTarget.split(current_File.getBaseName()+current_File.getFileExtension())[0];
-            _l.sys.pump(_l.fs.createReadStream(current_File.path),
-                    _l.fs.createWriteStream(self.outputPath+'Apps/'+self.projectName+'/frameworks/'+fileTarget+current_File.getBaseName()+current_File.getFileExtension()),
+            self._l.sys.pump(self._l.fs.createReadStream(current_File.path),
+                    self._l.fs.createWriteStream(self.outputPath+'Apps/'+self.projectName+'/frameworks/'+fileTarget+current_File.getBaseName()+current_File.getFileExtension()),
                     function(err){
                         if(err) {throw err}
                         that._folderCounter--;
@@ -377,10 +373,10 @@ this.checkArguments(args);
 
  };
 
-_l.fs.mkdir(self.outputPath+'Apps', 0777, function(err){
+self._l.fs.mkdir(self.outputPath+'Apps', 0777, function(err){
 
     if(err){
-      _l.sys.puts(self.outputPath+'Apps');
+      self._l.sys.puts(self.outputPath+'Apps');
     }
 
 
