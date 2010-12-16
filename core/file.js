@@ -9,12 +9,9 @@
 // ==========================================================================
 
 
-var _l = {},
+var E = require('./e').E,
     File;
 
-_l.fs = require('fs');
-_l.path = require('path');
-_l.sys = require('sys');
 
 /**
  * @class
@@ -27,6 +24,8 @@ _l.sys = require('sys');
  *
  * Files are organized in a Framework.
  * @param properties
+ *
+ * @extends M
  */
 File = exports.File = function(properties) {
  
@@ -53,6 +52,10 @@ File = exports.File = function(properties) {
   }
 };
 
+/*
+ * Getting all basic Espresso functions from the root prototype: M
+ */
+File.prototype = new E;
 
 /**
  * @description
@@ -93,7 +96,7 @@ File.prototype.getName = function(){
  */
 File.prototype.getBaseName = function(){
   if (this.basename === undefined) {
-    this.basename = _l.path.basename(this.path,_l.path.extname(this.path));
+    this.basename = this._l.path.basename(this.path,this._l.path.extname(this.path));
   }
   return this.basename;
 };
@@ -104,7 +107,7 @@ File.prototype.getBaseName = function(){
  */
 File.prototype.getFileExtension = function() {
   if (this.extname === undefined) {
-    this.extname = _l.path.extname(this.path);
+    this.extname = this._l.path.extname(this.path);
   }
   return this.extname;
 };

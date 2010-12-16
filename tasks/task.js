@@ -9,8 +9,8 @@
 // ==========================================================================
 
 
-var _l = {}, Task;
-    _l.sys = require('sys');
+var  E = require('../core/e').E,
+     Task;
 
 /**
  * @class
@@ -26,6 +26,11 @@ Task = exports.Task = function() {
   this.next;  /* the reference to the next task in the chain.*/
     
 };
+
+/*
+ * Getting all basic Espresso functions from the root prototype: M
+ */
+Task.prototype = new E;
 
 /**
  * @description
