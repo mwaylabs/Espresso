@@ -9,7 +9,7 @@
 {{appName}}.{{controllerName}} = M.Controller.extend({
 
     // sample controller property.
-	   myControllerProp: '',
+	   myControllerProperty: '',
 
     /*
      * Sample function
@@ -25,12 +25,12 @@
 
         // do something, for any other load.
 
-    },
+    }
 
     /*
      * Example function, which shows how to switch to another page
      * Function is triggered by setting target & action in a view.
-    switchToExamplePage: function() {
+    ,switchToExamplePage: function() {
 
         //this.switchToPage(M.ViewManager.getPage('examplePage'));
 

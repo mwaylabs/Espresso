@@ -6,7 +6,7 @@
 // Page: {{pageName}}
 // ==========================================================================
 
-{{appName}}.{{pageName}}: M.PageView.design({
+{{appName}}.{{pageName}} = M.PageView.design({
 
 	  /*
 	   * uncomment the following lines, to use the onLoad function

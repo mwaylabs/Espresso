@@ -5,6 +5,8 @@
 // Project: {{appName}} 
 // ==========================================================================
 
+var {{appName}}  = {{appName}} || {};
+
 {{appName}}.app = M.Application.extend({
 
 page1: M.PageView.design({
