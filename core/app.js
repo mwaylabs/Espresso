@@ -50,7 +50,7 @@ App = exports.App = function (applicationDirectory,server) {
   this.clear = '';     
   this.server = server;
   this.buildVersion = Date.now(); //new Date.getTime(); // timestamp of the build.
-  this.buildLanguages = [];
+  this.supportedLanguages = [];
   this.theme = 'm-deafult';
   this.outputFolder = 'build'; // name of the output folder, default is 'build'.
   this.jslintCheck = true;
@@ -77,7 +77,7 @@ App = exports.App = function (applicationDirectory,server) {
 };
 
 
-App.prototype.supportedLanguages  = ['de_de','en_us'];
+//App.prototype.supportedLanguages  = ['de_de','en_us'];
 
 
 /**
