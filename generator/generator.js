@@ -32,6 +32,11 @@ Generator = exports.Generator = function() {
  */
 Generator.prototype = new E;
 
+/**
+ * @property
+ * Using the 'optimist' framework, for parsing the arguments.
+ * https://github.com/substack/node-optimist
+ */
 Generator.prototype.argv = require('../lib/optimist').argv;
 
 /**
@@ -57,6 +62,14 @@ Generator.prototype.Mu =  require('../lib/mu');
 Generator.prototype.setProjectName  = function(current_Dir){
     var x = current_Dir.split('/');
     this.projectName = x[x.length-1];
+};
+
+/**
+ * @description
+ * Print a help or usage note on the shell
+ */
+Generator.prototype.printHelp = function(){
+   console.log("printHelp(), Generator");
 };
 
 /**

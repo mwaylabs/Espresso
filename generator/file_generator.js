@@ -67,7 +67,7 @@ FileGenerator.prototype.printHelp = function(){
 
 /**
  * @description
- * Make sure, that the arguments ale valid.
+ * Make sure, that the arguments are valid.
  * @param {Object} args, the command line arguments
  */
 FileGenerator.prototype.dispatchArguments = function(argv) {
