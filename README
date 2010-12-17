@@ -1,6 +1,6 @@
 Espresso : The-M-Projects build tools using node.js.
 
-Using:
+=== Using ===
 
 1.) Install node.js. see description here: http://nodejs.org/#download
 2.) Checkout Espresso
@@ -12,3 +12,9 @@ Using:
 4.) copy & paste the url into your browser
 
 
+=== Installing node.js on Windows ===
+
+Check put the information here:
+https://github.com/ry/node/wiki/Building-node.js-on-Cygwin-%28Windows%29
+
+- Tested with node 0.2.5 on Windows 7
