@@ -7,7 +7,7 @@
 
 var {{appName}}  = {{appName}} || {};
 
-{{appName}}.app = M.Application.extend({
+{{appName}}.app = M.Application.design({
 
 page1: M.PageView.design({
 
