@@ -60,7 +60,7 @@ var self = this;
        }else if(currentFile.isImage()){
           currentFile.requestPath = '/'+'theme/images/'+currentFile.getBaseName()+currentFile.getFileExtension();
        }else if (currentFile.isHTML()){
-          currentFile.requestPath = '/'+framework.app.name;
+          currentFile.requestPath = '/'+currentFile.getBaseName()+currentFile.getFileExtension();
        }else{
           currentFile.requestPath = '/'+currentFile.getBaseName()+currentFile.getFileExtension();
        }
