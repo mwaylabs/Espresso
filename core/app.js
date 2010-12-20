@@ -47,6 +47,7 @@ App = exports.App = function (applicationDirectory,server) {
 
   /* Build configuration */
   this.name = 'defaultName';
+  this.displayName;  
   this.clear = '';     
   this.server = server;
   this.buildVersion = Date.now(); //new Date.getTime(); // timestamp of the build.
@@ -218,7 +219,7 @@ var that = this, _theMProject, _theMProjectResources;
  * Builds the index.html page. Used for loading the application.
  */
 App.prototype.buildIndexHTML = function() {
-
+var _displayName =  (this.displayName) ? this.displayName : this.name;
 var _indexHtml = [];
 
     _indexHtml.push(
@@ -229,7 +230,7 @@ var _indexHtml = [];
         '<meta name="apple-mobile-web-app-status-bar-style" content="default">'+
         '<link rel="apple-touch-icon" href="/theme/images/apple-touch-icon.png"/>'+       
         '<meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">'+
-        '<title>'+this.name+'</title>'+
+        '<title>'+_displayName+'</title>'+
         '<link href="theme/jquery.mobile-1.0a2.min.css" rel="stylesheet" />'+
         '<link href="theme/style.css" rel="stylesheet" />'+
         '<script src="jquery-1.4.4.min.js"></script>'+
@@ -282,6 +283,7 @@ var _indexHtml = [];
                             virtual: true,
                             name:'/index.html',
                             path:'/index.html',
+                            requestPath :'/index.html',
                             framework: fr, /* the framework, this file belongs to.*/
                             content: _indexHtml
                            })

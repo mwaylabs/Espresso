@@ -176,9 +176,8 @@ var that = this;
       });
   }
    that.proxies.forEach(function(p){
-       _l.sys.puts(p.host+' -> '+p.proxyAlias);
+       _l.sys.puts(p.host+' => '+p.proxyAlias);
    });
-
 };
 
 /**
@@ -187,18 +186,17 @@ var that = this;
  * @param appName, name of the application.
  */
 Server.prototype.run = function(appName) {
-
-    var that = this,
-        _file,_requestedURL,
-        _applicationName =  (appName) ? appName : '';
+var that = this,
+    _file,_requestedURL,
+    _applicationName =  (appName) ? appName : '';
 
     _l.http.createServer(function (request, response) {
-         var path = _l.url.parse(request.url).pathname.slice(1);
-         //  _l.sys.puts(path);
-
+        // var path = _l.url.parse(request.url).pathname.slice(1);
+        //  _l.sys.puts(path);
         _requestedURL = _l.url.parse(request.url);
-         _l.sys.puts('requesting : '+_requestedURL.pathname);
-        _file = that.files[_requestedURL.pathname];
+        _l.sys.puts('requesting : '+_requestedURL.pathname);
+
+        _file = that.files[(_requestedURL.pathname === '/'+_applicationName) ? '/index.html' : _requestedURL.pathname];
 
         if (_file === undefined) {
             that.proxyThat(request, response);
@@ -208,9 +206,5 @@ Server.prototype.run = function(appName) {
             that.deliverThat(response,_file);
         }          
     }).listen(that.port);
-
     _l.sys.puts('Server running at http://'+that.hostname+':' + that.port+'/'+_applicationName);
-
-
 };
-
