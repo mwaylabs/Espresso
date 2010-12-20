@@ -46,8 +46,7 @@ FileGenerator.prototype = new Generator;
  * @description
  * Print the possible commands for the FileGenerator. 
  */
-FileGenerator.prototype.printHelp = function(){
-
+FileGenerator.prototype.printHelp = function(){ 
   console.log(this.style.green("=== m-gen.js === "));
   console.log(this.style.green("Espresso command line tool to generate new or additional files for a project "));
   console.log(this.style.green("The generated files containing some sample code, to start coding right away!"));  
