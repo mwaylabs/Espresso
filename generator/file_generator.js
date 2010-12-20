@@ -53,7 +53,7 @@ FileGenerator.prototype.printHelp = function(){
   console.log(this.style.green("The generated files containing some sample code, to start coding right away!"));  
   console.log(this.style.green("\n"));  
   console.log(this.style.green("--- commands ---"));
-  console.log(this.style.green("-p, --page [page name]                a new page"));
+  console.log(this.style.green("-p, --page [page name]                 a new page"));
   console.log(this.style.green("-c, --controller [controller name]     a new controller"));
   console.log(this.style.green("-v, --validator [validator name]       a new validator"));
   console.log(this.style.green("-m, --model [model name]               a new model"));
