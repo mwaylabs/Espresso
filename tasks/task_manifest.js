@@ -44,7 +44,6 @@ var that = this,
      if(_manifestExclude){
          framework.files.forEach(function(file){
              if(_manifestExclude.indexOf(file.getBaseName()+file.getFileExtension()) === -1){
-
                _app.manifest.cache.push(file.requestPath);
              }else{
                _app.manifest.network.push(file.requestPath);
@@ -52,9 +51,7 @@ var that = this,
          });
      }else{
        framework.files.forEach(function(file){
-             console.log(file.requestPath);
            _app.manifest.cache.push(file.requestPath);
-
          });
      }
     callback(framework);
