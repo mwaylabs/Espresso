@@ -77,8 +77,8 @@ Generator.prototype.printHelp = function(){
  * This function is overridden by any Generator.  
  * @param args, the command line arguments to check
  */
-Generator.prototype.checkArguments = function(args){
-    console.log("checkArguments(), Generator");
+Generator.prototype.dispatchArguments = function(args){
+    console.log("dispatchArguments(), Generator");
 };
 
 /**

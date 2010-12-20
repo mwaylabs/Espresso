@@ -91,6 +91,7 @@ var args = argv, self = this;
         break;
       case ((args.projectHelloWorld || args.w) && ((typeof args.projectHelloWorld === 'string') ||(typeof args.w === 'string'))):
         self.projectName = (args.projectHelloWorld) ? args.projectHelloWorld : args.w;
+        self.isHelloWorldProject = true;      
         self.genProject(self.projectName);           
         break;
       default:
@@ -372,11 +373,12 @@ NewProjectGenerator.prototype.genProject = function(projectName){
  * Call stack for the newProjectGenerator
  */
   new _ProjectDirMaker(function(){
+                          self.genStyleCSS();
       new  _BuildToolsGenerator(function(){
            new _MainJSGenerator(function(){
                new _MProjectCopy(function(f){
                    new _MProjectCopy(function(d){
-                     //  _l.sys.puts('All done!');
+                    //END
                    }).copy(f)
                })._MProjectCopy()
            })._generateMainJS()
@@ -386,6 +388,33 @@ NewProjectGenerator.prototype.genProject = function(projectName){
   });
 
 
+};
+
+NewProjectGenerator.prototype.genStyleCSS = function(cb){
+var self = this;
+        /*setting the template sources*/
+       this.Mu.templateRoot = this._templatePath;
+    
+       var ctx = {
+
+       };
+
+         this.Mu.render('style.css', ctx, {}, function (err, output) {
+              if (err) {
+                  throw err;
+              }
+
+              var buffer = '';
+              output.addListener('data', function (c) {buffer += c; })
+                    .addListener('end', function () {
+                      self._l.fs.writeFile(self.outputPath+'Apps/'+self.projectName+'/app/resources/style.css', buffer, function (err) {
+                        if (err){ throw err; }
+                        self._l.sys.puts('style.css generated!');
+                          //cb();
+                      });
+                    });
+         });
+       
 };
 
 /**
