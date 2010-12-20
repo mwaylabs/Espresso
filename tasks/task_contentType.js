@@ -25,20 +25,18 @@ Task_ContentType = exports.Task_ContentType = function() {
   /* Properties */
   this.name = 'content type';
   this.contentTypes = {
-    ".js": "text/javascript; charset=utf-8",
-    ".css": "text/css; charset=utf-8",
-    ".manifest": "text/cache-manifest",
-    ".html": "text/html",
-    ".png": "image/png",
-    ".jpg": "image/jpeg",
-    ".gif": "image/gif",
-    ".svg": "image/svg+xml",
-    ".json": "application/json"
+    ".js"      :  "text/javascript; charset=utf-8",
+    ".css"     :  "text/css; charset=utf-8",
+    ".manifest":  "text/cache-manifest",
+    ".html"    :  "text/html",
+    ".png"     :  "image/png",
+    ".jpg"     :  "image/jpeg",
+    ".gif"     :  "image/gif",
+    ".svg"     :  "image/svg+xml",
+    ".json"    :  "application/json"
   };
-     
-
-
 };
+
 
 Task_ContentType.prototype = new Task;
 
@@ -50,24 +48,25 @@ Task_ContentType.prototype = new Task;
  */
 Task_ContentType.prototype.duty = function(framework,callback){
 var self = this;
+  framework.files.forEach(function(_cF){
+  _cF.contentType = (self.contentTypes[_cF.getFileExtension()]) ? self.contentTypes[_cF.getFileExtension()] :  'text/plain';
 
-  framework.files.forEach(function(currentFile){
-          currentFile.contentType = (self.contentTypes[currentFile.getFileExtension()]) ? self.contentTypes[currentFile.getFileExtension()] :  'text/plain';
-
-       if(currentFile.isStylesheet()){
-          currentFile.requestPath = '/'+'theme/'+currentFile.getBaseName()+currentFile.getFileExtension();
-          currentFile.contentType = "text/css; charset=utf-8";
-       }else if(currentFile.isImage()){
-          currentFile.requestPath = '/'+'theme/images/'+currentFile.getBaseName()+currentFile.getFileExtension();
-       }else if (currentFile.isHTML()){
-          currentFile.requestPath = '/'+currentFile.getBaseName()+currentFile.getFileExtension();
-       }else{
-          currentFile.requestPath = '/'+currentFile.getBaseName()+currentFile.getFileExtension();
-       }
-  });
-
+   switch (true) {
+     case (_cF.isImage()):
+       _cF.requestPath = '/'+'theme/images/'+_cF.getBaseName()+_cF.getFileExtension();
+       break;
+     case (_cF.isStylesheet()):
+       _cF.requestPath = '/'+'theme/'+_cF.getBaseName()+_cF.getFileExtension();
+       _cF.contentType = "text/css; charset=utf-8";
+       break;
+     case (_cF.isHTML()):
+       _cF.requestPath = '/'+_cF.getBaseName()+_cF.getFileExtension();
+       break;
+     default:
+       _cF.requestPath = '/'+_cF.getBaseName()+_cF.getFileExtension();
+       break;
+   }
+});
 
   callback(framework);
-
-
 };
