@@ -244,7 +244,8 @@ NewProjectGenerator.prototype.genProject = function(projectName){
          }
 
        var ctx = {
-         appName: self.projectName
+         appName: self.projectName,
+         e_Version: self.__version__
        };
 
        if(that._folderCounter >=1){

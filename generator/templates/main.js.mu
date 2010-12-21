@@ -1,6 +1,6 @@
 // ==========================================================================
 // The M-Project - Mobile HTML5 Application Framework
-// Generated with: Espresso
+// Generated with: Espresso {{e_Version}}
 //
 // Project: {{appName}} 
 // ==========================================================================
