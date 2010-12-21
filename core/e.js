@@ -27,7 +27,7 @@ E = exports.E = function() {
 
 /**
  * @property
- * Reference to node basic system functions.
+ * Reference to node basic node.js system functions.
  */
 E.prototype._l = {};
 E.prototype._l.fs = require('fs');

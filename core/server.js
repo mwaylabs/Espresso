@@ -8,16 +8,12 @@
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
-var Server;
-    _l = {},
+var E = require('./e').E,
+    Server,
     Proxy = require('./proxy').Proxy;
     App = require('./app').App;
- 
 
-    _l.sys = require('sys');
-    _l.fs = require('fs');
-    _l.http = require('http');
-    _l.url = require('url');
+
 
 /**
  * @class
@@ -32,6 +28,10 @@ var Server;
  * For that reason, the server holds several Proxy objects.
  *
  * @param properties, the properties
+ *
+ * @extends E
+ *
+ * @constructor
  */
 Server = exports.Server = function(properties) {
 
@@ -46,8 +46,24 @@ Server = exports.Server = function(properties) {
   if(properties){
     this.addProperties(properties);
   }
-
 };
+
+/*
+ * Getting all basic Espresso functions from the root prototype: M
+ */
+Server.prototype = new E;
+
+/**
+ * @property
+ * http to get access to nodes http handling
+ */
+Server.prototype._l.http = require('http');
+
+/**
+ * @property
+ * http to get access to nodes url parsing and handling
+ */
+Server.prototype._l.url = require('url');
 
 /**
  * @description
@@ -55,9 +71,7 @@ Server = exports.Server = function(properties) {
  * @param properties, the properties
  */
 Server.prototype.addProperties = function(properties){
-
  var that = this;
-
  Object.keys(properties).forEach(function (key) {
    that[key] = properties[key];
  });
@@ -84,17 +98,16 @@ Server.prototype.getNewApp = function(applicationDirectory) {
  * @param file, the file to deliver
  */
 Server.prototype.deliverThat = function (response,file){
-  var status = 200; // = file found.
-
-  var headers = {};
+  var _status = 200, // = file found.
+      _headers = {};
       // TODO: maybe set the expire-date header ?!
-      headers['Content-Type'] = file.contentType; // get the content type for this resource.
+      _headers['Content-Type'] = file.contentType; // get the content type for this resource.
       //headers['Last-Modified'] = res.lastModified.format('httpDateTime');
   if(file.isImage()){
-    headers['Content-Length'] = file.content.length;
+    _headers['Content-Length'] = file.content.length;
   }
     
-  response.writeHead(status, headers);  // write the response header. 
+  response.writeHead(_status, _headers);  // write the response header.
   response.write(file.content,'utf8');  // write the content of this resource.
   response.end();
 };
@@ -114,7 +127,7 @@ var that = this;
 
   request.addListener('end', function() {   
   var _proxy,
-      _path = _l.url.parse(request.url).pathname.slice(1),
+      _path = that._l.url.parse(request.url).pathname.slice(1),
       _pr = _path.split('/')[0];
     //TODO: can this done better ?!
     that.proxies.forEach(function(p){  // looking for proxy entries.
@@ -124,9 +137,9 @@ var that = this;
     });
 
    if(_proxy){ // if proxy entry was found.
-       var _inquiredData =  request.url.split(_pr)[1];
-      _l.sys.puts("proxy request on = "+_proxy.host+_inquiredData);
-      var proxyClient  =  _l.http.createClient(_proxy.hostPort, _proxy.host);
+      var _inquiredData =  request.url.split(_pr)[1];
+      that._l.sys.puts("proxy request on = "+_proxy.host+_inquiredData);
+      var proxyClient  =  that._l.http.createClient(_proxy.hostPort, _proxy.host);
 
       proxyClient.addListener('error', function(err) {
         console.log('ERROR: "' + err.message + '" for proxy request on ' + _proxy.host + ':' + _proxy.hostPort);
@@ -176,7 +189,7 @@ var that = this;
       });
   }
    that.proxies.forEach(function(p){
-       _l.sys.puts(p.host+' => '+p.proxyAlias);
+       that._l.sys.puts(p.host+' => '+p.proxyAlias);
    });
 };
 
@@ -190,11 +203,11 @@ var that = this,
     _file,_requestedURL,
     _applicationName =  (appName) ? appName : '';
 
-    _l.http.createServer(function (request, response) {
+    that._l.http.createServer(function (request, response) {
         // var path = _l.url.parse(request.url).pathname.slice(1);
         //  _l.sys.puts(path);
-        _requestedURL = _l.url.parse(request.url);
-        _l.sys.puts('requesting : '+_requestedURL.pathname);
+        _requestedURL = that._l.url.parse(request.url);
+        that._l.sys.puts('requesting : '+_requestedURL.pathname);
 
         _file = that.files[(_requestedURL.pathname === '/'+_applicationName) ? '/index.html' : _requestedURL.pathname];
 
@@ -206,5 +219,5 @@ var that = this,
             that.deliverThat(response,_file);
         }          
     }).listen(that.port);
-    _l.sys.puts('Server running at http://'+that.hostname+':' + that.port+'/'+_applicationName);
+    that._l.sys.puts('Server running at http://'+that.hostname+':' + that.port+'/'+_applicationName);
 };

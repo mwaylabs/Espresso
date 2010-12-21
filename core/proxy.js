@@ -8,12 +8,8 @@
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
-/**
- *
-
- */
-
-var Proxy;
+var E = require('./e').E,
+    Proxy;
 
 
 /**
@@ -23,6 +19,10 @@ var Proxy;
  * Every Proxy object belongs to one Server. A Proxy object contains all information about a proxy entry.
  *
  * @param properties
+ *
+ * @extends E
+ *
+ * @constructor
  */
 Proxy = exports.Proxy = function(properties) {
 
@@ -35,20 +35,23 @@ Proxy = exports.Proxy = function(properties) {
   if(properties){
     this.addProperties(properties);
   }
-
 };
+
+
+/*
+ * Getting all basic Espresso functions from the root prototype: M
+ */
+Proxy.prototype = new E;
 
 /**
  * Adds the given properties, to the proxy object.
  * @param properties
  */
 Proxy.prototype.addProperties = function(properties){
-    var that = this;
-
-    Object.keys(properties).forEach(function (key) {
-         that[key] = properties[key];
-    });
-
+  var that = this;
+  Object.keys(properties).forEach(function (key) {
+     that[key] = properties[key];
+  });
 };
 
 /**
@@ -60,7 +63,6 @@ Proxy.prototype.addProperties = function(properties){
  * @return {string} a readable presentations of this proxy object.
  */
 Proxy.prototype.toString = function(){
-     return 'Host: '+this.host + '\n'
-          +'Proxy: '+this.proxyAlias + '\n';
-
-}
+ return 'Host: '+this.host + '\n'
+       +'Proxy: '+this.proxyAlias + '\n';
+};

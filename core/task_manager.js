@@ -9,20 +9,10 @@
 // ==========================================================================
 
 
-var _l = {},
+var E = require('./e').E,
     TaskManager,
     ManagedTasks = require('../tasks/managed_tasks').ManagedTasks.Tasks,
     File = require('../core/file').File;
-
-/*
- * The required modules for Task Manager.
- *
- * sys = node.js system module
- * fs  = filesystem
- *
- */
-_l.fs = require('fs');
-_l.sys = require('sys');
 
 
 /**
@@ -34,6 +24,10 @@ _l.sys = require('sys');
  * Which means hooking up the Tasks, so they can execute themselves and pass the result to next Task.
  *
  * @param Tasks, the task that the manager should hook up.
+ *
+ * @extends E
+ *
+ * @constructor
  */
 TaskManager = exports.TaskManager = function(Tasks) {
   /* Properties */
@@ -44,19 +38,28 @@ TaskManager = exports.TaskManager = function(Tasks) {
   }
 };
 
+
+/*
+ * Getting all basic Espresso functions from the root prototype: M
+ */
+TaskManager.prototype = new E;
+
 /**
  * Load the all tasks that had been registered in managed_tasks.js.
  * @param Task the task defined in the managed_tasks.js.
  */
 TaskManager.prototype.loadNewTaskChain = function (Tasks){
 var that = this,
-    _i, _firstTask, _current, _nextTask;
+    _i,
+    _firstTask,
+    _current,
+    _nextTask;
 
     for (_i = 0; _i < Tasks.length; ++_i) {
       if(!ManagedTasks[Tasks[_i]]){
-          _l.sys.puts("ERROR: Task '"+Tasks[_i]+"' not found! ");
-          _l.sys.puts("Hint: make sure, the task is defined and has an entry in /tasks/managed_tasks.js");
-          _l.sys.puts("Hint: check spelling");
+         that._l.sys.puts("ERROR: Task '"+Tasks[_i]+"' not found! ");
+         that._l.sys.puts("Hint: make sure, the task is defined and has an entry in /tasks/managed_tasks.js");
+         that._l.sys.puts("Hint: check spelling");
           process.exit(1); /* exit the process, reason: task not found!*/
       }else{
         _nextTask = new ManagedTasks[Tasks[_i]];
@@ -72,7 +75,7 @@ var that = this,
    if(_firstTask){
        that.tasksChain.push(_firstTask);
    }else{
-     _l.sys.puts("ERROR: No Task defined");
+     that._l.sys.puts("ERROR: No Task defined");
      process.exit(1); /* exit the process, reason: not task was defined*/
    }
 };

@@ -8,20 +8,10 @@
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
-var _l = {},
+var E = require('./e').E,
     App,
     TaskManager = require('./task_manager').TaskManager,
     Framework = require('./framework').Framework;
-
-/*
- * The required modules for App.
- *
- * sys    = node.js system module
- * fs     = filesystem
- */
-_l.sys = require('sys');
-_l.fs = require('fs');
-var style = require('../lib/color');
 
 
 /**
@@ -39,6 +29,10 @@ var style = require('../lib/color');
  * The task chain is prepared by the TaskManager.
  *
  * @param build_options, the options to customize the build process
+ *
+ * @extends E
+ *
+ * @constructor
  */
 
 App = exports.App = function (applicationDirectory,server) {
@@ -78,8 +72,10 @@ App = exports.App = function (applicationDirectory,server) {
 };
 
 
-//App.prototype.supportedLanguages  = ['de_de','en_us'];
-
+/*
+ * Getting all basic Espresso functions from the root prototype: M
+ */
+App.prototype = new E;
 
 /**
  * @description
@@ -87,12 +83,10 @@ App = exports.App = function (applicationDirectory,server) {
  * @param build_options the options to customize the build process
  */
 App.prototype.addOptions = function(build_options){
-    var that = this;
-
-    Object.keys(build_options).forEach(function (key) {
-         that[key] = build_options[key];
-    });
-  
+ var that = this;
+ Object.keys(build_options).forEach(function (key) {
+   that[key] = build_options[key];
+ });
 };
 
 /**
@@ -102,13 +96,13 @@ App.prototype.addOptions = function(build_options){
  */
 App.prototype.loadJSONConfig = function() {
     try{
-        var config = JSON.parse(_l.fs.readFileSync(this.execPath+'/config.json', 'utf8'));
+        var config = JSON.parse(this._l.fs.readFileSync(this.execPath+'/config.json', 'utf8'));
         this.addOptions(config);
         if(config.proxies){
            this.server.proxies = config.proxies; //adding proxies, if present.
         }
     }catch(ex){
-       console.log(style.red('ERROR:')+style.cyan(' - while reading "config.json", error message: '+ex.message));
+       console.log(this.style.red('ERROR:')+this.style.cyan(' - while reading "config.json", error message: '+ex.message));
        process.exit(1); /* exit the process, reason: error in config.json*/
     }
 };
@@ -119,7 +113,6 @@ App.prototype.loadJSONConfig = function() {
  */
 App.prototype.addFrameworks = function(frameworks) {
 var that = this;
-
   if (frameworks instanceof Array) {
     frameworks.forEach(function(framework) {
         that.frameworks.push(framework);
@@ -219,8 +212,8 @@ var that = this, _theMProject, _theMProjectResources;
  * Builds the index.html page. Used for loading the application.
  */
 App.prototype.buildIndexHTML = function() {
-var _displayName =  (this.displayName) ? this.displayName : this.name;
-var _indexHtml = [];
+var _displayName =  (this.displayName) ? this.displayName : this.name,
+    _indexHtml = [];
 
     _indexHtml.push(
       '<!DOCTYPE html>',
@@ -394,7 +387,7 @@ var _outputPath = this.execPath+'/'+this.outputFolder;
 
     that.makeOutputDir = function(path) {
       if(that._folderCounter >=1){
-        _l.fs.mkdir(path, 0777 ,function(err){
+        self._l.fs.mkdir(path, 0777 ,function(err){
               // if(err){}
           that._folderCounter--;
           that.makeOutputDir(path+ self._outP.shift());
@@ -416,11 +409,6 @@ var self = this;
     
 this.buildIndexHTML();
 
-/* TODO: Sort frameworks before calling build.
-   The application should be build first, to check for used resources and APIs,
-   to exclude them later from the core framework
-*/
-
 var _AppBuilder = function(app, callback) {
     var that = this;
     /* amount of used frameworks, for this application. */
@@ -434,14 +422,13 @@ var _AppBuilder = function(app, callback) {
     };
 
     that.build = function() {
-      console.log(style.green("Building components:"));  
+      console.log(self.style.green("Building components:"));
       app.frameworks.forEach(function(framework) {
         framework.build(function(fr) {
           /* count  = -1 if a framework has been build. */
           that._frameworkCounter -= 1;
-          console.log(style.magenta(fr.name)+style.green(': ')+style.cyan('done'));   
-         // console.log('build() done for: "'+fr.name+'"');  
-           //console.log(require('util').inspect(fr.files_with_Dependencies, true, 1));
+          console.log(self.style.magenta(fr.name)+self.style.green(': ')+self.style.cyan('done'));
+          //console.log(require('util').inspect(fr.files_with_Dependencies, true, 1));
           /* check if callback can be called, the condition ist that all frameworks has been build. */
           that.callbackIfDone();
         });
@@ -449,7 +436,7 @@ var _AppBuilder = function(app, callback) {
     };
   };
 
- console.log(style.green('Building application: "')+style.magenta(this.name)+style.green('"')); 
+ console.log(this.style.green('Building application: "')+this.style.magenta(this.name)+this.style.green('"')); 
 
   /*
    *  build batch:
@@ -474,7 +461,6 @@ var _AppBuilder = function(app, callback) {
  */
 App.prototype.saveLocal = function(callback){
   var self = this;
-
 
   var _AppSaver = function(app, callback) {
     var that = this;

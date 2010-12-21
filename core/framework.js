@@ -10,21 +10,10 @@
 
 
 
-var _l = {},
+var E = require('./e').E,
     Framework,
     File = require('./file').File;
-var style = require('../lib/color');
 
-/*
- * The required modules for Framework.
- *
- * sys    = node.js system module
- * fs     = filesystem
- *
- */
-_l.fs = require('fs');
-_l.sys = require('sys');
-_l.path = require('path');
 
 
 /**
@@ -37,9 +26,12 @@ _l.path = require('path');
  * This information is shipped over from the App object which the Framework belongs to.
  * 
  * @param properties, the properties for the framework
+ *
+ * @extends E
+ *
+ * @constructor
  */
 Framework = exports.Framework = function(properties) {
-
 
   /* Properties */
 
@@ -69,6 +61,10 @@ Framework = exports.Framework = function(properties) {
   }
 };
 
+/*
+ * Getting all basic Espresso functions from the root prototype: M
+ */
+Framework.prototype = new E;
 
 /**
  * Sets the Properties for Framework
@@ -81,6 +77,7 @@ Framework.prototype.addProperties = function(properties){
          that[key] = properties[key];
     });
 };
+
 
 /**
  * @description
@@ -150,12 +147,12 @@ var _FileBrowser = function(framework, callback) {
      * The function, that actually browses thru the files, reads and add them. 
      */
     that.browse = function(path) {
-      _l.fs.stat(path, function(err, stats) {
+      self._l.fs.stat(path, function(err, stats) {
         if (err){
           throw err;   
         }else{
           if (stats.isDirectory()) {
-            _l.fs.readdir(path, function(err, subpaths) {
+            self._l.fs.readdir(path, function(err, subpaths) {
                 if (err){ throw err;}
                 // if folder is empty.
                 if(subpaths.length < 1) { that.callbackIfDone(); }
@@ -163,7 +160,7 @@ var _FileBrowser = function(framework, callback) {
                 subpaths.forEach(function(subpath) {
                 /* add 1 to the counter if sub file is NOT a folder*/
                     if (subpath.match('\\.')) {that._folderCounter += 1;}
-                    that.browse(_l.path.join(path, subpath));
+                    that.browse(self._l.path.join(path, subpath));
                 });
              });
           } else {
@@ -171,7 +168,7 @@ var _FileBrowser = function(framework, callback) {
                that._folderCounter -= 1;
                that.callbackIfDone();
             }else{
-               _l.fs.readFile(path, function(err, data) { // data is a buffer object, if no encoding was specified!
+               self._l.fs.readFile(path, function(err, data) { // data is a buffer object, if no encoding was specified!
                if (err){
                  throw err;
                }else{
@@ -207,7 +204,7 @@ return new _FileBrowser(this, callback).browse(path);
  */
 Framework.prototype.build = function(callback){
 var that = this;
-console.log(style.green('calling build() for: "')+style.magenta(this.name)+style.green('"'));
+console.log(this.style.green('calling build() for: "')+this.style.magenta(this.name)+this.style.green('"'));
     if(that.isVirtual()){ // default = false.
        that.taskChain.run(that,callback);
     }else{
@@ -224,69 +221,64 @@ console.log(style.green('calling build() for: "')+style.magenta(this.name)+style
  * @param callback, function to be called after all files had been saved.
  */
 Framework.prototype.save = function(callback){
-// TODO: made some refactoring here, to make the save function more "well-arranged".
- var self = this,
-     _outputPath = this.app.execPath+'/'+this.app.outputFolder;
+var self = this,
+    _outputPath = this.app.execPath+'/'+this.app.outputFolder;
 
+ /*
+  * Helper, to save files of a framework.  
+  */
  var _FileSaver = function(filesLength, callback) {
- var that = this;
+  var that = this,
+      _fileCounter = filesLength;
      
-    that._fileCounter = filesLength;
     that.callbackIfDone = function() {
-      if (that._fileCounter === 0){
+      if (_fileCounter === 0){
           callback();
       }
     };
 
-    that.save = function(files) {
-        var _currentFile = files.shift();
-        if(that._fileCounter >=1){
-          if(_currentFile !== undefined){
-            if(_currentFile.isImage()){
-               _l.sys.pump(_l.fs.createReadStream(_currentFile.path),
-                           _l.fs.createWriteStream(_outputPath+'/'+self.app.buildVersion+'/theme/images/'+_currentFile.getBaseName()+_currentFile.getFileExtension()),
-                             function(err){
-                               if(err) {throw err}
-                               that._fileCounter--;
-                               that.save(files);
-                             });
-
-            }else if (_currentFile.isStylesheet()){
-                 _l.sys.pump(_l.fs.createReadStream(_currentFile.path),
-                             _l.fs.createWriteStream(_outputPath+'/'+self.app.buildVersion+'/theme/'+_currentFile.getBaseName()+_currentFile.getFileExtension()),
-                                function(err){
-                                    if(err) {throw err}
-                                    that._fileCounter--;
-                                    that.save(files);
-                                });
-
-            }else if (_currentFile.isVirtual()){
-                 _l.fs.writeFile(_outputPath+'/'+self.app.buildVersion+'/'+_currentFile.getBaseName()+_currentFile.getFileExtension(), _currentFile.content,
-                         function(err){
-                           if(err) {throw err}
-                           that._fileCounter--;
-                           that.save(files);
-                         });
-
-            }else{
-                 var _fileName =  (self.combinedScripts) ? self.name+'.js' : _currentFile.getBaseName()+_currentFile.getFileExtension();
-
-                 _l.fs.writeFile(_outputPath+'/'+self.app.buildVersion+'/'+_fileName, _currentFile.content ,
+    that.copyFile = function(files,filePath, fileOutPutPath){
+     self._l.sys.pump(self._l.fs.createReadStream(filePath),
+                 self._l.fs.createWriteStream(fileOutPutPath),
                    function(err){
+                     if(err) {throw err}
+                     _fileCounter--;
+                     that.save(files);
+                   });         
+    };
+
+    that.writeFile = function(files,fileOutPutPath, content){
+     self._l.fs.writeFile(fileOutPutPath,content,
+                function(err){
                     if(err) {throw err}
-                    that._fileCounter--;
+                    _fileCounter--;
                     that.save(files);
-                 });
+                });
+    };
 
-            }
-
-
-           }
-
-        }
-        that.callbackIfDone();
+    that.save = function(files) {
+     var _currentFile = files.shift();
+     if(_currentFile !== undefined){
+      switch (true) {
+        case (_currentFile.isImage()):
+          that.copyFile(files,_currentFile.path,_outputPath+'/'+self.app.buildVersion+'/theme/images/'+_currentFile.getBaseName()+_currentFile.getFileExtension());
+          break;
+        case (_currentFile.isStylesheet()):
+          that.copyFile(files,_currentFile.path,_outputPath+'/'+self.app.buildVersion+'/theme/'+_currentFile.getBaseName()+_currentFile.getFileExtension());
+          break;
+        case (_currentFile.isVirtual()):
+          that.writeFile(files,_outputPath+'/'+self.app.buildVersion+'/'+_currentFile.getBaseName()+_currentFile.getFileExtension(),_currentFile.content);
+          break;
+        default:
+          var _fileName =  (self.combinedScripts) ? self.name+'.js' : _currentFile.getBaseName()+_currentFile.getFileExtension();
+          that.writeFile(files,_outputPath+'/'+self.app.buildVersion+'/'+_fileName,_currentFile.content);
+          break;
+      }
+     }
+     that.callbackIfDone();
     }
  };
+    
  new _FileSaver(this.files.length, callback).save(this.files);
 };
 
