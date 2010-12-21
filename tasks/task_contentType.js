@@ -48,22 +48,22 @@ Task_ContentType.prototype = new Task;
  */
 Task_ContentType.prototype.duty = function(framework,callback){
 var self = this;
-  framework.files.forEach(function(_cF){
-  _cF.contentType = (self.contentTypes[_cF.getFileExtension()]) ? self.contentTypes[_cF.getFileExtension()] :  'text/plain';
+  framework.files.forEach(function(cF){
+  cF.contentType = (self.contentTypes[cF.getFileExtension()]) ? self.contentTypes[cF.getFileExtension()] :  'text/plain';
 
    switch (true) {
-     case (_cF.isImage()):
-       _cF.requestPath = '/'+'theme/images/'+_cF.getBaseName()+_cF.getFileExtension();
+     case (cF.isImage()):
+       cF.requestPath = '/'+'theme/images/'+cF.getBaseName()+cF.getFileExtension();
        break;
-     case (_cF.isStylesheet()):
-       _cF.requestPath = '/'+'theme/'+_cF.getBaseName()+_cF.getFileExtension();
-       _cF.contentType = "text/css; charset=utf-8";
+     case (cF.isStylesheet()):
+       cF.requestPath = '/'+'theme/'+cF.getBaseName()+cF.getFileExtension();
+       cF.contentType = "text/css; charset=utf-8";
        break;
-     case (_cF.isHTML()):
-       _cF.requestPath = '/'+_cF.getBaseName()+_cF.getFileExtension();
+     case (cF.isHTML()):
+       cF.requestPath = '/'+cF.getBaseName()+cF.getFileExtension();
        break;
      default:
-       _cF.requestPath = '/'+_cF.getBaseName()+_cF.getFileExtension();
+       cF.requestPath = '/'+cF.getBaseName()+cF.getFileExtension();
        break;
    }
 });
