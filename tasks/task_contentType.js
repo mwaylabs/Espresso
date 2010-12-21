@@ -15,6 +15,8 @@ var Task_ContentType,
 
 /**
  * @class
+ *
+ * @description
  * Determine the content type for every file contained in a framework.
  * The content type is attached ot the files directly.
  *
