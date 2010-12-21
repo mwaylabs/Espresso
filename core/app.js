@@ -44,7 +44,7 @@ App = exports.App = function (applicationDirectory,server) {
   this.displayName;  
   this.clear = '';     
   this.server = server;
-  this.buildVersion = Date.now(); //new Date.getTime(); // timestamp of the build.
+  this.buildVersion = Date.now();  // timestamp of the build.
   this.supportedLanguages = [];
   this.theme = 'm-deafult';
   this.outputFolder = 'build'; // name of the output folder, default is 'build'.
@@ -224,13 +224,13 @@ var _displayName =  (this.displayName) ? this.displayName : this.name,
         '<link rel="apple-touch-icon" href="/theme/images/apple-touch-icon.png"/>'+       
         '<meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">'+
         '<title>'+_displayName+'</title>'+
-        '<link href="theme/jquery.mobile-1.0a2.min.css" rel="stylesheet" />'+
-        '<link href="theme/style.css" rel="stylesheet" />'+
-        '<script src="jquery-1.4.4.min.js"></script>'+
-        '<script src="jquery.mobile-1.0a2.min.js"></script>'+
-        '<script src="underscore-min.js"></script>'+
-        '<script src="core.js"></script>'+
-        '<script src="ui.js"></script>'
+        '<link type="text/css" href="theme/jquery.mobile-1.0a2.min.css" rel="stylesheet" />'+
+        '<link type="text/css" href="theme/style.css" rel="stylesheet" />'+
+        '<script type="text/javascript" src="jquery-1.4.4.min.js"></script>'+
+        '<script type="text/javascript" src="jquery.mobile-1.0a2.min.js"></script>'+
+        '<script type="text/javascript" src="underscore-min.js"></script>'+
+        '<script type="text/javascript" src="core.js"></script>'+
+        '<script type="text/javascript" src="ui.js"></script>'
     );
 
     if(this.supportedLanguages.length >= 1){

@@ -31,7 +31,7 @@ var E = require('./e').E,
  */
 TaskManager = exports.TaskManager = function(Tasks) {
   /* Properties */
-  this.tasksChain = new Array();
+  this.tasksChain = [];
 
   if(Tasks !== undefined){
     this.loadNewTaskChain(Tasks);
@@ -48,28 +48,28 @@ TaskManager.prototype = new E;
  * Load the all tasks that had been registered in managed_tasks.js.
  * @param Task the task defined in the managed_tasks.js.
  */
-TaskManager.prototype.loadNewTaskChain = function (Tasks){
+TaskManager.prototype.loadNewTaskChain = function (tasks){
 var that = this,
     _i,
     _firstTask,
     _current,
     _nextTask;
 
-    for (_i = 0; _i < Tasks.length; ++_i) {
-      if(!ManagedTasks[Tasks[_i]]){
-         that._l.sys.puts("ERROR: Task '"+Tasks[_i]+"' not found! ");
+   for (_i = 0; _i < tasks.length; ++_i) {
+     if(!ManagedTasks[tasks[_i]]){
+         that._l.sys.puts("ERROR: Task '"+tasks[_i]+"' not found! ");
          that._l.sys.puts("Hint: make sure, the task is defined and has an entry in /tasks/managed_tasks.js");
          that._l.sys.puts("Hint: check spelling");
-          process.exit(1); /* exit the process, reason: task not found!*/
-      }else{
-        _nextTask = new ManagedTasks[Tasks[_i]];
+         process.exit(1); /* exit the process, reason: task not found!*/
+     }else{
+       _nextTask = new ManagedTasks[tasks[_i]];
 
-        if (_firstTask === undefined) {
-          _firstTask = _nextTask;
-        } else {
-          _current.next = _nextTask;
-        }
-        _current = _nextTask;
+       if (_firstTask === undefined) {
+         _firstTask = _nextTask;
+       } else {
+         _current.next = _nextTask;
+       }
+       _current = _nextTask;
      }     
    }
    if(_firstTask){

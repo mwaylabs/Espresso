@@ -36,23 +36,21 @@ Framework = exports.Framework = function(properties) {
   /* Properties */
 
   /* Build configuration */
-  this.buildVersion = null;
+  this.buildVersion    = null;
   this.combinedScripts = false;
-  this.defaultLanguage = 'english';
-  this.buildLanguage = 'english';
 
   /* Local properties */
-  this.app = null;
+  this.app     = null;
   this.virtual = false;  
   this.path = '';
   this.name = '';
   this.frDelimiter;
   this.excludedFolders = [];  
-  this.excludedFiles = [];  
-  this.files = [];
-  this.mergedFiles=[];
+  this.excludedFiles   = [];
+  this.files           = [];
+  this.mergedFiles     = [];
   this.dependencyTrees = [];
-  this.taskChain = [];
+  this.taskChain       = [];
 
 
   /* Adding the properties fot this Frameworks */
@@ -71,11 +69,10 @@ Framework.prototype = new E;
  * @param properties, the properties for the framework
  */
 Framework.prototype.addProperties = function(properties){
-    var that = this;
-
-    Object.keys(properties).forEach(function (key) {
-         that[key] = properties[key];
-    });
+ var that = this;
+ Object.keys(properties).forEach(function (key) {
+   that[key] = properties[key];
+ });
 };
 
 
@@ -104,8 +101,6 @@ var self = this;
 
 var _FileBrowser = function(framework, callback) {
     var that = this;
-    //console.log(self.excludedFiles);
-    // String.search(regEx) != -1
      /* keep in track of the files, to load. Execute callback only if all resources are loaded*/
     that._folderCounter = 0;
 
@@ -209,8 +204,7 @@ console.log(this.style.green('calling build() for: "')+this.style.magenta(this.n
        that.taskChain.run(that,callback);
     }else{
        this.loadFiles(that.path, function(files) {
-           // _l.sys.puts("Files for '"+that.name+"' loaded");
-            that.taskChain.run(that,callback);
+         that.taskChain.run(that,callback);
        });
     }
 };
@@ -222,7 +216,7 @@ console.log(this.style.green('calling build() for: "')+this.style.magenta(this.n
  */
 Framework.prototype.save = function(callback){
 var self = this,
-    _outputPath = this.app.execPath+'/'+this.app.outputFolder;
+    _outputPath = this.app.execPath+'/'+this.app.outputFolder+'/'+self.app.buildVersion;
 
  /*
   * Helper, to save files of a framework.  
@@ -243,8 +237,9 @@ var self = this,
                    function(err){
                      if(err) {throw err}
                      _fileCounter--;
-                     that.save(files);
-                   });         
+                     that.callbackIfDone();
+                   });
+     that.save(files);
     };
 
     that.writeFile = function(files,fileOutPutPath, content){
@@ -252,30 +247,29 @@ var self = this,
                 function(err){
                     if(err) {throw err}
                     _fileCounter--;
-                    that.save(files);
+                    that.callbackIfDone();
                 });
+     that.save(files);
     };
 
     that.save = function(files) {
-     var _currentFile = files.shift();
-     if(_currentFile !== undefined){
+     that.callbackIfDone();   
+     var _cF = files.shift();
+     if(_cF !== undefined){
       switch (true) {
-        case (_currentFile.isImage()):
-          that.copyFile(files,_currentFile.path,_outputPath+'/'+self.app.buildVersion+'/theme/images/'+_currentFile.getBaseName()+_currentFile.getFileExtension());
+        case (_cF.isImage()):
+          that.copyFile(files,_cF.path,_outputPath+'/theme/images/'+_cF.getBaseName()+_cF.getFileExtension());
           break;
-        case (_currentFile.isStylesheet()):
-          that.copyFile(files,_currentFile.path,_outputPath+'/'+self.app.buildVersion+'/theme/'+_currentFile.getBaseName()+_currentFile.getFileExtension());
+        case (_cF.isStylesheet()):
+          that.copyFile(files,_cF.path,_outputPath+'/theme/'+_cF.getBaseName()+_cF.getFileExtension());
           break;
-        case (_currentFile.isVirtual()):
-          that.writeFile(files,_outputPath+'/'+self.app.buildVersion+'/'+_currentFile.getBaseName()+_currentFile.getFileExtension(),_currentFile.content);
-          break;
+        case (_cF.isVirtual()):
         default:
-          var _fileName =  (self.combinedScripts) ? self.name+'.js' : _currentFile.getBaseName()+_currentFile.getFileExtension();
-          that.writeFile(files,_outputPath+'/'+self.app.buildVersion+'/'+_fileName,_currentFile.content);
+          var _fileName =  (self.combinedScripts) ? self.name+'.js' : _cF.getBaseName()+_cF.getFileExtension();
+          that.writeFile(files,_outputPath+'/'+_fileName,_cF.content);
           break;
       }
      }
-     that.callbackIfDone();
     }
  };
     

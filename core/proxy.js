@@ -27,9 +27,9 @@ var E = require('./e').E,
 Proxy = exports.Proxy = function(properties) {
 
    /* Properties */
-  this.host = null;
-  this.hostPort = '80';
-  this.proxyAlias = null;
+  this.host          = null;
+  this.hostPort      = '80';
+  this.proxyAlias    = null;
   this.requestMethod = null;
 
   if(properties){
