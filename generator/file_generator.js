@@ -32,6 +32,9 @@ var Generator = require('./generator').Generator,
  * ./m-gen.js --page myNewPage            will generate a new page called: 'myNewPage'
  *
  * @constructor
+ *
+ *
+ * @extends Generator
  */
 FileGenerator = exports.FileGenerator = function() {
   this.Mu.templateRoot = '../../Espresso/' + this._templatePath; //extending the template path from prototype

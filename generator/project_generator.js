@@ -33,6 +33,10 @@ var Generator = require('./generator').Generator,
  * --- usages ---
  * node m-init.js --project myNewProject       will generate a new project called: 'myNewProject'
  *
+ * @extends Generator
+ *
+ * @constructor
+ *
  */
 NewProjectGenerator = exports.NewProjectGenerator = function() {
 
@@ -58,7 +62,6 @@ NewProjectGenerator.prototype = new Generator;
  * Print the possible commands for the NewProjectGenerator.
  */
 NewProjectGenerator.prototype.printHelp = function(){
-
   console.log(this.style.green("=== m-init.js === "));
   console.log(this.style.green("Espresso command line tool to generate a new project "));
   console.log(this.style.green("\n"));
@@ -285,8 +288,7 @@ NewProjectGenerator.prototype.genProject = function(projectName){
 
 
      that.checkIfFileShouldBeExcluded = function (path){
-
-          var fileBaseName = path.split('/');
+         var fileBaseName = path.split('/');
 
           if(that._filesToExclude.indexOf(fileBaseName[fileBaseName.length-1]) === -1){
               return false;
@@ -363,7 +365,6 @@ NewProjectGenerator.prototype.genProject = function(projectName){
    };
 
   self._l.fs.mkdir(self.outputPath+'Apps', 0777, function(err){
-
       if(err){
         self._l.sys.puts(self.outputPath+'Apps');
       }
@@ -373,7 +374,7 @@ NewProjectGenerator.prototype.genProject = function(projectName){
  * Call stack for the newProjectGenerator
  */
   new _ProjectDirMaker(function(){
-                          self.genStyleCSS();
+            self.genStyleCSS();
       new  _BuildToolsGenerator(function(){
            new _MainJSGenerator(function(){
                new _MProjectCopy(function(f){
@@ -386,8 +387,6 @@ NewProjectGenerator.prototype.genProject = function(projectName){
   }).makeOutputDir(self._outP.shift());
 
   });
-
-
 };
 
 NewProjectGenerator.prototype.genStyleCSS = function(cb){
@@ -395,26 +394,20 @@ var self = this;
         /*setting the template sources*/
        this.Mu.templateRoot = this._templatePath;
     
-       var ctx = {
+       var ctx = {};
 
-       };
-
-         this.Mu.render('style.css', ctx, {}, function (err, output) {
-              if (err) {
-                  throw err;
-              }
-
-              var buffer = '';
-              output.addListener('data', function (c) {buffer += c; })
-                    .addListener('end', function () {
-                      self._l.fs.writeFile(self.outputPath+'Apps/'+self.projectName+'/app/resources/style.css', buffer, function (err) {
-                        if (err){ throw err; }
-                        self._l.sys.puts('style.css generated!');
-                          //cb();
-                      });
-                    });
-         });
-       
+       this.Mu.render('style.css', ctx, {}, function (err, output) {
+         if (err) { throw err;}
+         var buffer = '';
+         output.addListener('data', function (c) {buffer += c; })
+                .addListener('end', function () {
+                   self._l.fs.writeFile(self.outputPath+'Apps/'+self.projectName+'/app/resources/style.css', buffer, function (err) {
+                     if (err){ throw err; }
+                     self._l.sys.puts('style.css generated!');
+                     //cb();
+                   });
+                });
+       });
 };
 
 /**
