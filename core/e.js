@@ -36,11 +36,33 @@ E.prototype._l.path = require('path');
 
 
 /**
- * @property
+ * @function
  * The reference to 'style' -  used to color the console output.
  * https://github.com/chrislloyd/colored.js
  */
 E.prototype.style = require('../lib/color');
+
+/**
+ * @function
+ * Reference to Step, used for organize the code, if used a lot of callback
+ * stuff.
+ *
+ * @example
+ * 
+ * self.sequencer(
+ *      function A(){
+ *        do something at first here,
+ *      },
+ *      function B(err,obj){
+ *        do something after A here.
+ *      },
+ *      function C(err){
+ *        do something at the and of the sequence
+ *      }
+ *  );
+ *
+ */
+E.prototype.sequencer =  require('../lib/step');
 
 /**
  * @property
@@ -56,3 +78,11 @@ E.prototype.style = require('../lib/color');
  * logger.trace('Trace message');
  */
 E.prototype.logger = require('../lib/node-logger').logger(module,true);
+
+/**
+ * @function
+ * Prints the current version number of Espresso.
+ */
+E.prototype.printVersionNumber = function(){
+  console.log('version is '+this.__version__);
+};
