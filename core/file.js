@@ -168,6 +168,15 @@ var that = this;
 };
 
 
+File.prototype.equalBaseName = function (otherFile){
+  if(otherFile instanceof File){
+    if(this.getBaseName() === otherFile.getBaseName()){
+       return true;
+    }
+  }
+    return false;
+};
+
 /**
  * @description
  * Override Object.toString()
