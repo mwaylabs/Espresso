@@ -98,7 +98,7 @@ this.TaskSequencer.sequenceThat(
                   }
                   if(_deps.length >= 1){
                       /*Add the found dependencies to the file.*/
-                   //   console.log(_deps);
+                      //console.log(_deps);
                       file.dependencies = _deps;
                   }
               }
@@ -108,6 +108,7 @@ this.TaskSequencer.sequenceThat(
       },
        /*Tree based sort*/
       function buildDependencyTrees(err,fr) {
+
          var that = this,_roots = [];   // _roots = object to hold the root nodes.
         /**
          * Helper object to generate nodes.
@@ -178,7 +179,6 @@ this.TaskSequencer.sequenceThat(
       function sortDependencies(err,fr) {
         var _queue  = []; // the queue, needed for the tree sort algorithm.
         var _sortedFiles = []; // holds the sort result.
-          
           function print(node,string){
                       string += '+';
                       var it = node.name+' \n'
@@ -189,13 +189,11 @@ this.TaskSequencer.sequenceThat(
                      }
                      return string+' '+it;
           }
-/*
+     /*
           fr.dependencyTrees.forEach(function (tree){
-
                      _l.sys.puts(print(tree,''));
            });
-
-*/
+      */
       /*
        * Helper object, to traverse the dependency tree based on the 'Breadth-first' search algorithm.
        * See at: http://en.wikipedia.org/wiki/Breadth-first_search
