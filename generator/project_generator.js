@@ -111,21 +111,21 @@ NewProjectGenerator.prototype.genProject = function(projectName){
       self._outP.push( self.outputPath+'Apps/'+self.projectName);
       self._outP.push( self.outputPath+'Apps/'+self.projectName+'/app');
       self._outP.push( self.outputPath+'Apps/'+self.projectName+'/app/resources');
+      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/app/resources/base');
+    
       self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks');
       self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/Mproject');
       self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/Mproject/modules');
-
       self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/Mproject/modules/core');
       self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/Mproject/modules/core/datastore');
       self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/Mproject/modules/core/datastore/validators');
-
       self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/Mproject/modules/core/foundation');
       self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/Mproject/modules/core/utility');
       self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/Mproject/modules/core/utility/cypher_algorithms');
 
       self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/Mproject/modules/ui');
       self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/Mproject/modules/ui/dialogs');
-
+    
       self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/Mproject/modules/jquery');
 
       self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/Mproject/modules/jquery_mobile');
@@ -402,7 +402,7 @@ var self = this;
          var buffer = '';
          output.addListener('data', function (c) {buffer += c; })
                 .addListener('end', function () {
-                   self._l.fs.writeFile(self.outputPath+'Apps/'+self.projectName+'/app/resources/style.css', buffer, function (err) {
+                   self._l.fs.writeFile(self.outputPath+'Apps/'+self.projectName+'/app/resources/base/style.css', buffer, function (err) {
                      if (err){ throw err; }
                      self._l.sys.puts('style.css generated!');
                      //cb();
