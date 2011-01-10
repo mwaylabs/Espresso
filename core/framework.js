@@ -86,8 +86,49 @@ Framework.prototype.addProperties = function(properties){
  */
 Framework.prototype.isVirtual = function(){
   return this.virtual;
-}
+};
 
+/**
+ * @description
+ * Reads the content of the files connected to a framework.
+ * Needs a array with File objects, to read the content.
+ *
+ * @param arrayOfFiles {object}, the Array containing the files
+ * @param callback {function}, the callback function.
+ */
+Framework.prototype.readFiles = function(arrayOfFiles,callback){
+var self = this;
+
+  if(arrayOfFiles instanceof Array){
+
+   var _FileReader = function(cb,array) {
+    var that = this;
+    this._resourceCounter = array.length;
+
+    that.callbackIfDone = function(){
+      if (that._resourceCounter <= 0){
+          cb(null,self.files);
+      }
+    };
+
+    that.read = function() {
+      array.forEach(function(file){
+        var _cFPath  = file.path;
+        self._l.fs.readFile(_cFPath, function(err, data) { // data is a buffer object, if no encoding was specified!
+               if (err){
+                 throw err;
+               }else{
+                 file.content = data;
+                 that._resourceCounter -= 1;
+                 that.callbackIfDone();
+               }
+        });
+      });
+    }
+  }
+   new _FileReader(callback,arrayOfFiles).read();
+ }
+};
 
 /**
  * @description
@@ -96,7 +137,7 @@ Framework.prototype.isVirtual = function(){
  * @param path, the path to look for resources.
  * @param callback, the function, that is called after all resources haven been loaded.
  */
-Framework.prototype.loadFiles = function(path,callback){
+Framework.prototype.browseFiles = function(path,callback){
 var self = this;
 
 var _FileBrowser = function(framework, callback) {
@@ -106,7 +147,7 @@ var _FileBrowser = function(framework, callback) {
 
     that.callbackIfDone = function(){
       if (that._folderCounter <= 0){
-          callback(framework.files);
+          callback(null,framework.files);
       }
     };
 
@@ -137,56 +178,42 @@ var _FileBrowser = function(framework, callback) {
              }
         });
         return _exclude;
-    };                          
-    /*
-     * The function, that actually browses thru the files, reads and add them. 
-     */
+    };
+
     that.browse = function(path) {
+      that._folderCounter += 1;
       self._l.fs.stat(path, function(err, stats) {
+            that._folderCounter -= 1;
         if (err){
           throw err;   
         }else{
           if (stats.isDirectory()) {
+            that._folderCounter += 1;
             self._l.fs.readdir(path, function(err, subpaths) {
+                that._folderCounter -= 1;
                 if (err){ throw err;}
-                // if folder is empty.
-                if(subpaths.length < 1) { that.callbackIfDone(); }
-
                 subpaths.forEach(function(subpath) {
-                /* add 1 to the counter if sub file is NOT a folder*/
-                    if (subpath.match('\\.')) {that._folderCounter += 1;}
                     that.browse(self._l.path.join(path, subpath));
                 });
              });
           } else {
-            if(that.checkIfFileShouldBeExcluded(path)){
-               that._folderCounter -= 1;
-               that.callbackIfDone();
-            }else{
-               self._l.fs.readFile(path, function(err, data) { // data is a buffer object, if no encoding was specified!
-               if (err){
-                 throw err;
-               }else{
-                 framework.files.push(
+            if(!that.checkIfFileShouldBeExcluded(path)){
+               framework.files.push(
                       new File({
                                  frDelimiter: framework.frDelimiter,
                                  name: path,
                                  path: path,
-                                 framework: framework,
-                                 content: data
+                                 framework: framework
                                 })
 
-                      );
-                 that._folderCounter -= 1;
-                 that.callbackIfDone();
-                }
-               });
-            }
+               );
+            } that.callbackIfDone();
           }
         }
       });
     };
-  };
+}
+
 return new _FileBrowser(this, callback).browse(path);
 };
 
@@ -199,13 +226,27 @@ return new _FileBrowser(this, callback).browse(path);
  */
 Framework.prototype.build = function(callback){
 var that = this;
-console.log(this.style.green('calling build() for: "')+this.style.magenta(this.name)+this.style.green('"'));
+
+    console.log(this.style.green('calling build() for: "')
+               +this.style.magenta(this.name)
+               +this.style.green('"'));
+    
     if(that.isVirtual()){ // default = false.
        that.taskChain.run(that,callback);
     }else{
-       this.loadFiles(that.path, function(files) {
-         that.taskChain.run(that,callback);
-       });
+      that.sequencer(
+          function(){
+            that.browseFiles(that.path,this);
+          },
+          function(err,files){
+            if(err){throw err;}
+            that.readFiles(files,this);
+          },
+          function(err,files){
+            if(err){throw err;}  
+            that.taskChain.run(that,callback);
+          }
+      );
     }
 };
 
@@ -231,9 +272,9 @@ var self = this,
       }
     };
 
-    that.copyFile = function(files,filePath, fileOutPutPath){
+    that.copyFile = function(files,filePath, fileOutputPath){
      self._l.sys.pump(self._l.fs.createReadStream(filePath),
-                 self._l.fs.createWriteStream(fileOutPutPath),
+                 self._l.fs.createWriteStream(fileOutputPath),
                    function(err){
                      if(err) {throw err}
                      _fileCounter--;
@@ -255,6 +296,7 @@ var self = this,
     that.save = function(files) {
      that.callbackIfDone();   
      var _cF = files.shift();
+
      if(_cF !== undefined){
       switch (true) {
         case (_cF.isImage()):
@@ -302,6 +344,3 @@ Framework.prototype.toString = function() {
     return 'Name: '+this.name + '\n'
           +'Path: '+this.path + '\n';
 };
-
-
-
