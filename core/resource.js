@@ -98,8 +98,8 @@ var that = this;
  */
 Resource.prototype.evaluateTargetConfig = function(){
 var _target = this.app.target;
-console.log('target = ');
-console.log(_target);
+//console.log('target = ');
+//console.log(_target);
 
  if(_target){
      if(_target.manufacturer){
