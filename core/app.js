@@ -11,7 +11,8 @@
 var E = require('./e').E,
     App,
     TaskManager = require('./task_manager').TaskManager,
-    Framework = require('./framework').Framework;
+    Framework   = require('./framework').Framework,
+    Resource    = require('./resource').Resource;
 
 
 /**
@@ -55,6 +56,7 @@ App = exports.App = function (applicationDirectory,server) {
   this.excludedFromCaching;
   this.excludedFolders = [];
   this.excludedFiles = [];
+  this.target = {};  
     
   /* Properties used by App */
   this.frameworks = [];
@@ -126,7 +128,10 @@ var that = this;
  * The project is equals the application.
  */
 App.prototype.loadTheApplication = function() {
-var that = this, _theApplication = [],_theApplicationResources;
+var that = this,
+    _theApplication = [],
+    _theApplicationResources,
+    _i18n;
 
   _theApplication = ['app'].map(function(module) {
     var _frameworkOptions  = {};
@@ -143,7 +148,7 @@ var that = this, _theApplication = [],_theApplicationResources;
 
  this.addFrameworks(_theApplication);
 
- _theApplicationResources = ['app/resources'].map(function(module) {
+  _theApplicationResources = ['app/resources'].map(function(module) {
     var _frameworkOptions  = {};
         _frameworkOptions.path = that.execPath + '/' + module;
         _frameworkOptions.name = that.name+'_AppResources';
@@ -151,12 +156,26 @@ var that = this, _theApplication = [],_theApplicationResources;
         _frameworkOptions.excludedFolders = that.excludedFolders;
         _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
         _frameworkOptions.app = that;
-         /* Definition of standard build chain for The-M-Project«s core files*/
+        _frameworkOptions.taskChain = new TaskManager(["contentType","manifest"]).getTaskChain();
+       return new Resource(_frameworkOptions);
+  });
+
+ this.addFrameworks(_theApplicationResources);
+
+ _i18n = ['app/resources/i18n'].map(function(module) {
+    var _frameworkOptions  = {};
+        _frameworkOptions.path = that.execPath + '/' + module;
+        _frameworkOptions.name = 'i18n';
+        _frameworkOptions.frDelimiter = that.execPath+'/';
+        _frameworkOptions.excludedFolders = that.excludedFolders;
+        _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
+        _frameworkOptions.app = that;
         _frameworkOptions.taskChain = new TaskManager(["contentType","manifest"]).getTaskChain();
        return new Framework(_frameworkOptions);
     });
 
- this.addFrameworks(_theApplicationResources);
+
+ this.addFrameworks(_i18n);
 };
 
 /**
@@ -376,7 +395,7 @@ var _outputPath = this.execPath+'/'+this.outputFolder;
 
  var _OutputDirMaker = function(callback) {
     var that = this;
-
+    //console.log('output dir maker called');
     that._folderCounter = 4; /*make 4 folders*/
 
     that.callbackIfDone = function() {
@@ -388,7 +407,7 @@ var _outputPath = this.execPath+'/'+this.outputFolder;
     that.makeOutputDir = function(path) {
       if(that._folderCounter >=1){
         self._l.fs.mkdir(path, 0777 ,function(err){
-              // if(err){}
+           if(err && err.errno !== 17){throw err;}
           that._folderCounter--;
           that.makeOutputDir(path+ self._outP.shift());
         });
@@ -417,6 +436,7 @@ var _AppBuilder = function(app, callback) {
     /* callback checker, called if all frameworks are build. */
     that.callbackIfDone = function() {
       if (callback && that._frameworkCounter <= 0){
+         // console.log('build callback called !');
           callback();
       }
     };
@@ -467,7 +487,7 @@ App.prototype.saveLocal = function(callback){
 
     /* amount of used frameworks, for this application. */
     that._frameworkCounter = app.frameworks.length;
-
+      
     /* callback checker, called if all frameworks are build. */
     that.callbackIfDone = function() {
       if (callback && that._frameworkCounter <= 0){
@@ -494,7 +514,7 @@ App.prototype.saveLocal = function(callback){
    *     just generated file structure.
    *  3) Call callback, which prompts the massage: 'Saved application to filesystem!'.
    */
-  return this.makeOutputFolder(function(){
+  this.makeOutputFolder(function(){
         new _AppSaver(self, function(){
          console.log('Saved application to filesystem!');
          console.log("\n");   
