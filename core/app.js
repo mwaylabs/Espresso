@@ -142,7 +142,7 @@ var that = this,
         _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
         _frameworkOptions.app = that;
          /* Definition of standard build chain for The-M-Project«s core files*/
-        _frameworkOptions.taskChain = new TaskManager(["preSort","dependency","merge","contentType","manifest"]).getTaskChain();
+        _frameworkOptions.taskChain = new TaskManager(["preSort","dependency","merge","minify","contentType","manifest"]).getTaskChain();
        return new Framework(_frameworkOptions);
     });
 
@@ -200,7 +200,7 @@ var that = this, _theMProject, _theMProjectResources;
         _frameworkOptions.excludedFolders = that.excludedFolders;
         _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
          /* Definition of standard build chain for The-M-Project«s core files*/ 
-        _frameworkOptions.taskChain = new TaskManager(["dependency","merge","contentType","manifest"]).getTaskChain();
+        _frameworkOptions.taskChain = new TaskManager(["dependency","merge","minify","contentType","manifest"]).getTaskChain();
        return new Framework(_frameworkOptions);
     });
 
