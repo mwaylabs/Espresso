@@ -42,20 +42,23 @@ App = exports.App = function (applicationDirectory,server) {
 
   /* Build configuration */
   this.name = 'defaultName';
-  this.displayName;  
-  this.clear = '';     
-  this.server = server;
-  this.buildVersion = Date.now();  // timestamp of the build.
-  this.supportedLanguages = [];
-  this.theme = 'm-deafult';
-  this.outputFolder = 'build'; // name of the output folder, default is 'build'.
-  this.jslintCheck = true;
-  this.execPath = "";  //  the a actually folder name, in which the application is located.
-  this.taskChain = new Array();
-  this.proxies = [];  
+  this.displayName;
   this.excludedFromCaching;
-  this.excludedFolders = [];
-  this.excludedFiles = [];
+  this.clear        = '';
+  this.server       = server;
+  this.buildVersion = Date.now();  // timestamp of the build.
+  this.theme        = 'm-deafult';
+  this.outputFolder = 'build'; // name of the output folder, default is 'build'.
+  this.jslintCheck  = false;
+  this.minify       = false;
+  this.execPath     = "";  //  the a actually folder name, in which the application is located.
+  this.taskChain    = new Array();
+
+  this.proxies            = [];
+  this.supportedLanguages = [];
+  this.excludedFolders    = [];
+  this.excludedFiles      = [];
+
   this.target = {};  
     
   /* Properties used by App */
@@ -516,8 +519,9 @@ App.prototype.saveLocal = function(callback){
    */
   this.makeOutputFolder(function(){
         new _AppSaver(self, function(){
-         console.log('Saved application to filesystem!');
-         console.log("\n");   
+         console.log('\n');
+         console.log(self.style.green('saving application to filesystem!'));
+         console.log("\n");
         }).save();
   });
 };

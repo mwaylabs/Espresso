@@ -30,11 +30,10 @@ Task_Minify.prototype = new Task;
  * minifiy files. d
  */
 Task_Minify.prototype.duty = function(framework,callback){
-var that = this,
+var that = this, _data = '',
     sp = require('child_process').spawn;
-  var data = '';
-   // console.log(that._l.path.join(__dirname, '..', 'bin', 'yuicompressor-2.4.2.jar'));
-    if(true){
+
+    if(framework.app.minify){
 
    // min = sp('java', ['-jar', that._l.path.join(__dirname, '..', 'bin', 'yuicompressor-2.4.2.jar'), '--type', 'js']);
       min = sp('java', ['-jar', that._l.path.join(__dirname, '..', 'bin', 'compiler.jar'),
@@ -42,12 +41,11 @@ var that = this,
                         '--warning_level','QUIET']);
 
       min.stdout.addListener('data', function(newData) {
-         //    console.log(newData);
-       data += newData;
+       _data += newData;
       });
 
       min.stderr.addListener('data', function(data) {
-             console.log(data);
+        console.log(data);
         that._l.sys.print(data);
       });
 
@@ -55,15 +53,12 @@ var that = this,
         if (code !== 0) {
           console.log('ERROR: Minifier exited with code ' + code);
         } else {
-            framework.files[0].content = data;
+            framework.files[0].content = _data;
             callback(framework);
-
         }
-
       });
 
       min.stdin.write(framework.files[0].content);
-         min.stdin.end();
+      min.stdin.end();
    }
-
 };
