@@ -41,16 +41,17 @@ App = exports.App = function (applicationDirectory,server) {
   /* Properties */
 
   /* Build configuration */
-  this.name = 'defaultName';
   this.displayName;
   this.excludedFromCaching;
+
   this.clear        = '';
+  this.name         = 'defaultName';
   this.server       = server;
   this.buildVersion = Date.now();  // timestamp of the build.
   this.theme        = 'm-deafult';
   this.outputFolder = 'build'; // name of the output folder, default is 'build'.
   this.jslintCheck  = false;
-  this.minify       = false;
+  this.minify       = false;  // uses minfiy task ?! default is false
   this.execPath     = "";  //  the a actually folder name, in which the application is located.
   this.taskChain    = new Array();
 
@@ -58,11 +59,9 @@ App = exports.App = function (applicationDirectory,server) {
   this.supportedLanguages = [];
   this.excludedFolders    = [];
   this.excludedFiles      = [];
+  this.frameworks         = [];
 
-  this.target = {};  
-    
-  /* Properties used by App */
-  this.frameworks = [];
+  this.target   = {};  
   this.manifest = {
     "cache"   :[],
     "network" :[],
