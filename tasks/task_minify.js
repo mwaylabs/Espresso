@@ -27,51 +27,43 @@ Task_Minify = exports.Task_Minify = function() {
 Task_Minify.prototype = new Task;
 
 /**
- * minifiy files, with google closure compiler
+ * minifiy files. d
  */
 Task_Minify.prototype.duty = function(framework,callback){
+var that = this,
+    sp = require('child_process').spawn;
+  var data = '';
+   // console.log(that._l.path.join(__dirname, '..', 'bin', 'yuicompressor-2.4.2.jar'));
+    if(true){
 
-    callback(framework);
-
-};
-
-
-/*
-sharedHandlers.add('minify', function() {
-  var that = {};
-
-  that.handle = function(file, request, callback) {
-    that.next.handle(file, request, function(response) {
-      var data = '',
-          min, fileType;
-
-      if (file.isStylesheet()) fileType = 'css';
-      if (file.isScript()) fileType = 'js';
-      min = l.spawn('java', ['-jar', l.path.join(__dirname, '..', 'bin', 'yuicompressor-2.4.2.jar'), '--type', fileType]);
+   // min = sp('java', ['-jar', that._l.path.join(__dirname, '..', 'bin', 'yuicompressor-2.4.2.jar'), '--type', 'js']);
+      min = sp('java', ['-jar', that._l.path.join(__dirname, '..', 'bin', 'compiler.jar'),
+                        '--compilation_level', 'SIMPLE_OPTIMIZATIONS',
+                        '--warning_level','QUIET']);
 
       min.stdout.addListener('data', function(newData) {
-        data += newData;
+         //    console.log(newData);
+       data += newData;
       });
 
       min.stderr.addListener('data', function(data) {
-        l.sys.print(data);
+             console.log(data);
+        that._l.sys.print(data);
       });
 
       min.addListener('exit', function(code) {
         if (code !== 0) {
-          l.sys.puts('ERROR: Minifier exited with code ' + code);
+          console.log('ERROR: Minifier exited with code ' + code);
         } else {
-          response.data = data;
+            framework.files[0].content = data;
+            callback(framework);
+
         }
 
-        callback(response);
       });
 
-      min.stdin.write(response.data);
-      min.stdin.end();
-    });
-  };
+      min.stdin.write(framework.files[0].content);
+         min.stdin.end();
+   }
 
-  return that;
-});
-*/
+};
