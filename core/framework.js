@@ -147,7 +147,7 @@ var _FileBrowser = function(framework, callback) {
 
     that.callbackIfDone = function(){
       if (that._folderCounter <= 0){
-                  console.log('framework '+framework.name+'  _folderCounter '+that._folderCounter);
+       //           console.log('framework '+framework.name+'  _folderCounter '+that._folderCounter);
           callback(null,framework.files);
       }
     };
