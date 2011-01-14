@@ -61,8 +61,9 @@ App = exports.App = function (applicationDirectory,server) {
   this.excludedFiles      = [];
   this.frameworks         = [];
 
-  this.target   = {};  
-  this.manifest = {
+  this.target    = {};
+  this.ua_target;
+  this.manifest  = {
     "cache"   :[],
     "network" :[],
     "fallback":[]
@@ -164,6 +165,8 @@ var that = this,
 
  this.addFrameworks(_theApplicationResources);
 
+if(this.supportedLanguages.length >= 1){
+
  _i18n = ['app/resources/i18n'].map(function(module) {
     var _frameworkOptions  = {};
         _frameworkOptions.path = that.execPath + '/' + module;
@@ -175,9 +178,11 @@ var that = this,
         _frameworkOptions.taskChain = new TaskManager(["contentType","manifest"]).getTaskChain();
        return new Framework(_frameworkOptions);
     });
+    
 
+   this.addFrameworks(_i18n);  
+}
 
- this.addFrameworks(_i18n);
 };
 
 /**
@@ -236,9 +241,23 @@ App.prototype.buildIndexHTML = function() {
 var _displayName =  (this.displayName) ? this.displayName : this.name,
     _indexHtml = [];
 
+   _indexHtml.push(
+      '<!DOCTYPE html>'
+    );
+/*
+    if(this.buildNoManifest){
+       _indexHtml.push(
+      '<html manifest="cache.manifest">'
+    );
+ */
+
+       _indexHtml.push(
+      '<html manifest="cache.manifest">'
+    );
+
+
+
     _indexHtml.push(
-      '<!DOCTYPE html>',
-      '<html manifest="cache.manifest">',
       '<head>',
         '<meta name="apple-mobile-web-app-capable" content="yes">'+
         '<meta name="apple-mobile-web-app-status-bar-style" content="default">'+
@@ -316,6 +335,11 @@ var _displayName =  (this.displayName) ? this.displayName : this.name,
 App.prototype.buildManifest = function(callback){
 var self = this, _cacheManifest = [];
 
+    /*
+if(!self.buildNOManifest){
+   callback(); 
+}
+*/
  /* adding entries for the Explicit CACHE section*/
  _cacheManifest.push(
    'CACHE MANIFEST',
@@ -420,6 +444,41 @@ var _outputPath = this.execPath+'/'+this.outputFolder;
  new _OutputDirMaker(callback).makeOutputDir(self._outP.shift());
 };
 
+
+
+App.prototype.readTargetConfig = function (tar){
+var that = this;
+    var t = this._l.path.join(this.execPath, 'targets', 'targets.json')
+    try{
+        var targets = JSON.parse(this._l.fs.readFileSync(t, 'utf8'));
+      //  console.log(tar);
+        if(targets.targets){
+         //  console.log(tar.manufacturer);
+           if(targets.targets[tar.manufacturer]){
+           var manu =  targets.targets[tar.manufacturer];
+         //  console.log('manu');
+        //   console.log(manu);
+            that.target.manufacturer = tar.manufacturer;
+         //   console.log("tar.device");
+
+            if(manu[tar.device]){
+          //      console.log(manu[tar.device]);
+                var f = manu[tar.device];
+          //      console.log(f.resolution);
+                that.target.resolution = f.resolution;
+            }
+          }    
+        }
+ //  console.log(that.target);
+    }catch(ex){
+       console.log(this.style.red('ERROR:')+this.style.cyan(' - while reading "targets.json", error message: '+ex.message));
+       process.exit(1); /* exit the process, reason: error in targets.json*/
+    }
+
+
+};
+
+
 /**
  * @description
  * The function tat builds the application.
@@ -427,7 +486,11 @@ var _outputPath = this.execPath+'/'+this.outputFolder;
  */
 App.prototype.build = function(callback){
 var self = this;
-    
+
+if(self.ua_target){
+    this.readTargetConfig(self.ua_target);
+}
+
 this.buildIndexHTML();
 
 var _AppBuilder = function(app, callback) {
@@ -467,7 +530,7 @@ var _AppBuilder = function(app, callback) {
    *  2) Build the cache manifest, after all frameworks has been build.
    *     This is done by calling 'buildManifest()' as callback after
    *     '_AppBuilder.build()' is done.
-   *  3) Call callback, which leads to the next step of the build OR server process.
+   *  3) Call callback, which leads to the next step of the build OR server process.5
    *
    */
   new _AppBuilder(self, function(){self.buildManifest(callback)}).build();

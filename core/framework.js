@@ -147,6 +147,7 @@ var _FileBrowser = function(framework, callback) {
 
     that.callbackIfDone = function(){
       if (that._folderCounter <= 0){
+                  console.log('framework '+framework.name+'  _folderCounter '+that._folderCounter);
           callback(null,framework.files);
       }
     };
@@ -192,6 +193,7 @@ var _FileBrowser = function(framework, callback) {
             self._l.fs.readdir(path, function(err, subpaths) {
                 that._folderCounter -= 1;
                 if (err){ throw err;}
+                 if(subpaths.length === 0){  that.callbackIfDone();}
                 subpaths.forEach(function(subpath) {
                     that.browse(self._l.path.join(path, subpath));
                 });
@@ -326,6 +328,9 @@ var self = this,
  */
 Framework.prototype.prepareForServer = function(server,callback){
     this.files.forEach(function(file){
+        if(!server.files){
+            server.files = {};
+        }
         server.files[file.requestPath] = file;
     });
     callback();

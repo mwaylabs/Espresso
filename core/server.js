@@ -41,7 +41,8 @@ Server = exports.Server = function(properties) {
 
   this.proxies = [];
   this.hostedApps = [];   /* = the applications managed by this server */
-  this.files = {};  /* = the files, that should be served by  this server */
+  //this.files = {};  /* = the files, that should be served by  this server */
+  this.files;  /* = the files, that should be served by  this server */
 
   if(properties){
     this.addProperties(properties);
@@ -192,6 +193,64 @@ var that = this;
        that._l.sys.puts(p.host+' => '+p.proxyAlias);
    });
 };
+
+
+/**
+ * @description
+ * Run the server, and waiting for requests.
+ * @param appName, name of the application.
+ */
+Server.prototype.run2 = function(appName) {
+var that = this,
+    _file,_requestedURL,
+    _applicationName =  (appName) ? appName : '';
+
+    that._l.http.createServer(function (request, response) {
+        // var path = _l.url.parse(request.url).pathname.slice(1);
+        //  _l.sys.puts(path);
+        _requestedURL = that._l.url.parse(request.url);
+        that._l.sys.puts('requesting : '+_requestedURL.pathname);
+
+        if((_requestedURL.pathname === '/'+_applicationName)){
+            that.files = null;
+            that.hostedApps = [];  
+            var t = that._l.path.join(__dirname, '..','..', 'Apps', _applicationName);
+            console.log('Build '+t);
+            var app = that.getNewApp(t);
+     
+            app.loadTheApplication();
+
+            app.loadTheMProject();
+
+            app.build(function (options) {
+                app.prepareForServer(function (opt){
+                    _file = that.files['/index.html'];
+                    that.deliverThat(response,_file);
+                })
+            });
+
+
+
+        }else{
+            _file = that.files[(_requestedURL.pathname === '/'+_applicationName) ? '/index.html' : _requestedURL.pathname];
+              if (_file === undefined) {
+            that.proxyThat(request, response);
+           // response.writeHead(200, {'Content-Type': 'text/plain'});
+           // response.write('Resource "' + _requestedURL.pathname+ '" not found on server!');
+        } else {
+            that.deliverThat(response,_file);
+        }
+        }
+      //  console.log(that.files[(_requestedURL.pathname === '/'+_applicationName) ? '/index.html' : _requestedURL.pathname]);
+
+
+
+
+    }).listen(that.port);
+    that._l.sys.puts('Server running at http://'+that.hostname+':' + that.port+'/'+_applicationName);
+};
+
+
 
 /**
  * @description 

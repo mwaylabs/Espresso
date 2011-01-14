@@ -61,17 +61,17 @@ var that = this;
         return that.evaluateTargetConfig();
       },
       function readDeviceSpecific(){
-        that.browseFiles(that.path+'/'+that.deviceGroup+'/'+that.device,that._BASE_GROUP_DEVICE_,this);
+        that.browseFiles(that.path+'/'+that.deviceGroup+'/'+that.device,that._BASE_GROUP_DEVICE_,true,this);
       },
       function readGroupSpecific(err,obj){
         if(err){console.log(err); throw err;}
         if(obj){console.log(obj)}
-        that.browseFiles(that.path+'/'+that.deviceGroup,that._BASE_GROUP_,this);
+        that.browseFiles(that.path+'/'+that.deviceGroup,that._BASE_GROUP_,false,this);
       },
       function readBase(err,obj){
         if(err){console.log(err); throw err;}
         if(obj){console.log(obj)}
-        that.browseFiles(that.path+that.__resourceBase__,that._BASE_ ,this);
+        that.browseFiles(that.path+that.__resourceBase__,that._BASE_ ,true,this);
       },
       function done(err,obj){
         if(err){console.log(err); throw err;}
@@ -124,13 +124,14 @@ var _target = this.app.target;
  * @param should_run {boolean}, indicates if this function should browser the resources
  * @param cb {function}, called after this function is done.
  */
-Resource.prototype.browseFiles = function(path,should_run,cb){
+Resource.prototype.browseFiles = function(path,should_run,allow_sub_folders,cb){
 var self = this;
 
   var _FileBrowser = function(cb) {
+
     var that = this;
     this._resourceCounter = 0;
-
+    this._allowSubFolders= true;
     that.callbackIfDone = function(){
       if (that._resourceCounter <= 0){
           cb();
@@ -167,6 +168,7 @@ var self = this;
     };
 
     that.browse = function(path) {
+       //     console.log(path);
        that._resourceCounter += 1;
        self._l.fs.stat(path, function(err, stats) {
             that._resourceCounter -= 1;
@@ -174,17 +176,22 @@ var self = this;
           throw err;
         }else{
           if (stats.isDirectory()) {
+            if(that._allowSubFolders || allow_sub_folders){
             that._resourceCounter += 1;
             self._l.fs.readdir(path, function(err, subpaths) {
                   that._resourceCounter -= 1;
                 if (err){ throw err;}
+            //    console.log('Path ='+path+' subpath.length '+subpaths.length+'  _resourceCounter '+that._resourceCounter);
+                if(subpaths.length === 0){  that.callbackIfDone();}
                 subpaths.forEach(function(subpath) {
                     that.browse(self._l.path.join(path, subpath));
                 });
              });
-
+           that._allowSubFolders = false
+           }
           } else {
            if(!that.checkIfFileShouldBeExcluded(path)){
+
               var newResource = new File({
                                  frDelimiter: self.frDelimiter,
                                  name: path,
@@ -236,6 +243,8 @@ var that = this;
     console.log(this.style.green('calling build() for: "')
                +this.style.magenta(this.name)
                +this.style.green('"'));
+
+   // console.log(this.files.length);
 
     if(that.isVirtual()){ // default = false.
        that.taskChain.run(that,callback);
