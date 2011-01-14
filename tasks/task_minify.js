@@ -14,10 +14,8 @@ var Task_Minify,
 
 
 Task_Minify = exports.Task_Minify = function() {
-
   /* Properties */
   this.name = 'minifiy';
-
 };
 
 /**
@@ -27,14 +25,13 @@ Task_Minify = exports.Task_Minify = function() {
 Task_Minify.prototype = new Task;
 
 /**
- * minifiy files. d
+ * minifiy files. 
  */
 Task_Minify.prototype.duty = function(framework,callback){
 var that = this, _data = '',
     sp = require('child_process').spawn;
 
     if(framework.app.minify){
-
    // min = sp('java', ['-jar', that._l.path.join(__dirname, '..', 'bin', 'yuicompressor-2.4.2.jar'), '--type', 'js']);
       min = sp('java', ['-jar', that._l.path.join(__dirname, '..', 'bin', 'compiler.jar'),
                         '--compilation_level', 'SIMPLE_OPTIMIZATIONS',
@@ -60,5 +57,7 @@ var that = this, _data = '',
 
       min.stdin.write(framework.files[0].content);
       min.stdin.end();
-   }
+   }else{
+        callback(framework); 
+    }
 };
