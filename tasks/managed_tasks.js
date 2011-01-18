@@ -28,5 +28,6 @@ ManagedTasks.Tasks['contentType'] =  require('./task_contentType').Task_ContentT
 ManagedTasks.Tasks['manifest']    =  require('./task_manifest').Task_Manifest;
 ManagedTasks.Tasks['preSort']     =  require('./task_preSort').Task_PreSort;
 ManagedTasks.Tasks['minify']     =  require('./task_minify').Task_Minify;
+ManagedTasks.Tasks['sass']     =  require('./task_sass').Task_SASS;
 
 
