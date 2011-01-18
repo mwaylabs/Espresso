@@ -307,6 +307,9 @@ var self = this,
         case (_cF.isStylesheet()):
           that.copyFile(files,_cF.path,_outputPath+'/theme/'+_cF.getBaseName()+_cF.getFileExtension());
           break;
+        case (_cF.isSASS_Stylesheet()):
+          that.writeFile(files,_outputPath+'/theme/'+_cF.getBaseName()+'.css',_cF.content);
+          break;
         case (_cF.isVirtual()):
         default:
           var _fileName =  (self.combinedScripts) ? self.name+'.js' : _cF.getBaseName()+_cF.getFileExtension();

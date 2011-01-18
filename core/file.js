@@ -123,6 +123,14 @@ File.prototype.isStylesheet = function() {
 
 /**
  * @description
+ * Returns 'true' if file is a stylesheet.
+ */
+File.prototype.isSASS_Stylesheet = function() {
+  return this.getFileExtension() === '.sass';
+};
+
+/**
+ * @description
  * True if file is a stylesheet.
  */
 File.prototype.isHTML = function() {
