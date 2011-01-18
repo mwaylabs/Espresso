@@ -101,10 +101,13 @@ var self = this;
 
   if(arrayOfFiles instanceof Array){
 
+      if(arrayOfFiles.length === 0){
+          callback(null,arrayOfFiles);
+      }
+
    var _FileReader = function(cb,array) {
     var that = this;
     this._resourceCounter = array.length;
-
     that.callbackIfDone = function(){
       if (that._resourceCounter <= 0){
           cb(null,self.files);

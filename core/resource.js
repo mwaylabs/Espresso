@@ -33,6 +33,7 @@ Resource = exports.Resource = function(properties) {
   this.device            = '';
 
   this.markedResources = [];
+  this.sassStyleSheets = [];
 
   this._BASE_              = true;
   this._BASE_GROUP_        = false;
@@ -191,18 +192,23 @@ var self = this;
            }
           } else {
            if(!that.checkIfFileShouldBeExcluded(path)){
-
+             
               var newResource = new File({
                                  frDelimiter: self.frDelimiter,
                                  name: path,
                                  path: path,
                                  framework: self
                                 });
-              if(self.markedResources.indexOf(newResource.getBaseName()) === -1){
+
+             if(!newResource.isSASS_Stylesheet()){
+                if(self.markedResources.indexOf(newResource.getBaseName()) === -1){
                 self.files.push(newResource);
                 self.markedResources.push(newResource.getBaseName());
               }
-
+             }else{
+                self.sassStyleSheets.push(newResource);
+                //self.markedResources.push(newResource.getBaseName());
+             }            
            }   
            that.callbackIfDone();
           }
@@ -229,6 +235,35 @@ var that = this;
     this.files.forEach(function(file){
         console.log(that.style.cyan(file.path.split(that.frDelimiter)[1]));
     });
+    this.sassStyleSheets.forEach(function(file){
+        console.log(that.style.cyan(file.path.split(that.frDelimiter)[1]));
+    });
+};
+
+
+Resource.prototype.mergeSASSFiles = function (files,callback){
+var that = this,
+    akku = [];
+
+    if(that.sassStyleSheets.length === 0){
+        callback(null,files);
+    }else{
+      that.readFiles(that.sassStyleSheets,function(err,f){
+              that.sassStyleSheets.forEach(function(file){
+               akku += file.content;
+      });
+         var _newSASSResource = new File({
+                                 name: 'sass',
+                                 path: 'sass',
+                                 extname: '.sass', 
+                                 content: akku.toString(),
+                                 framework: that
+                                });
+          that.sassStyleSheets = [];
+          that.sassStyleSheets.push(_newSASSResource);
+           callback(null,files);
+      });
+    }
 };
 
 /**
@@ -256,6 +291,9 @@ var that = this;
          function(err,files){
             if(err){throw err;}
             that.readFiles(files,this);
+         },
+         function mergeSASSFiles(err,files){
+           that.mergeSASSFiles(that.sassStyleSheets,this);   
          },
          function taskChain(err,files){
            if(err){throw err;}

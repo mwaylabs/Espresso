@@ -40,15 +40,14 @@ Task_SASS.prototype = new Task;
 Task_SASS.prototype.duty = function(framework,callback){
 var that = this;
 
-    framework.files.forEach(function(file){
+ if(framework.sassStyleSheets){
+  framework.sassStyleSheets.forEach(function(file){
        if(file.isSASS_Stylesheet()){
-         console.log(file.path);
-         console.log('From : ');
-         console.log(''+file.content);
          file.content = sass.render(''+file.content);
-         console.log('\n TO: \n');
-         console.log(''+file.content);
-        }
+         framework.files.push(file);
+       }
     });
+
+   }
     callback(framework);
 };
