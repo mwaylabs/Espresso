@@ -159,7 +159,7 @@ var that = this,
         _frameworkOptions.excludedFolders = that.excludedFolders;
         _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
         _frameworkOptions.app = that;
-        _frameworkOptions.taskChain = new TaskManager(["contentType","manifest"]).getTaskChain();
+        _frameworkOptions.taskChain = new TaskManager(["contentType","manifest","sass"]).getTaskChain();
        return new Resource(_frameworkOptions);
   });
 
@@ -452,7 +452,7 @@ var that = this;
     try{
         var targets = JSON.parse(this._l.fs.readFileSync(t, 'utf8'));
       //  console.log(tar);
-        if(targets.targets){
+        if(targets){
          //  console.log(tar.manufacturer);
            if(targets.targets[tar.manufacturer]){
            var manu =  targets.targets[tar.manufacturer];
@@ -561,7 +561,6 @@ App.prototype.saveLocal = function(callback){
     };
 
     that.save = function() {
-
       app.frameworks.forEach(function(framework) {
         framework.save(function(fr) {
           /* count  = -1 if a framework has been saved. */
