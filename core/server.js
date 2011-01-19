@@ -237,9 +237,9 @@ var that = this,
             that.proxyThat(request, response);
            // response.writeHead(200, {'Content-Type': 'text/plain'});
            // response.write('Resource "' + _requestedURL.pathname+ '" not found on server!');
-        } else {
-            that.deliverThat(response,_file);
-        }
+            } else {
+                that.deliverThat(response,_file);
+            }
         }
       //  console.log(that.files[(_requestedURL.pathname === '/'+_applicationName) ? '/index.html' : _requestedURL.pathname]);
 

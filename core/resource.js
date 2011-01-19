@@ -240,28 +240,34 @@ var that = this;
     });
 };
 
-
+/**
+ * @description
+ * Merge all found SASS files into one single SASS file.
+ *
+ * @param files  {array}  the array of containing the found sass files.
+ * @param callback {function} the callback to be called after this functions is done.
+ */
 Resource.prototype.mergeSASSFiles = function (files,callback){
 var that = this,
-    akku = [];
+    _akku = [];
 
     if(that.sassStyleSheets.length === 0){
         callback(null,files);
     }else{
       that.readFiles(that.sassStyleSheets,function(err,f){
               that.sassStyleSheets.forEach(function(file){
-               akku += file.content;
+              _akku += file.content;
       });
          var _newSASSResource = new File({
                                  name: 'sass',
-                                 path: 'sass',
+                                 path: '/sass.sass',
                                  extname: '.sass', 
-                                 content: akku.toString(),
+                                 content: _akku.toString(),
                                  framework: that
                                 });
-          that.sassStyleSheets = [];
-          that.sassStyleSheets.push(_newSASSResource);
-           callback(null,files);
+         that.sassStyleSheets = [];
+         that.sassStyleSheets.push(_newSASSResource);
+         callback(null,files);
       });
     }
 };
@@ -270,7 +276,7 @@ var that = this,
  * @description
  * Building the framework, included all files.
  * This function loads all resources, and runs the task chain on this files.
- * @param callback, the function, that is called after all resources haven been build.
+ * @param callback {function}, the function, that is called after all resources haven been build.
  */
 Resource.prototype.build = function(callback){
 var that = this;

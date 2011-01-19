@@ -63,7 +63,8 @@ NewProjectGenerator.prototype = new Generator;
  */
 NewProjectGenerator.prototype.printHelp = function(){
   console.log(this.style.green("=== m-init.js === "));
-  console.log(this.style.green("Espresso version "+this.__version__+" command line tool to generate a new project "));
+  console.log(this.style.green("Espresso "+this.__version__));  
+  console.log(this.style.green("command line tool to generate a new project "));
   console.log(this.style.green("\n"));
   console.log(this.style.green("--- commands ---"));
   console.log(this.style.green("-p, --project [project name]                a new empty project"));
