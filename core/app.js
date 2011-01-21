@@ -48,7 +48,7 @@ App = exports.App = function (applicationDirectory,server) {
   this.name         = 'defaultName';
   this.server       = server;
   this.buildVersion = Date.now();  // timestamp of the build.
-  this.theme        = 'm-deafult';
+  this.theme        = 'deafult';
   this.outputFolder = 'build'; // name of the output folder, default is 'build'.
   this.jslintCheck  = false;
   this.minify       = false;  // uses minfiy task ?! default is false
@@ -144,7 +144,6 @@ var that = this,
         _frameworkOptions.excludedFolders = ['resources'].concat(that.excludedFolders);
         _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
         _frameworkOptions.app = that;
-         /* Definition of standard build chain for The-M-Project«s core files*/
         _frameworkOptions.taskChain = new TaskManager(["preSort","dependency","merge","minify","contentType","manifest"]).getTaskChain();
        return new Framework(_frameworkOptions);
     });
