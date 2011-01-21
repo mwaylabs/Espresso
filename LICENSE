@@ -4,7 +4,9 @@ is dual licensed under the MIT or GPL Version 2 licenses.
         http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
         http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 
-***
+
+***  Used third-party components and tools ***
+
  Google - Closure Compiler
  Copyright 2009 The Closure Compiler Authors.
 
