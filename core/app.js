@@ -48,7 +48,7 @@ App = exports.App = function (applicationDirectory,server) {
   this.name         = 'defaultName';
   this.server       = server;
   this.buildVersion = Date.now();  // timestamp of the build.
-  this.theme        = 'm-deafult';
+  this.theme        = 'deafult';
   this.outputFolder = 'build'; // name of the output folder, default is 'build'.
   this.jslintCheck  = false;
   this.minify       = false;  // uses minfiy task ?! default is false
@@ -178,9 +178,9 @@ if(this.supportedLanguages.length >= 1){
         _frameworkOptions.taskChain = new TaskManager(["contentType","manifest"]).getTaskChain();
        return new Framework(_frameworkOptions);
     });
-    
 
-   this.addFrameworks(_i18n);  
+
+   this.addFrameworks(_i18n);
 }
 
 };
@@ -206,7 +206,7 @@ var that = this, _theMProject, _theMProjectResources;
         _frameworkOptions.frDelimiter = 'modules/';
         _frameworkOptions.excludedFolders = that.excludedFolders;
         _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
-         /* Definition of standard build chain for The-M-Project«s core files*/ 
+         /* Definition of standard build chain for The-M-Project«s core files*/
         _frameworkOptions.taskChain = new TaskManager(["dependency","merge","minify","contentType","manifest"]).getTaskChain();
        return new Framework(_frameworkOptions);
     });
@@ -261,7 +261,7 @@ var _displayName =  (this.displayName) ? this.displayName : this.name,
       '<head>',
         '<meta name="apple-mobile-web-app-capable" content="yes">'+
         '<meta name="apple-mobile-web-app-status-bar-style" content="default">'+
-        '<link rel="apple-touch-icon" href="/theme/images/apple-touch-icon.png"/>'+       
+        '<link rel="apple-touch-icon" href="/theme/images/apple-touch-icon.png"/>'+
         '<meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">'+
         '<title>'+_displayName+'</title>'+
         '<link type="text/css" href="theme/jquery.mobile-1.0a3pre.min.css" rel="stylesheet" />'+
@@ -324,7 +324,7 @@ var _displayName =  (this.displayName) ? this.displayName : this.name,
                   );
   var ar = [];
       ar.push(fr);
-  this.addFrameworks(ar); 
+  this.addFrameworks(ar);
 };
 
 /**
@@ -337,7 +337,7 @@ var self = this, _cacheManifest = [];
 
     /*
 if(!self.buildNOManifest){
-   callback(); 
+   callback();
 }
 */
  /* adding entries for the Explicit CACHE section*/
@@ -351,7 +351,7 @@ if(!self.buildNOManifest){
  this.manifest.cache.forEach(function(expliFile){
    _cacheManifest.push(expliFile);
  });
-  
+
 
  /* adding entries for the NETWORK section*/
  _cacheManifest.push(
@@ -400,13 +400,13 @@ if(!self.buildNOManifest){
      );
   var ar = [];
       ar.push(fr);
-  this.addFrameworks(ar); 
+  this.addFrameworks(ar);
   callback();
 };
 
 /**
  * @description
- * Function to generate the projects output folders. 
+ * Function to generate the projects output folders.
  * @param {function}, the function that should be called after the output folders are made.
  */
 App.prototype.makeOutputFolder = function(callback){
@@ -467,7 +467,7 @@ var that = this;
           //      console.log(f.resolution);
                 that.target.resolution = f.resolution;
             }
-          }    
+          }
         }
  //  console.log(that.target);
     }catch(ex){
@@ -497,7 +497,7 @@ var _AppBuilder = function(app, callback) {
     var that = this;
     /* amount of used frameworks, for this application. */
     that._frameworkCounter = app.frameworks.length ;
-  
+
     /* callback checker, called if all frameworks are build. */
     that.callbackIfDone = function() {
       if (callback && that._frameworkCounter <= 0){
@@ -521,7 +521,7 @@ var _AppBuilder = function(app, callback) {
     };
   };
 
- console.log(this.style.green('Building application: "')+this.style.magenta(this.name)+this.style.green('"')); 
+ console.log(this.style.green('Building application: "')+this.style.magenta(this.name)+this.style.green('"'));
 
   /*
    *  build batch:
@@ -552,7 +552,7 @@ App.prototype.saveLocal = function(callback){
 
     /* amount of used frameworks, for this application. */
     that._frameworkCounter = app.frameworks.length;
-      
+
     /* callback checker, called if all frameworks are build. */
     that.callbackIfDone = function() {
       if (callback && that._frameworkCounter <= 0){
