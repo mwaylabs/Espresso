@@ -29,34 +29,32 @@ Task_Minify.prototype = new Task;
  */
 Task_Minify.prototype.duty = function(framework,callback){
 var that = this, _data = '',
-    sp = require('child_process').spawn;
+    _cp = require('child_process').spawn;
 
     if(framework.app.minify){
-   // min = sp('java', ['-jar', that._l.path.join(__dirname, '..', 'bin', 'yuicompressor-2.4.2.jar'), '--type', 'js']);
-      min = sp('java', ['-jar', that._l.path.join(__dirname, '..', 'bin', 'compiler.jar'),
+      minify = _cp('java', ['-jar', that._l.path.join(__dirname, '..', 'bin', 'compiler.jar'),
                         '--compilation_level', 'SIMPLE_OPTIMIZATIONS',
                         '--warning_level','QUIET']);
 
-      min.stdout.addListener('data', function(newData) {
-       _data += newData;
+      minify.stdout.addListener('data', function(miniData) {
+       _data += miniData;
       });
 
-      min.stderr.addListener('data', function(data) {
+      minify.stderr.addListener('data', function(data) {
         console.log(data);
-        that._l.sys.print(data);
       });
 
-      min.addListener('exit', function(code) {
+      minify.addListener('exit', function(code) {
         if (code !== 0) {
-          console.log('ERROR: Minifier exited with code ' + code);
+          console.log(this.style.red('ERROR:')+this.style.cyan(' - while executing Task Minify: error code is: '+code));  
         } else {
             framework.files[0].content = _data;
             callback(framework);
         }
       });
 
-      min.stdin.write(framework.files[0].content);
-      min.stdin.end();
+      minify.stdin.write(framework.files[0].content);
+      minify.stdin.end();
    }else{
         callback(framework); 
     }
