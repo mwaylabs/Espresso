@@ -241,9 +241,6 @@ var that = this,
         }
       //  console.log(that.files[(_requestedURL.pathname === '/'+_applicationName) ? '/index.html' : _requestedURL.pathname]);
 
-
-
-
     }).listen(that.port);
     that._l.sys.puts('Server running at http://'+that.hostname+':' + that.port+'/'+_applicationName);
 };
