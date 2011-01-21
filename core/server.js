@@ -103,7 +103,6 @@ Server.prototype.deliverThat = function (response,file){
       _headers = {};
       // TODO: maybe set the expire-date header ?!
       _headers['Content-Type'] = file.contentType; // get the content type for this resource.
-      //headers['Last-Modified'] = res.lastModified.format('httpDateTime');
   if(file.isImage()){
     _headers['Content-Length'] = file.content.length;
   }
@@ -156,7 +155,6 @@ var that = this;
         console.log('HOST RESPONDING');
         console.log('Status: ' + proxyResponse.statusCode);
         console.log('Content Type: ' + proxyResponse.headers['content-type']);
-   //   console.log('Headers: ' + JSON.stringify(proxyResponse.headers));
         response.writeHead(proxyResponse.statusCode, proxyResponse.headers);
         proxyResponse.on('data', function (chunk) {
           response.write(chunk);
