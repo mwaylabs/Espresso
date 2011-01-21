@@ -77,7 +77,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ***
 
-Used small parts & concepts from Garcon: https://github.com/martoche/garcon
+Espresso is inspired by Garcon: https://github.com/martoche/garcon
+Small parts & concepts are used in the implementation. 
 
 Garcon is under the MIT License
 
