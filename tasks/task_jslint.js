@@ -9,20 +9,11 @@
 // ==========================================================================
 
 
-var _l = {},
-    Task_JSLINT,
+var Task_JSLINT,
     Task = require('./Task').Task;
     File = require('../core/file').File;
 
-/*
- * The required modules for Task_Dependency.
- *
- * sys    = node.js system module
- * fs     = filesystem
- *
- */
-_l.sys = require('sys');
-_l.jslint = require('../lib/jslint').JSLINT;
+var jslint = require('../lib/jslint').JSLINT;
 
 
 
@@ -46,21 +37,22 @@ Task_JSLINT.prototype = new Task;
  * @param framework the reference to the framework this task is working with. 
  */
 Task_JSLINT.prototype.duty = function(framework){
-  var files = framework.files;
+var files = framework.files;
+var that = this;
 
-_l.sys.puts('Running Task JSLINT');
+this._e_.sys.puts('Running Task JSLINT');
     files.forEach(function (file){
       if(file.isJavaScript()){
-        erg = _l.jslint(file.content);
+        erg = that.jslint(file.content);
         if(!erg){
 
-        for (i = 0; i < _l.jslint.errors.length; ++i) {
-              e = _l.jslint.errors[i];
+        for (i = 0; i < this._e_.jslint.errors.length; ++i) {
+              e = that.jslint.errors[i];
 
               if (e) {
-                  _l.sys.puts('WARNING: jslint error in "'+ file +'" at line ' + e.line + ' character ' + e.character + ': ' + e.reason);
-                  _l.sys.puts('         ' + (e.evidence || '').replace(/^\s*(\S*(\s+\S+)*)\s*$/, "$1"));
-                  _l.sys.puts('');
+                  this._e_.sys.puts('WARNING: jslint error in "'+ file +'" at line ' + e.line + ' character ' + e.character + ': ' + e.reason);
+                  this._e_.sys.puts('         ' + (e.evidence || '').replace(/^\s*(\S*(\s+\S+)*)\s*$/, "$1"));
+                  this._e_.sys.puts('');
               }
           }
         }

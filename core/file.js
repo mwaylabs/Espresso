@@ -96,7 +96,7 @@ File.prototype.getName = function(){
  */
 File.prototype.getBaseName = function(){
   if (this.basename === undefined) {
-    this.basename = this._l.path.basename(this.path,this._l.path.extname(this.path));
+    this.basename = this._e_.path.basename(this.path,this._e_.path.extname(this.path));
   }
   return this.basename;
 };
@@ -107,7 +107,7 @@ File.prototype.getBaseName = function(){
  */
 File.prototype.getFileExtension = function() {
   if (this.extname === undefined) {
-    this.extname = this._l.path.extname(this.path);
+    this.extname = this._e_.path.extname(this.path);
   }
   return this.extname;
 };

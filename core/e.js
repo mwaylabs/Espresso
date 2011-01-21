@@ -29,10 +29,10 @@ E = exports.E = function() {
  * @property
  * Reference to node basic node.js system functions.
  */
-E.prototype._l = {};
-E.prototype._l.fs = require('fs');
-E.prototype._l.sys = require('sys');
-E.prototype._l.path = require('path');
+E.prototype._e_ = {};
+E.prototype._e_.fs = require('fs');
+E.prototype._e_.sys = require('sys');
+E.prototype._e_.path = require('path');
 
 
 /**

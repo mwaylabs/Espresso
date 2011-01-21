@@ -58,13 +58,13 @@ Server.prototype = new E;
  * @property
  * http to get access to nodes http handling
  */
-Server.prototype._l.http = require('http');
+Server.prototype._e_.http = require('http');
 
 /**
  * @property
  * http to get access to nodes url parsing and handling
  */
-Server.prototype._l.url = require('url');
+Server.prototype._e_.url = require('url');
 
 /**
  * @description
@@ -127,7 +127,7 @@ var that = this;
 
   request.addListener('end', function() {   
   var _proxy,
-      _path = that._l.url.parse(request.url).pathname.slice(1),
+      _path = that._e_.url.parse(request.url).pathname.slice(1),
       _pr = _path.split('/')[0];
     //TODO: can this done better ?!
     that.proxies.forEach(function(p){  // looking for proxy entries.
@@ -138,8 +138,8 @@ var that = this;
 
    if(_proxy){ // if proxy entry was found.
       var _inquiredData =  request.url.split(_pr)[1];
-      that._l.sys.puts("proxy request on = "+_proxy.host+_inquiredData);
-      var proxyClient  =  that._l.http.createClient(_proxy.hostPort, _proxy.host);
+      that._e_.sys.puts("proxy request on = "+_proxy.host+_inquiredData);
+      var proxyClient  =  that._e_.http.createClient(_proxy.hostPort, _proxy.host);
 
       proxyClient.addListener('error', function(err) {
         console.log('ERROR: "' + err.message + '" for proxy request on ' + _proxy.host + ':' + _proxy.hostPort);
@@ -188,7 +188,7 @@ var that = this;
       });
   }
    that.proxies.forEach(function(p){
-       that._l.sys.puts(p.host+' => '+p.proxyAlias);
+       that._e_.sys.puts(p.host+' => '+p.proxyAlias);
    });
 };
 
@@ -203,16 +203,16 @@ var that = this,
     _file,_requestedURL,
     _applicationName =  (appName) ? appName : '';
 
-    that._l.http.createServer(function (request, response) {
-        // var path = _l.url.parse(request.url).pathname.slice(1);
-        //  _l.sys.puts(path);
-        _requestedURL = that._l.url.parse(request.url);
-        that._l.sys.puts('requesting : '+_requestedURL.pathname);
+    that._e_.http.createServer(function (request, response) {
+        // var path = _e_.url.parse(request.url).pathname.slice(1);
+        //  _e_.sys.puts(path);
+        _requestedURL = that._e_.url.parse(request.url);
+        that._e_.sys.puts('requesting : '+_requestedURL.pathname);
 
         if((_requestedURL.pathname === '/'+_applicationName)){
             that.files = null;
             that.hostedApps = [];  
-            var t = that._l.path.join(__dirname, '..','..', 'Apps', _applicationName);
+            var t = that._e_.path.join(__dirname, '..','..', 'Apps', _applicationName);
             console.log('Build '+t);
             var app = that.getNewApp(t);
      
@@ -242,7 +242,7 @@ var that = this,
       //  console.log(that.files[(_requestedURL.pathname === '/'+_applicationName) ? '/index.html' : _requestedURL.pathname]);
 
     }).listen(that.port);
-    that._l.sys.puts('Server running at http://'+that.hostname+':' + that.port+'/'+_applicationName);
+    console.log('Server running at http://'+that.hostname+':' + that.port+'/'+_applicationName);
 };
 
 
@@ -257,11 +257,11 @@ var that = this,
     _file,_requestedURL,
     _applicationName =  (appName) ? appName : '';
 
-    that._l.http.createServer(function (request, response) {
-        // var path = _l.url.parse(request.url).pathname.slice(1);
-        //  _l.sys.puts(path);
-        _requestedURL = that._l.url.parse(request.url);
-        that._l.sys.puts('requesting : '+_requestedURL.pathname);
+    that._e_.http.createServer(function (request, response) {
+        // var path = _e_.url.parse(request.url).pathname.slice(1);
+        //  _e_.sys.puts(path);
+        _requestedURL = that._e_.url.parse(request.url);
+        that._e_.sys.puts('requesting : '+_requestedURL.pathname);
 
         _file = that.files[(_requestedURL.pathname === '/'+_applicationName) ? '/index.html' : _requestedURL.pathname];
 
@@ -273,5 +273,5 @@ var that = this,
             that.deliverThat(response,_file);
         }          
     }).listen(that.port);
-    that._l.sys.puts('Server running at http://'+that.hostname+':' + that.port+'/'+_applicationName);
+    console.log('Server running at http://'+that.hostname+':' + that.port+'/'+_applicationName);
 };

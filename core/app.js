@@ -101,7 +101,7 @@ App.prototype.addOptions = function(build_options){
  */
 App.prototype.loadJSONConfig = function() {
     try{
-        var config = JSON.parse(this._l.fs.readFileSync(this.execPath+'/config.json', 'utf8'));
+        var config = JSON.parse(this._e_.fs.readFileSync(this.execPath+'/config.json', 'utf8'));
         this.addOptions(config);
         if(config.proxies){
            this.server.proxies = config.proxies; //adding proxies, if present.
@@ -432,7 +432,7 @@ var _outputPath = this.execPath+'/'+this.outputFolder;
 
     that.makeOutputDir = function(path) {
       if(that._folderCounter >=1){
-        self._l.fs.mkdir(path, 0777 ,function(err){
+        self._e_.fs.mkdir(path, 0777 ,function(err){
            if(err && err.errno !== 17){throw err;}
           that._folderCounter--;
           that.makeOutputDir(path+ self._outP.shift());
@@ -448,9 +448,9 @@ var _outputPath = this.execPath+'/'+this.outputFolder;
 
 App.prototype.readTargetConfig = function (tar){
 var that = this;
-    var t = this._l.path.join(this.execPath, 'targets', 'targets.json')
+    var t = this._e_.path.join(this.execPath, 'targets', 'targets.json')
     try{
-        var targets = JSON.parse(this._l.fs.readFileSync(t, 'utf8'));
+        var targets = JSON.parse(this._e_.fs.readFileSync(t, 'utf8'));
       //  console.log(tar);
         if(targets){
          //  console.log(tar.manufacturer);

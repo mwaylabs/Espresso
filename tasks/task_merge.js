@@ -8,16 +8,10 @@
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
-var _l = {},
-    Task_Merge,
+var Task_Merge,
     File = require('../core/file').File;
     Task = require('./Task').Task;
 
-/*
- * The required modules.
- */
-_l.sys = require('sys');
-_l.fs = require('fs');
 
 
 /**

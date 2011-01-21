@@ -171,7 +171,7 @@ var self = this;
     that.browse = function(path) {
        //     console.log(path);
        that._resourceCounter += 1;
-       self._l.fs.stat(path, function(err, stats) {
+       self._e_.fs.stat(path, function(err, stats) {
             that._resourceCounter -= 1;
         if (err){
           throw err;
@@ -179,13 +179,13 @@ var self = this;
           if (stats.isDirectory()) {
             if(that._allowSubFolders || allow_sub_folders){
             that._resourceCounter += 1;
-            self._l.fs.readdir(path, function(err, subpaths) {
+            self._e_.fs.readdir(path, function(err, subpaths) {
                   that._resourceCounter -= 1;
                 if (err){ throw err;}
             //    console.log('Path ='+path+' subpath.length '+subpaths.length+'  _resourceCounter '+that._resourceCounter);
                 if(subpaths.length === 0){  that.callbackIfDone();}
                 subpaths.forEach(function(subpath) {
-                    that.browse(self._l.path.join(path, subpath));
+                    that.browse(self._e_.path.join(path, subpath));
                 });
              });
            that._allowSubFolders = false

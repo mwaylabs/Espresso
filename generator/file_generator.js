@@ -108,7 +108,7 @@ var args = argv, self = this;
  */
 FileGenerator.prototype.doesFilesExist = function(filePath,fileName,callback){
 var self = this;
-    this._l.fs.stat(filePath+fileName, function(err, fd){
+    this._e_.fs.stat(filePath+fileName, function(err, fd){
         if(err){
             callback();
         }else{
@@ -141,7 +141,7 @@ FileGenerator.prototype.generate = function(templateName, fileName, filePath, ct
         output.addListener('data', function (c) {buffer += c;})
               .addListener('end', function () {
                 self.doesFilesExist(filePath, fileName, function(){
-                    self._l.fs.writeFile(filePath + fileName, buffer, function (err) {
+                    self._e_.fs.writeFile(filePath + fileName, buffer, function (err) {
                         if (err) {
                             throw err;
                         }
@@ -166,7 +166,7 @@ FileGenerator.prototype.genModel = function(modelName) {
               };
 
    if (modelName) {
-      self._l.fs.mkdir(self.outputPath+'/app/models', 0777 ,function(err){
+      self._e_.fs.mkdir(self.outputPath+'/app/models', 0777 ,function(err){
          if(err){
            if(err.errno === 17){ /* 17 = error code for: folder: models exists!, but do it anyway*/
               self.generate('model.js', modelName+'.js', self.outputPath+'/app/models/', _ctx);
@@ -179,8 +179,8 @@ FileGenerator.prototype.genModel = function(modelName) {
          }
       });
    } else {
-     this._l.sys.puts(this.style.red('ERROR:') + this.style.magenta(' no arguments given'));
-     this._l.sys.puts(this.style.cyan('Usage: "-controller:\<page name\>"'));
+     this._e_.sys.puts(this.style.red('ERROR:') + this.style.magenta(' no arguments given'));
+     this._e_.sys.puts(this.style.cyan('Usage: "-controller:\<page name\>"'));
    }
 
 };
@@ -200,7 +200,7 @@ FileGenerator.prototype.genPage = function(pageName) {
               };
 
    if (pageName) {
-      self._l.fs.mkdir(self.outputPath+'/app/views', 0777 ,function(err){
+      self._e_.fs.mkdir(self.outputPath+'/app/views', 0777 ,function(err){
          if(err){
            if(err.errno === 17){ /* 17 = error code for: folder: views exists!, but do it anyway*/
               self.generate('page.js', pageName+'.js', self.outputPath+'/app/views/', _ctx);
@@ -213,8 +213,8 @@ FileGenerator.prototype.genPage = function(pageName) {
          }
       });
    } else {
-     this._l.sys.puts(this.style.red('ERROR:') + this.style.magenta(' no arguments given'));
-     this._l.sys.puts(this.style.cyan('Usage: "-controller:\<page name\>"'));
+     this._e_.sys.puts(this.style.red('ERROR:') + this.style.magenta(' no arguments given'));
+     this._e_.sys.puts(this.style.cyan('Usage: "-controller:\<page name\>"'));
    }
 };
 
@@ -231,7 +231,7 @@ FileGenerator.prototype.genController = function(controllerName) {
               };
 
    if (controllerName){
-      self._l.fs.mkdir(self.outputPath+'/app/controllers', 0777 ,function(err){
+      self._e_.fs.mkdir(self.outputPath+'/app/controllers', 0777 ,function(err){
          if(err){
            if(err.errno === 17){ /* 17 = error code for: folder: controllers exists!, but do it anyway*/
               self.generate('controller.js', controllerName+'.js', self.outputPath+'/app/controllers/', _ctx);
@@ -244,8 +244,8 @@ FileGenerator.prototype.genController = function(controllerName) {
          }
       });
    } else {
-     this._l.sys.puts(this.style.red('ERROR:') + this.style.magenta(' no arguments given'));
-     this._l.sys.puts(this.style.cyan('Usage: "-view:\<page name\>"'));
+     this._e_.sys.puts(this.style.red('ERROR:') + this.style.magenta(' no arguments given'));
+     this._e_.sys.puts(this.style.cyan('Usage: "-view:\<page name\>"'));
    }
 };
 
@@ -262,7 +262,7 @@ FileGenerator.prototype.genValidator = function(validatorName){
               };
 
    if (validatorName){
-      self._l.fs.mkdir(self.outputPath+'/app/validators', 0777 ,function(err){
+      self._e_.fs.mkdir(self.outputPath+'/app/validators', 0777 ,function(err){
          if(err){
            if(err.errno === 17){ /* 17 = error code for: folder: validators exists!, but do it anyway*/
               self.generate('validator.js', validatorName+'.js', self.outputPath+'/app/validators/', _ctx);
@@ -275,8 +275,8 @@ FileGenerator.prototype.genValidator = function(validatorName){
          }
       });
    } else {
-     this._l.sys.puts(this.style.red('ERROR:') + this.style.magenta(' no arguments given'));
-     this._l.sys.puts(this.style.cyan('Usage: "-view:\<page name\>"'));
+     this._e_.sys.puts(this.style.red('ERROR:') + this.style.magenta(' no arguments given'));
+     this._e_.sys.puts(this.style.cyan('Usage: "-view:\<page name\>"'));
    }
 
 };
@@ -292,7 +292,7 @@ FileGenerator.prototype.genI18N = function(){
                 e_Version: self.__version__
               };
 
-   self._l.fs.mkdir(self.outputPath+'/app/resources/i18n', 0777 ,function(err){
+   self._e_.fs.mkdir(self.outputPath+'/app/resources/i18n', 0777 ,function(err){
          if(err){
            if(err.errno === 17){ /* 17 = error code for: folder: i18n exists!, but do it anyway*/
               self.generate('i18n_de_de.js', 'de_de'+'.js', self.outputPath+'/app/resources/i18n/', _ctx);

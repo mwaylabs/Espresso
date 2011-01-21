@@ -32,7 +32,7 @@ var that = this, _data = '',
     _cp = require('child_process').spawn;
 
     if(framework.app.minify){
-      minify = _cp('java', ['-jar', that._l.path.join(__dirname, '..', 'bin', 'compiler.jar'),
+      minify = _cp('java', ['-jar', that._e_.path.join(__dirname, '..', 'bin', 'compiler.jar'),
                         '--compilation_level', 'SIMPLE_OPTIMIZATIONS',
                         '--warning_level','QUIET']);
 

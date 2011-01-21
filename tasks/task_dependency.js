@@ -8,20 +8,11 @@
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
-var _l = {},
-    Task_Dependency,
+var Task_Dependency,
     Task = require('./Task').Task;
     File = require('../core/file').File;
 
-/*
- * The required modules for Task_Dependency.
- *
- * sys    = node.js system module
- * fs     = filesystem
- *
- */
-_l.sys = require('sys');
-_l.fs = require('fs');
+
 
 
 
@@ -191,7 +182,7 @@ this.TaskSequencer.sequenceThat(
           }
      /*
           fr.dependencyTrees.forEach(function (tree){
-                     _l.sys.puts(print(tree,''));
+                     this._e_.sys.puts(print(tree,''));
            });
       */
       /*

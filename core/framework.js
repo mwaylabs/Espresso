@@ -117,7 +117,7 @@ var self = this;
     that.read = function() {
       array.forEach(function(file){
         var _cFPath  = file.path;
-        self._l.fs.readFile(_cFPath, function(err, data) { // data is a buffer object, if no encoding was specified!
+        self._e_.fs.readFile(_cFPath, function(err, data) { // data is a buffer object, if no encoding was specified!
                if (err){
                  throw err;
                }else{
@@ -186,19 +186,19 @@ var _FileBrowser = function(framework, callback) {
 
     that.browse = function(path) {
       that._folderCounter += 1;
-      self._l.fs.stat(path, function(err, stats) {
+      self._e_.fs.stat(path, function(err, stats) {
             that._folderCounter -= 1;
         if (err){
           throw err;   
         }else{
           if (stats.isDirectory()) {
             that._folderCounter += 1;
-            self._l.fs.readdir(path, function(err, subpaths) {
+            self._e_.fs.readdir(path, function(err, subpaths) {
                 that._folderCounter -= 1;
                 if (err){ throw err;}
                  if(subpaths.length === 0){  that.callbackIfDone();}
                 subpaths.forEach(function(subpath) {
-                    that.browse(self._l.path.join(path, subpath));
+                    that.browse(self._e_.path.join(path, subpath));
                 });
              });
           } else {
@@ -278,8 +278,8 @@ var self = this,
     };
 
     that.copyFile = function(files,filePath, fileOutputPath){
-     self._l.sys.pump(self._l.fs.createReadStream(filePath),
-                 self._l.fs.createWriteStream(fileOutputPath),
+     self._e_.sys.pump(self._e_.fs.createReadStream(filePath),
+                 self._e_.fs.createWriteStream(fileOutputPath),
                    function(err){
                      if(err) {throw err}
                      _fileCounter--;
@@ -289,7 +289,7 @@ var self = this,
     };
 
     that.writeFile = function(files,fileOutPutPath, content){
-     self._l.fs.writeFile(fileOutPutPath,content,
+     self._e_.fs.writeFile(fileOutPutPath,content,
                 function(err){
                     if(err) {throw err}
                     _fileCounter--;

@@ -154,10 +154,10 @@ NewProjectGenerator.prototype.genProject = function(projectName){
 
      that.makeOutputDir = function(path) {
        if(that._folderCounter >=1){
-         self._l.fs.mkdir(path, 0777 ,function(err){
+         self._e_.fs.mkdir(path, 0777 ,function(err){
            if(err){
              if(err.errno === 17){ /* 17 = error code for: File exists!*/
-               self._l.sys.puts(self.style.cyan('Project with name: ')+self.style.magenta('"'+self.projectName+'"')+self.style.cyan(' already exists!'));
+               self._e_.sys.puts(self.style.cyan('Project with name: ')+self.style.magenta('"'+self.projectName+'"')+self.style.cyan(' already exists!'));
                process.exit(1);
              }else{
                throw err;
@@ -203,11 +203,11 @@ NewProjectGenerator.prototype.genProject = function(projectName){
               var buffer = '';
               output.addListener('data', function (c) {buffer += c; })
                     .addListener('end', function () {
-                     self._l.fs.writeFile(self.outputPath+'Apps/'+self.projectName+'/'+_templateFile, buffer, function (err) {
+                     self._e_.fs.writeFile(self.outputPath+'Apps/'+self.projectName+'/'+_templateFile, buffer, function (err) {
                         if (err){ throw err; }
-                       self._l.sys.puts(_templateFile+' generated!');
+                       self._e_.sys.puts(_templateFile+' generated!');
                         /*Making the build tools executable */
-                        self._l.fs.chmod(self.outputPath+'Apps/'+self.projectName+'/'+_templateFile, 0777, function (err){
+                        self._e_.fs.chmod(self.outputPath+'Apps/'+self.projectName+'/'+_templateFile, 0777, function (err){
                                if (err){ throw err; }
                           that._folderCounter -= 1;
                           that._generateBuildFiles(files);
@@ -258,9 +258,9 @@ NewProjectGenerator.prototype.genProject = function(projectName){
               var buffer = '';
               output.addListener('data', function (c) {buffer += c; })
                     .addListener('end', function () {
-                      self._l.fs.writeFile(self.outputPath+'Apps/'+self.projectName+'/app/main.js', buffer, function (err) {
+                      self._e_.fs.writeFile(self.outputPath+'Apps/'+self.projectName+'/app/main.js', buffer, function (err) {
                         if (err){ throw err; }
-                        self._l.sys.puts('main.js generated!');
+                        self._e_.sys.puts('main.js generated!');
                           that._folderCounter -= 1;
                           that._generateMainJS();
                       });
@@ -300,14 +300,14 @@ NewProjectGenerator.prototype.genProject = function(projectName){
      }
 
      that.browse = function(path) {
-        self._l.fs.stat(path, function(err, stats) {
+        self._e_.fs.stat(path, function(err, stats) {
 
           if (err){
               throw err;
           }else {
 
             if (stats.isDirectory()) {
-              self._l.fs.readdir(path, function(err, subpaths) {
+              self._e_.fs.readdir(path, function(err, subpaths) {
 
                 if (err){
                     throw err;
@@ -318,7 +318,7 @@ NewProjectGenerator.prototype.genProject = function(projectName){
                         /* add 1 to the counter if sub file is NOT a folder*/
                         if (subpath.match('\\.')) {that._folderCounter += 1;
                              }
-                        that.browse(self._l.path.join(path, subpath));
+                        that.browse(self._e_.path.join(path, subpath));
                      }
 
                   });
@@ -345,8 +345,8 @@ NewProjectGenerator.prototype.genProject = function(projectName){
           if(current_File !== undefined ){
               var fileTarget = current_File.path.split('frameworks/')[1];
               fileTarget = fileTarget.split(current_File.getBaseName()+current_File.getFileExtension())[0];
-              self._l.sys.pump(self._l.fs.createReadStream(current_File.path),
-                      self._l.fs.createWriteStream(self.outputPath+'Apps/'+self.projectName+'/frameworks/'+fileTarget+current_File.getBaseName()+current_File.getFileExtension()),
+              self._e_.sys.pump(self._e_.fs.createReadStream(current_File.path),
+                      self._e_.fs.createWriteStream(self.outputPath+'Apps/'+self.projectName+'/frameworks/'+fileTarget+current_File.getBaseName()+current_File.getFileExtension()),
                       function(err){
                           if(err) {throw err}
                           that._folderCounter--;
@@ -366,9 +366,9 @@ NewProjectGenerator.prototype.genProject = function(projectName){
 
    };
 
-  self._l.fs.mkdir(self.outputPath+'Apps', 0777, function(err){
+  self._e_.fs.mkdir(self.outputPath+'Apps', 0777, function(err){
       if(err){
-        self._l.sys.puts(self.outputPath+'Apps');
+        self._e_.sys.puts(self.outputPath+'Apps');
       }
 
 
@@ -403,9 +403,9 @@ var self = this;
          var buffer = '';
          output.addListener('data', function (c) {buffer += c; })
                 .addListener('end', function () {
-                   self._l.fs.writeFile(self.outputPath+'Apps/'+self.projectName+'/app/resources/base/style.css', buffer, function (err) {
+                   self._e_.fs.writeFile(self.outputPath+'Apps/'+self.projectName+'/app/resources/base/style.css', buffer, function (err) {
                      if (err){ throw err; }
-                     self._l.sys.puts('style.css generated!');
+                     self._e_.sys.puts('style.css generated!');
                      //cb();
                    });
                 });
