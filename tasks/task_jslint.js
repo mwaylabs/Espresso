@@ -10,7 +10,7 @@
 
 
 var Task_JSLINT,
-    Task = require('./Task').Task;
+    Task = require('./task').Task;
     File = require('../core/file').File;
 
 var jslint = require('../lib/jslint').JSLINT;

@@ -10,7 +10,7 @@
 
 var Task_Merge,
     File = require('../core/file').File;
-    Task = require('./Task').Task;
+    Task = require('./task').Task;
 
 
 

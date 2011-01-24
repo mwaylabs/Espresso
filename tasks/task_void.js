@@ -10,8 +10,7 @@
 
 
 var Task_Void,
-    Task = require('./Task').Task;
-
+    Task = require('./task').Task;
 /**
  * @class
  *

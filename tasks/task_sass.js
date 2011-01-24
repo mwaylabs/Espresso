@@ -11,7 +11,7 @@
 
 var Task_SASS,
     sass = require('../lib/sass'),
-    Task = require('./Task').Task;
+    Task = require('./task').Task;
 
 /**
  * @class

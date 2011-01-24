@@ -10,7 +10,7 @@
 
 
 var Task_Minify,
-    Task = require('./Task').Task;
+    Task = require('./task').Task;
 
 
 Task_Minify = exports.Task_Minify = function() {

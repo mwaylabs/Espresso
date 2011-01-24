@@ -9,7 +9,7 @@
 // ==========================================================================
 
 var Task_Manifest,
-    Task = require('./Task').Task;
+    Task = require('./task').Task;
 
 /**
  * @class

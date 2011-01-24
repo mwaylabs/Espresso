@@ -11,7 +11,7 @@
 
 
 var Task_ContentType,
-    Task = require('./Task').Task;
+    Task = require('./task').Task;
 
 /**
  * @class

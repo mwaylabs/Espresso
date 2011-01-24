@@ -9,7 +9,7 @@
 // ==========================================================================
 
 var Task_Dependency,
-    Task = require('./Task').Task;
+    Task = require('./task').Task;
     File = require('../core/file').File;
 
 
