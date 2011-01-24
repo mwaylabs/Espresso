@@ -144,7 +144,6 @@ var that = this,
         _frameworkOptions.excludedFolders = ['resources'].concat(that.excludedFolders);
         _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
         _frameworkOptions.app = that;
-         /* Definition of standard build chain for The-M-Project«s core files*/
         _frameworkOptions.taskChain = new TaskManager(["preSort","dependency","merge","minify","contentType","manifest"]).getTaskChain();
        return new Framework(_frameworkOptions);
     });

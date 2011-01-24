@@ -27,3 +27,9 @@ Read the instructions here:
 https://github.com/ry/node/wiki/Building-node.js-on-Cygwin-%28Windows%29
 
 - Tested with node 0.2.5 on Windows 7
+
+
+=== Licensing ===
+
+All license information about Espresso and used third-party components can be found in the LICENSE file,
+Or in the concrete third-party component.

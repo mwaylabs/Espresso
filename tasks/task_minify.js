@@ -32,12 +32,13 @@ var that = this, _data = '',
     _cp = require('child_process').spawn;
 
     if(framework.app.minify){
+
       minify = _cp('java', ['-jar', that._e_.path.join(__dirname, '..', 'bin', 'compiler.jar'),
                         '--compilation_level', 'SIMPLE_OPTIMIZATIONS',
                         '--warning_level','QUIET']);
 
-      minify.stdout.addListener('data', function(newData) {
-       _data += newData;
+      minify.stdout.addListener('data', function(miniData) {
+       _data += miniData;
       });
 
       minify.stderr.addListener('data', function(data) {
@@ -46,7 +47,7 @@ var that = this, _data = '',
 
       minify.addListener('exit', function(code) {
         if (code !== 0) {
-          console.log('ERROR: Minifier exited with code ' + code);
+          console.log(this.style.red('ERROR:')+this.style.cyan(' - while executing Task Minify: error code is: '+code));  
         } else {
             framework.files[0].content = _data;
             callback(framework);
