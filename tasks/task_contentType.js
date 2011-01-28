@@ -55,17 +55,17 @@ var self = this;
 
    switch (true) {
      case (cF.isImage()):
-       cF.requestPath = '/'+'theme/images/'+cF.getBaseName()+cF.getFileExtension();
+       cF.requestPath = 'theme/images/'+cF.getBaseName()+cF.getFileExtension();
        break;
      case (cF.isStylesheet()):
-       cF.requestPath = '/'+'theme/'+cF.getBaseName()+cF.getFileExtension();
+       cF.requestPath = 'theme/'+cF.getBaseName()+cF.getFileExtension();
        cF.contentType = "text/css; charset=utf-8";
        break;
      case (cF.isHTML()):
-       cF.requestPath = '/'+cF.getBaseName()+cF.getFileExtension();
+       cF.requestPath = cF.getBaseName()+cF.getFileExtension();
        break;
      default:
-       cF.requestPath = '/'+cF.getBaseName()+cF.getFileExtension();
+       cF.requestPath = cF.getBaseName()+cF.getFileExtension();
        break;
    }
 });
