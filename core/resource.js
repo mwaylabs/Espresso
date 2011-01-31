@@ -200,15 +200,15 @@ var self = this;
                                  framework: self
                                 });
 
-             if(!newResource.isSASS_Stylesheet()){
-                if(self.markedResources.indexOf(newResource.getBaseName()) === -1){
+           //  if(!newResource.isSASS_Stylesheet()){
+              if(self.markedResources.indexOf(newResource.getBaseName()) === -1){
                 self.files.push(newResource);
                 self.markedResources.push(newResource.getBaseName());
-              }
-             }else{
-                self.sassStyleSheets.push(newResource);
+               }
+           //  }else{
+           //     self.sassStyleSheets.push(newResource);
                 //self.markedResources.push(newResource.getBaseName());
-             }            
+           //  }            
            }   
            that.callbackIfDone();
           }
@@ -297,10 +297,10 @@ var that = this;
          function(err,files){
             if(err){throw err;}
             that.readFiles(files,this);
-         },
+         },/*
          function mergeSASSFiles(err,files){
            that.mergeSASSFiles(that.sassStyleSheets,this);   
-         },
+         }, */
          function taskChain(err,files){
            if(err){throw err;}
            that.taskChain.run(that,callback);

@@ -42,6 +42,7 @@ Framework = exports.Framework = function(properties) {
   /* Local properties */
   this.app     = null;
   this.virtual = false;  
+  this.library = false;  
   this.path = '';
   this.name = '';
   this.frDelimiter;
@@ -310,9 +311,10 @@ var self = this,
         case (_cF.isStylesheet()):
           that.copyFile(files,_cF.path,_outputPath+'/theme/'+_cF.getBaseName()+_cF.getFileExtension());
           break;
+        /*
         case (_cF.isSASS_Stylesheet()):
           that.writeFile(files,_outputPath+'/theme/'+_cF.getBaseName()+'.css',_cF.content);
-          break;
+          break; */
         case (_cF.isVirtual()):
         default:
           var _fileName =  (self.combinedScripts) ? self.name+'.js' : _cF.getBaseName()+_cF.getFileExtension();
@@ -337,7 +339,7 @@ Framework.prototype.prepareForServer = function(server,callback){
         if(!server.files){
             server.files = {};
         }
-        server.files[file.requestPath] = file;
+        server.files['/'+file.requestPath] = file;
     });
     callback();
 };

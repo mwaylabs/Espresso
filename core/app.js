@@ -63,6 +63,9 @@ App = exports.App = function (applicationDirectory,server) {
 
   this.target    = {};
   this.ua_target;
+  this.libraries;
+  this.librariesNamesForIndexHtml = [];
+
   this.manifest  = {
     "cache"   :[],
     "network" :[],
@@ -158,7 +161,7 @@ var that = this,
         _frameworkOptions.excludedFolders = that.excludedFolders;
         _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
         _frameworkOptions.app = that;
-        _frameworkOptions.taskChain = new TaskManager(["contentType","manifest","sass"]).getTaskChain();
+        _frameworkOptions.taskChain = new TaskManager(["contentType","manifest"]).getTaskChain();
        return new Resource(_frameworkOptions);
   });
 
@@ -236,7 +239,7 @@ var that = this, _theMProject, _theMProjectResources;
  * @description
  * Builds the index.html page. Used for loading the application.
  */
-App.prototype.buildIndexHTML = function() {
+App.prototype.buildIndexHTML = function(callback,_frameworkNamesForIndexHtml,_HEAD_IndexHtml) {
 var _displayName =  (this.displayName) ? this.displayName : this.name,
     _indexHtml = [];
 
@@ -247,15 +250,16 @@ var _displayName =  (this.displayName) ? this.displayName : this.name,
     if(this.buildNoManifest){
        _indexHtml.push(
       '<html manifest="cache.manifest">'
-    );
- */
-
-       _indexHtml.push(
+     );
+    }     
+*/
+    _indexHtml.push(
       '<html manifest="cache.manifest">'
     );
 
-
-
+    
+//console.log(_frameworkNamesForIndexHtml);
+_indexHtml.push(_HEAD_IndexHtml);
     _indexHtml.push(
       '<head>',
         '<meta name="apple-mobile-web-app-capable" content="yes">'+
@@ -271,6 +275,10 @@ var _displayName =  (this.displayName) ? this.displayName : this.name,
         '<script type="text/javascript" src="core.js"></script>'+
         '<script type="text/javascript" src="ui.js"></script>'
     );
+
+    _frameworkNamesForIndexHtml.forEach(function(fr){
+        _indexHtml.push('<script type="text/javascript" src="'+fr+'"></script>'+'\n');
+    });
 
     if(this.supportedLanguages.length >= 1){
         this.supportedLanguages.forEach(function(lang){
@@ -315,7 +323,8 @@ var _displayName =  (this.displayName) ? this.displayName : this.name,
                             virtual: true,
                             name:'/index.html',
                             path:'/index.html',
-                            requestPath :'/index.html',
+                            requestPath :'index.html',
+                            contentType : 'text/html',
                             framework: fr, /* the framework, this file belongs to.*/
                             content: _indexHtml
                            })
@@ -324,6 +333,7 @@ var _displayName =  (this.displayName) ? this.displayName : this.name,
   var ar = [];
       ar.push(fr);
   this.addFrameworks(ar);
+  callback(null,this.frameworks);
 };
 
 /**
@@ -334,11 +344,11 @@ var _displayName =  (this.displayName) ? this.displayName : this.name,
 App.prototype.buildManifest = function(callback){
 var self = this, _cacheManifest = [];
 
-    /*
-if(!self.buildNOManifest){
+
+if(self.buildNOManifest){
    callback();
 }
-*/
+
  /* adding entries for the Explicit CACHE section*/
  _cacheManifest.push(
    'CACHE MANIFEST',
@@ -392,7 +402,7 @@ if(!self.buildNOManifest){
                        name:'/cache.manifest',
                        path:'/cache.manifest',
                        contentType : 'text/cache-manifest',
-                       requestPath :'/cache.manifest',
+                       requestPath :'cache.manifest',
                        framework: fr, /* the framework, this file belongs to.*/
                        content: _cacheManifest.join('\n')
                        })
@@ -400,7 +410,7 @@ if(!self.buildNOManifest){
   var ar = [];
       ar.push(fr);
   this.addFrameworks(ar);
-  callback();
+  callback(null,this.frameworks);
 };
 
 /**
@@ -478,19 +488,64 @@ var that = this;
 };
 
 
+App.prototype.addUsedFrameworks = function (usedFrameworks){
+var that = this;
+  var  _usedFrameworks = usedFrameworks.map(function(module) {
+       var _frameworkOptions  = {};
+           _frameworkOptions.path = that.execPath+'/frameworks/' + module;
+           _frameworkOptions.name = module;
+           _frameworkOptions.library = true;
+           _frameworkOptions.app = that;
+           _frameworkOptions.frDelimiter = 'modules/';
+           _frameworkOptions.excludedFolders = that.excludedFolders;
+           _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
+           _frameworkOptions.taskChain = new TaskManager(["contentType","markLibrary","manifest"]).getTaskChain();
+          return new Framework(_frameworkOptions);
+       });
+
+  this.addFrameworks(_usedFrameworks);
+};
+
 /**
  * @description
  * The function tat builds the application.
  * @param callback that should be called after the build.
  */
 App.prototype.build = function(callback){
-var self = this;
+var self = this,
+    _frameworks = [],
+    _HEAD_IndexHtml = [],
+    _BODY_IndexHtml = [];
 
 if(self.ua_target){
     this.readTargetConfig(self.ua_target);
 }
 
-this.buildIndexHTML();
+
+/*
+if(self.indexHTML_HeadContent){
+     _HEAD_IndexHtml.push(self.indexHTML_HeadContent.toString())
+
+}
+
+if(self.indexHTML_BodyContent){
+
+}
+*/
+
+
+if(self.libraries){
+   //console.log("thirdPartyComponents");
+ //  console.log( self.libraries);
+   self.libraries.forEach(function(fr){
+         _frameworks.push(fr.name);
+   });
+
+   self.addUsedFrameworks(_frameworks);
+}
+
+
+//this.buildIndexHTML(_frameworkNamesForIndexHtml,_HEAD_IndexHtml);
 
 var _AppBuilder = function(app, callback) {
     var that = this;
@@ -501,7 +556,7 @@ var _AppBuilder = function(app, callback) {
     that.callbackIfDone = function() {
       if (callback && that._frameworkCounter <= 0){
          // console.log('build callback called !');
-          callback();
+          callback(null,self.frameworks);
       }
     };
 
@@ -525,14 +580,33 @@ var _AppBuilder = function(app, callback) {
   /*
    *  build batch:
    *  1) Build the Application
-   *  11) Build each framework
-   *  2) Build the cache manifest, after all frameworks has been build.
+   *   11) Build each framework
+   *  2) Build the index.html
+   *  3) Build the cache manifest, after all frameworks has been build.
    *     This is done by calling 'buildManifest()' as callback after
    *     '_AppBuilder.build()' is done.
-   *  3) Call callback, which leads to the next step of the build OR server process.5
+   *  4) Call callback, which leads to the next step of the build OR server process.5
    *
    */
-  new _AppBuilder(self, function(){self.buildManifest(callback)}).build();
+ // new _AppBuilder(self, function(){self.buildIndexHTML(function(){self.buildManifest(callback)},_frameworkNamesForIndexHtml,_HEAD_IndexHtml)}).build();
+
+     self.sequencer(
+          function(){
+            new _AppBuilder(self, this).build();
+          },
+          function(err,frameworks){
+            if(err){throw err;}
+            self.buildIndexHTML(this,self.librariesNamesForIndexHtml,_HEAD_IndexHtml)
+          },
+          function(err,frameworks){
+            if(err){throw err;}
+            self.buildManifest(this)
+          },
+          function(err,frameworks){
+            if(err){throw err;}
+             callback();
+          }
+     );
 
 };
 
