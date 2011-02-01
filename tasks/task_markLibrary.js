@@ -40,7 +40,7 @@ Task_MarkLibrary.prototype = new Task;
  *
  */
 Task_MarkLibrary.prototype.duty = function(framework,callback){
-var that = this;
+var that = this,
     _framework = framework.app.libraries,
     _library = {},
     _akku = [];
