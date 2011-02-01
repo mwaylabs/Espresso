@@ -479,21 +479,21 @@ var that = this,
         if(targets){
            if(targets[tar.vendor]){
                var _vendor = targets[tar.vendor];
-               console.log(_vendor);
-               console.log(_vendor[tar.deviceModel]);
+             //  console.log(_vendor);
+             //  console.log(_vendor[tar.deviceModel]);
                that.target.manufacturer = tar.vendor; 
               if(_vendor[tar.deviceModel]) {
                    var _deviceModel = _vendor[tar.deviceModel];
                   
                    if(_deviceModel.resolution){
-                      console.log("_deviceModel.resolution "+_deviceModel.resolution); 
+                    //  console.log("_deviceModel.resolution "+_deviceModel.resolution);
                       that.target.resolution = _deviceModel.resolution;                      
                    }
                  
                    if(_deviceModel.htmlHeader){
                       that.HEAD_IndexHtml = []; // reset, to override the settings that may be made in config.json
                       that.HEAD_IndexHtml.push(_deviceModel.htmlHeader.toString());
-                      console.log(that.HEAD_IndexHtml);   
+                     // console.log(that.HEAD_IndexHtml);
                    }
              }
            }
