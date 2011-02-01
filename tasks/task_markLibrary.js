@@ -40,8 +40,10 @@ Task_MarkLibrary.prototype = new Task;
  *
  */
 Task_MarkLibrary.prototype.duty = function(framework,callback){
-var _framework = framework.app.libraries,
-    _library = {};
+var that = this;
+    _framework = framework.app.libraries,
+    _library = {},
+    _akku = [];
 
     // Getting the library entry from the config.json, for the current framework.
     _framework.forEach(function(fr){
@@ -59,18 +61,22 @@ var _framework = framework.app.libraries,
        }else{ // loop the the refs array to determine the files to use.
           framework.files.forEach(function(file){
             var _indexOfFile = _library.refs.indexOf(file.getBaseName()+file.getFileExtension());
-              
+                _akku.push(file.getBaseName()+file.getFileExtension());
             if(_indexOfFile === -1){
                framework.app.excludedFromCaching.push(file.getBaseName()+file.getFileExtension());
             };
 
          });
          _library.refs.forEach(function(ref){
+             var _indexOfFile = _akku.indexOf(ref);
+             if(_indexOfFile === -1){
+                console.log('WARN:'+that.style.cyan(' Third party file: ')+that.style.magenta(ref)+ that.style.cyan(' was specified, but cant be found in: "')
+                            +that.style.magenta('frameworks/'+framework.name)+that.style.cyan('" coud be a typo!'));
+             }
              framework.app.librariesNamesForIndexHtml.push(ref);     
          });
       }
             
     }
     callback(framework);
-
 };

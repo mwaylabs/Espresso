@@ -42,7 +42,7 @@ App = exports.App = function (applicationDirectory,server) {
 
   /* Build configuration */
   this.displayName;
-  this.excludedFromCaching;
+  this.excludedFromCaching = [];
   this.targetQuery;
   this.libraries;
 
