@@ -220,7 +220,8 @@ var that = this,
 
             app.loadTheMProject();
 
-            app.buildNoManifest = true;
+            app.buildManifestFile = false;
+            
             app.build(function (options) {
                 app.prepareForServer(function (opt){
                     _file = that.files['/index.html'];

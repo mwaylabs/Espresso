@@ -47,14 +47,14 @@ FileGenerator.prototype = new Generator;
 
 /**
  * @description
- * Print the possible commands for the FileGenerator. 
+ * Print the possible commands for the FileGenerator.
  */
 FileGenerator.prototype.printHelp = function(){
   console.log(this.style.green("=== m-gen.js === "));
   console.log(this.style.green("Espresso "+this.__version__));
   console.log(this.style.green("command line tool to generate new or additional files for a project "));
-  console.log(this.style.green("The generated files containing some sample code, to start coding right away!"));  
-  console.log(this.style.green("\n"));  
+  console.log(this.style.green("The generated files containing some sample code, to start coding right away!"));
+  console.log(this.style.green("\n"));
   console.log(this.style.green("--- commands ---"));
   console.log(this.style.green("-p, --page [page name]                 a new page"));
   console.log(this.style.green("-c, --controller [controller name]     a new controller"));
@@ -65,8 +65,16 @@ FileGenerator.prototype.printHelp = function(){
   console.log(this.style.green("\n"));
   console.log(this.style.green("--- example ---"));
   console.log(this.style.green("./m-gen.js --page myNewPage            will generate a new page called: 'myNewPage'"));
-  console.log(this.style.green("\n"));  
+  console.log(this.style.green("\n"));
 };
+/**
+ *         case (((args.n && args.v && args.r) || (args.newdevice && args.vendor && args.resolution))
+              && ( (typeof args.n === typeof args.v === typeof args.r === 'string')
+              || ( typeof args.newdevice === typeof args.vendor === typeof args.resolution === 'string'))):
+        self.ge
+ * @param argv
+ */
+
 
 /**
  * @description
@@ -75,18 +83,21 @@ FileGenerator.prototype.printHelp = function(){
  */
 FileGenerator.prototype.dispatchArguments = function(argv) {
 var args = argv, self = this;
-
+console.log(args)
   switch (true) {
       case (args.help || args.h):
         self.printHelp();
         break;
+      //case (args.n):
+      //  self.genNewTargetDevice(args); //(args.v) ? args.v : args.vendor, (args.r) ? args.r : args.resolution);
+      //  break;
       case ((args.page || args.p) && ((typeof args.page === 'string') ||(typeof args.p === 'string'))):
         self.genPage((args.page) ? args.page : args.p);
         break;
       case ((args.controller || args.c) && ((typeof args.controller === 'string') ||(typeof args.c === 'string'))):
         self.genController((args.controller) ? args.controller : args.c);
         break;
-      case ((args.validator || args.v) && ((typeof args.validator === 'string') ||(typeof args.v === 'string'))):
+      case ((args.validator || args.v) && ((typeof args.validator === 'string') ||(typeof args.v === 'string')) && !args.n):
         self.genValidator((args.validator) ? args.validator : args.v);
         break;
       case ((args.model || args.m) && ((typeof args.model === 'string') ||(typeof args.m === 'string'))):
@@ -95,6 +106,7 @@ var args = argv, self = this;
       case ((args.i18n || args.i)):
         self.genI18N();
         break;
+
       default:
         self.printHelp();
   }
@@ -152,6 +164,45 @@ FileGenerator.prototype.generate = function(templateName, fileName, filePath, ct
               });
  });
 };
+
+
+FileGenerator.prototype.makeFolder  = function(path, cb){
+
+
+
+
+
+};
+
+FileGenerator.prototype.genNewTargetDevice = function(n){
+var self = this;
+//  console.log("venodr = "+vendor +" resolution = "+resolution);
+    if(n.v && n.r){
+       console.log("venodr = "+n.v +" resolution = "+n.r);
+    }
+console.log(self._e_.path.join(self.outputPath, '/app/resources/', n.v ));
+    if (n.v && n.r){
+      self._e_.fs.mkdir(self.outputPath+'/app/resources/'+n.v, 0777 ,function(err){
+         if(err){
+           if(err.errno === 17){ /* 17 = error code for: folder: controllers exists!, but do it anyway*/
+            //  self.generate('controller.js', controllerName+'.js', self.outputPath+'/app/controllers/', _ctx);
+               console.log("done");
+           }
+           else{
+             throw err;
+           }
+         }else{
+         // self.generate('controller.js', controllerName+'.js', self.outputPath+'/app/controllers/', _ctx);
+         }
+      });
+   } else {
+     this._e_.sys.puts(this.style.red('ERROR:') + this.style.magenta(' no arguments given'));
+     this._e_.sys.puts(this.style.cyan('Usage: "-view:\<page name\>"'));
+   }
+
+};
+
+
 
 /**
  *
@@ -219,7 +270,7 @@ FileGenerator.prototype.genPage = function(pageName) {
 };
 
 /**
- * 
+ *
  * @param controllerName
  */
 FileGenerator.prototype.genController = function(controllerName) {
@@ -305,7 +356,7 @@ FileGenerator.prototype.genI18N = function(){
           self.generate('i18n_de_de.js', 'de_de'+'.js', self.outputPath+'/app/resources/i18n/', _ctx);
           self.generate('i18n_en_us.js', 'en_us'+'.js', self.outputPath+'/app/resources/i18n/', _ctx);
          }
-   }); 
+   });
 };
 
 /**
