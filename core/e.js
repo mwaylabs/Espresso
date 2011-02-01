@@ -22,7 +22,7 @@ var E;
  * @constructor
  */
 E = exports.E = function() {
-    this.__version__ = '0.0.7-1';  // Espresso version.
+    this.__version__ = '0.0.8-pre';  // Espresso version.
 };
 
 /**
@@ -78,6 +78,14 @@ E.prototype.sequencer =  require('../lib/step');
  * logger.trace('Trace message');
  */
 E.prototype.logger = require('../lib/node-logger').logger(module,true);
+
+
+/**
+ * @property
+ * Using the 'optimist' framework, for parsing the arguments.
+ * https://github.com/substack/node-optimist
+ */
+E.prototype.argv = require('../lib/optimist').argv;
 
 /**
  * @function

@@ -37,7 +37,7 @@ Generator.prototype = new E;
  * Using the 'optimist' framework, for parsing the arguments.
  * https://github.com/substack/node-optimist
  */
-Generator.prototype.argv = require('../lib/optimist').argv;
+//Generator.prototype.argv = require('../lib/optimist').argv;
 
 /**
  * @property

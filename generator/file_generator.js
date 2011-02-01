@@ -83,7 +83,7 @@ FileGenerator.prototype.printHelp = function(){
  */
 FileGenerator.prototype.dispatchArguments = function(argv) {
 var args = argv, self = this;
-console.log(args)
+    console.log(argv);
   switch (true) {
       case (args.help || args.h):
         self.printHelp();
