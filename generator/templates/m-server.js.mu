@@ -2,7 +2,7 @@
 
 var espresso  = require('../../Espresso/core/espresso').Espresso;
 
-var server = new espresso.Server();
+var server = new espresso.Server(true);
 
 var app = server.getNewApp(__dirname);
 

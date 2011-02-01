@@ -33,7 +33,7 @@ var E = require('./e').E,
  *
  * @constructor
  */
-Server = exports.Server = function(properties) {
+Server = exports.Server = function() {
 
   /*Properties*/
   this.hostname = '127.0.0.1'; //default address
@@ -44,10 +44,10 @@ Server = exports.Server = function(properties) {
   //this.files = {};  /* = the files, that should be served by  this server */
   this.files;  /* = the files, that should be served by  this server */
 
-  if(properties){
-    this.addProperties(properties);
-  }
+
+  this.addProperties(this.argv);
 };
+
 
 /*
  * Getting all basic Espresso functions from the root prototype: M
@@ -66,16 +66,48 @@ Server.prototype._e_.http = require('http');
  */
 Server.prototype._e_.url = require('url');
 
+
 /**
  * @description
  * Add the properties.
  * @param properties, the properties
  */
-Server.prototype.addProperties = function(properties){
+Server.prototype.addProperties = function(args){
  var that = this;
- Object.keys(properties).forEach(function (key) {
-   that[key] = properties[key];
- });
+ switch (true) {
+      case (args.help || args.h):
+        that.printHelp();
+        break;
+      case (args.version || args.v):
+        that.printVersionNumber();
+        process.exit(1);      
+        break;
+      case ((args.port || args.p) && ((typeof args.port === 'string') ||(typeof args.p === 'string'))):
+        that.commandLinePort = (args.port) ? args.port : args.p;
+        break;
+      default:
+       break;
+ };
+};
+
+/**
+ * @description
+ * Print the usage description of m-server.js
+ */
+Server.prototype.printHelp = function(){
+  console.log(this.style.green("=== m-server.js === "));
+  console.log(this.style.green("Espresso "+this.__version__));
+  console.log(this.style.green("command line tool to compile and run the application for testing business in a webbrowser"));
+  console.log(this.style.green("\n"));
+  console.log(this.style.green("--- commands ---"));
+  console.log(this.style.green("-p, --port [port]                 specify the port"));
+  console.log(this.style.green("-v, --version                     print Espresso version number"));
+  console.log(this.style.green("-h, --help                        print this help"));
+  console.log(this.style.green("\n"));
+  console.log(this.style.green("--- example ---"));
+  console.log(this.style.green("./m-server.js --port 6060         start the built-in server in port '6060'"));
+  console.log(this.style.green("\n"));
+  process.exit(1);
 };
 
 /**
@@ -274,6 +306,7 @@ var that = this,
         } else {
             that.deliverThat(response,_file);
         }          
-    }).listen(that.port);
-    console.log('Server running at http://'+that.hostname+':' + that.port+'/'+_applicationName);
+    }).listen((that.commandLinePort) ? that.commandLinePort : that.port);
+    var _thatPort = (that.commandLinePort) ? that.commandLinePort : that.port;
+    console.log('Server running at http://'+that.hostname+':' + _thatPort +'/'+_applicationName);
 };
