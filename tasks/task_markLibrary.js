@@ -13,10 +13,9 @@ var Task_MarkLibrary,
     Task = require('./task').Task;
 /**
  * @class
- *
- * This is a empty task, which does nothing at all.
- * Every framework must provide al least one Task, so this would be the task if a framework needs
- * no manipulation of it files.
+ * Lookup for all given 3rd party frameworks, take the names and mark
+ * the names of the files to include in offline manifest and for the entries in the
+ * index.html
  *
  * @extends Task
  */
@@ -35,51 +34,40 @@ Task_MarkLibrary.prototype = new Task;
 
 /**
  * @description
- * Void task .... do nothing here.
+ * Lookup for all given 3rd party frameworks, take the names and mark
+ * the names of the files to include in offline manifest and for the entries in the
+ * index.html
+ *
  */
 Task_MarkLibrary.prototype.duty = function(framework,callback){
-var _framework = framework.app.libraries;
-var _fr = {},
-    _akku = [];
+var _framework = framework.app.libraries,
+    _library = {};
 
+    // Getting the library entry from the config.json, for the current framework.
     _framework.forEach(function(fr){
          if(fr.name === framework.name){
-             _fr = fr;
-            // console.log('fr.name '+ fr.name + ' framework.name ' +framework.name);
+             _library = fr;
          }
     });
 
+    // If current framework is 3rd party library ?!
     if(framework.library){
-        if(_fr.refs[0] === '*'){
+        if(_library.refs.length === 1 &&_library.refs[0] === '*'){  // if wildcard: '*' is given, take all entries.
          framework.files.forEach(function(file){
-          //  console.log(file.name);
             framework.app.librariesNamesForIndexHtml.push(file.getBaseName()+file.getFileExtension());
         });
-       }else{
-        var t = _fr.refs;
-       //  console.log("t");
-      //   console.log(t);
-
+       }else{ // loop the the refs array to determine the files to use.
           framework.files.forEach(function(file){
-              var _currentFileName;
-             var found = false;
-             t.forEach(function(fr){
-                  _currentFileName= fr;
-                 if(_currentFileName === file.getBaseName()+file.getFileExtension()){
-                     found = true;
-                 }
-             });
-
-             if(!found){
-          //      console.log("Excluding : "+file.getBaseName()+file.getFileExtension());
-               framework.app.excludedFromCaching.push(file.getBaseName()+file.getFileExtension())
-             }else{
-          //     console.log("Adding "+file.getBaseName()+file.getFileExtension());
-               framework.app.librariesNamesForIndexHtml.push(file.getBaseName()+file.getFileExtension());
-             }
+            var _indexOfFile = _library.refs.indexOf(file.getBaseName()+file.getFileExtension());
+              
+            if(_indexOfFile === -1){
+               framework.app.excludedFromCaching.push(file.getBaseName()+file.getFileExtension());
+            };
 
          });
-
+         _library.refs.forEach(function(ref){
+             framework.app.librariesNamesForIndexHtml.push(ref);     
+         });
       }
             
     }

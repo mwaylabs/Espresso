@@ -43,6 +43,8 @@ App = exports.App = function (applicationDirectory,server) {
   /* Build configuration */
   this.displayName;
   this.excludedFromCaching;
+  this.targetQuery;
+  this.libraries;
 
   this.clear        = '';
   this.name         = 'defaultName';
@@ -52,6 +54,7 @@ App = exports.App = function (applicationDirectory,server) {
   this.outputFolder = 'build'; // name of the output folder, default is 'build'.
   this.jslintCheck  = false;
   this.minify       = false;  // uses minfiy task ?! default is false
+  this.buildManifestFile = true;  // build with offline manifest ?! default is true
   this.execPath     = "";  //  the a actually folder name, in which the application is located.
   this.taskChain    = new Array();
 
@@ -61,9 +64,11 @@ App = exports.App = function (applicationDirectory,server) {
   this.excludedFiles      = [];
   this.frameworks         = [];
 
+  this.HEAD_IndexHtml = [],
+  this.BODY_IndexHtml = [];  
+
+
   this.target    = {};
-  this.ua_target;
-  this.libraries;
   this.librariesNamesForIndexHtml = [];
 
   this.manifest  = {
@@ -246,25 +251,34 @@ var _displayName =  (this.displayName) ? this.displayName : this.name,
    _indexHtml.push(
       '<!DOCTYPE html>'
     );
-/*
-    if(this.buildNoManifest){
+
+    if(!this.buildManifestFile){
        _indexHtml.push(
-      '<html manifest="cache.manifest">'
+      '<html>'
      );
-    }     
-*/
-    _indexHtml.push(
+    }else{
+           _indexHtml.push(
       '<html manifest="cache.manifest">'
+    ); 
+    }
+
+
+
+    _indexHtml.push(
+      '<head>'
     );
 
-    
-//console.log(_frameworkNamesForIndexHtml);
-_indexHtml.push(_HEAD_IndexHtml);
-    _indexHtml.push(
-      '<head>',
+    if(_HEAD_IndexHtml.length >= 1){
+      _indexHtml.push(_HEAD_IndexHtml);
+    }else{ // Fallback header information.
+      _indexHtml.push(
         '<meta name="apple-mobile-web-app-capable" content="yes">'+
         '<meta name="apple-mobile-web-app-status-bar-style" content="default">'+
-        '<link rel="apple-touch-icon" href="/theme/images/apple-touch-icon.png"/>'+
+        '<link rel="apple-touch-icon" href="/theme/images/apple-touch-icon.png"/>'
+      );
+    }
+
+    _indexHtml.push(
         '<meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">'+
         '<title>'+_displayName+'</title>'+
         '<link type="text/css" href="theme/jquery.mobile-1.0a3pre.min.css" rel="stylesheet" />'+
@@ -275,7 +289,7 @@ _indexHtml.push(_HEAD_IndexHtml);
         '<script type="text/javascript" src="core.js"></script>'+
         '<script type="text/javascript" src="ui.js"></script>'
     );
-
+    
     _frameworkNamesForIndexHtml.forEach(function(fr){
         _indexHtml.push('<script type="text/javascript" src="'+fr+'"></script>'+'\n');
     });
@@ -301,7 +315,7 @@ _indexHtml.push(_HEAD_IndexHtml);
     _indexHtml.push('<script language="JavaScript">'+this.name+'.app.main();'+'</script>' );
 
     _indexHtml.push(
-    	  '</body>',
+    	  '</body>'+
       '</html>'
     );
 
@@ -345,7 +359,7 @@ App.prototype.buildManifest = function(callback){
 var self = this, _cacheManifest = [];
 
 
-if(self.buildNOManifest){
+if(!self.buildManifestFile){
    callback();
 }
 
@@ -456,34 +470,38 @@ var _outputPath = this.execPath+'/'+this.outputFolder;
 
 
 App.prototype.readTargetConfig = function (tar){
-var that = this;
-    var t = this._e_.path.join(this.execPath, 'targets', 'targets.json')
-    try{
-        var targets = JSON.parse(this._e_.fs.readFileSync(t, 'utf8'));
-      //  console.log(tar);
-        if(targets){
-         //  console.log(tar.manufacturer);
-           if(targets.targets[tar.manufacturer]){
-           var manu =  targets.targets[tar.manufacturer];
-         //  console.log('manu');
-        //   console.log(manu);
-            that.target.manufacturer = tar.manufacturer;
-         //   console.log("tar.device");
+var that = this,
+    _targetsJSON = this._e_.path.join(this.execPath, 'targets.json');
 
-            if(manu[tar.device]){
-          //      console.log(manu[tar.device]);
-                var f = manu[tar.device];
-          //      console.log(f.resolution);
-                that.target.resolution = f.resolution;
-            }
-          }
+   try{
+        var targets = JSON.parse(this._e_.fs.readFileSync(_targetsJSON, 'utf8'));
+
+        if(targets){
+           if(targets[tar.vendor]){
+               var _vendor = targets[tar.vendor];
+               console.log(_vendor);
+               console.log(_vendor[tar.deviceModel]);
+               that.target.manufacturer = tar.vendor; 
+              if(_vendor[tar.deviceModel]) {
+                   var _deviceModel = _vendor[tar.deviceModel];
+                  
+                   if(_deviceModel.resolution){
+                      console.log("_deviceModel.resolution "+_deviceModel.resolution); 
+                      that.target.resolution = _deviceModel.resolution;                      
+                   }
+                 
+                   if(_deviceModel.htmlHeader){
+                      that.HEAD_IndexHtml = []; // reset, to override the settings that may be made in config.json
+                      that.HEAD_IndexHtml.push(_deviceModel.htmlHeader.toString());
+                      console.log(that.HEAD_IndexHtml);   
+                   }
+             }
+           }
         }
- //  console.log(that.target);
     }catch(ex){
        console.log(this.style.red('ERROR:')+this.style.cyan(' - while reading "targets.json", error message: '+ex.message));
-       process.exit(1); /* exit the process, reason: error in targets.json*/
+       process.exit(1);
     }
-
 
 };
 
@@ -513,30 +531,19 @@ var that = this;
  */
 App.prototype.build = function(callback){
 var self = this,
-    _frameworks = [],
-    _HEAD_IndexHtml = [],
-    _BODY_IndexHtml = [];
+    _frameworks = [];
 
-if(self.ua_target){
-    this.readTargetConfig(self.ua_target);
+
+if(self.htmlHeader){
+   self.HEAD_IndexHtml.push(self.htmlHeader.toString())
 }
 
-
-/*
-if(self.indexHTML_HeadContent){
-     _HEAD_IndexHtml.push(self.indexHTML_HeadContent.toString())
-
+if(self.targetQuery){
+   this.readTargetConfig(self.targetQuery);
 }
-
-if(self.indexHTML_BodyContent){
-
-}
-*/
 
 
 if(self.libraries){
-   //console.log("thirdPartyComponents");
- //  console.log( self.libraries);
    self.libraries.forEach(function(fr){
          _frameworks.push(fr.name);
    });
@@ -544,15 +551,12 @@ if(self.libraries){
    self.addUsedFrameworks(_frameworks);
 }
 
-
-//this.buildIndexHTML(_frameworkNamesForIndexHtml,_HEAD_IndexHtml);
-
 var _AppBuilder = function(app, callback) {
     var that = this;
     /* amount of used frameworks, for this application. */
     that._frameworkCounter = app.frameworks.length ;
 
-    /* callback checker, called if all frameworks are build. */
+    /* callback checker, called if all frameworks are built. */
     that.callbackIfDone = function() {
       if (callback && that._frameworkCounter <= 0){
          // console.log('build callback called !');
@@ -564,7 +568,7 @@ var _AppBuilder = function(app, callback) {
       console.log(self.style.green("Building components:"));
       app.frameworks.forEach(function(framework) {
         framework.build(function(fr) {
-          /* count  = -1 if a framework has been build. */
+          /* count  = -1 if a framework had been built. */
           that._frameworkCounter -= 1;
           console.log(self.style.magenta(fr.name)+self.style.green(': ')+self.style.cyan('done'));
           //console.log(require('util').inspect(fr.files_with_Dependencies, true, 1));
@@ -575,28 +579,25 @@ var _AppBuilder = function(app, callback) {
     };
   };
 
- console.log(this.style.green('Building application: "')+this.style.magenta(this.name)+this.style.green('"'));
-
   /*
-   *  build batch:
+   *  Build stack:
    *  1) Build the Application
    *   11) Build each framework
    *  2) Build the index.html
-   *  3) Build the cache manifest, after all frameworks has been build.
-   *     This is done by calling 'buildManifest()' as callback after
-   *     '_AppBuilder.build()' is done.
-   *  4) Call callback, which leads to the next step of the build OR server process.5
+   *  3) Build the cache manifest, after all frameworks had been built.
+   *  4) Call callback, which leads to the next step of the build OR server process.
    *
    */
- // new _AppBuilder(self, function(){self.buildIndexHTML(function(){self.buildManifest(callback)},_frameworkNamesForIndexHtml,_HEAD_IndexHtml)}).build();
+ // new _AppBuilder(self, function(){self.buildIndexHTML(function(){self.buildManifest(callback)},self.librariesNamesForIndexHtml,_HEAD_IndexHtml)}).build();
 
      self.sequencer(
           function(){
+            console.log(self.style.green('Building application: "')+self.style.magenta(this.name)+self.style.green('"'));
             new _AppBuilder(self, this).build();
           },
           function(err,frameworks){
             if(err){throw err;}
-            self.buildIndexHTML(this,self.librariesNamesForIndexHtml,_HEAD_IndexHtml)
+            self.buildIndexHTML(this,self.librariesNamesForIndexHtml,self.HEAD_IndexHtml)
           },
           function(err,frameworks){
             if(err){throw err;}
