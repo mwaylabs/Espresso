@@ -115,27 +115,27 @@ NewProjectGenerator.prototype.genProject = function(projectName){
       self._outP.push( self.outputPath+'Apps/'+self.projectName+'/app/resources/base');
     
       self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks');
-      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/Mproject');
-      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/Mproject/modules');
-      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/Mproject/modules/core');
-      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/Mproject/modules/core/datastore');
-      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/Mproject/modules/core/datastore/validators');
-      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/Mproject/modules/core/foundation');
-      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/Mproject/modules/core/utility');
-      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/Mproject/modules/core/utility/cypher_algorithms');
+      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/The-M-Project');
+      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/The-M-Project/modules');
+      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/The-M-Project/modules/core');
+      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/The-M-Project/modules/core/datastore');
+      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/The-M-Project/modules/core/datastore/validators');
+      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/The-M-Project/modules/core/foundation');
+      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/The-M-Project/modules/core/utility');
+      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/The-M-Project/modules/core/utility/cypher_algorithms');
 
-      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/Mproject/modules/ui');
-      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/Mproject/modules/ui/dialogs');
+      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/The-M-Project/modules/ui');
+      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/The-M-Project/modules/ui/dialogs');
     
-      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/Mproject/modules/jquery');
+      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/The-M-Project/modules/jquery');
 
-      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/Mproject/modules/jquery_mobile');
+      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/The-M-Project/modules/jquery_mobile');
 
-      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/Mproject/modules/themes');
-      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/Mproject/modules/themes/jquery_mobile');
-      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/Mproject/modules/themes/jquery_mobile/images');
+      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/The-M-Project/modules/themes');
+      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/The-M-Project/modules/themes/jquery_mobile');
+      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/The-M-Project/modules/themes/jquery_mobile/images');
 
-      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/Mproject/modules/underscore');
+      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/The-M-Project/modules/underscore');
 
 
       /**
@@ -148,7 +148,7 @@ NewProjectGenerator.prototype.genProject = function(projectName){
 
      that.callbackIfDone = function() {
        if (that._folderCounter === 0){
-         callback();
+         callback(null,{});
        }
      };
 
@@ -182,7 +182,7 @@ NewProjectGenerator.prototype.genProject = function(projectName){
 
      that.callbackIfDone = function() {
        if (that._folderCounter === 0){
-         callback();
+         callback(null,{});
        }
       };
 
@@ -202,7 +202,7 @@ NewProjectGenerator.prototype.genProject = function(projectName){
               }
               var buffer = '';
               output.addListener('data', function (c) {buffer += c; })
-                    .addListener('end', function () {
+                        .addListener('end', function () {
                      self._e_.fs.writeFile(self.outputPath+'Apps/'+self.projectName+'/'+_templateFile, buffer, function (err) {
                         if (err){ throw err; }
                        self._e_.sys.puts(_templateFile+' generated!');
@@ -214,7 +214,7 @@ NewProjectGenerator.prototype.genProject = function(projectName){
                         });
 
                       });
-                    });
+                     });
          });
        }
        that.callbackIfDone();
@@ -231,7 +231,7 @@ NewProjectGenerator.prototype.genProject = function(projectName){
 
      that.callbackIfDone = function() {
        if (that._folderCounter === 0){
-         callback();
+         callback(null,{});
        }
      };
 
@@ -278,13 +278,13 @@ NewProjectGenerator.prototype.genProject = function(projectName){
    var _MProjectCopy = function(callback) {
      var that = this;
      that._folderCounter = 0;
-     that._MprojectPath =  self.espressoPath+'/frameworks/Mproject';
+     that._MprojectPath =  self.espressoPath+'/frameworks/The-M-Project';
      that._MprojectFile = [];
      that._filesToExclude = ['.DS_Store']; /*Files that should be excluded*/
 
      that.callbackIfDone = function() {
        if (that._folderCounter === 0){
-         callback(that._MprojectFile);
+         callback(null,that._MprojectFile);
        }
      };
 
@@ -353,41 +353,53 @@ NewProjectGenerator.prototype.genProject = function(projectName){
                           that.copy(files);
                       });
 
-
-
-
           }
           return '';
       }
 
-       that._MProjectCopy = function() {
-       that.browse(that._MprojectPath);
-     }
+      that._MProjectCopy = function() {
+        that.browse(that._MprojectPath);
+      }
 
    };
 
   self._e_.fs.mkdir(self.outputPath+'Apps', 0777, function(err){
       if(err){
-        self._e_.sys.puts(self.outputPath+'Apps');
+         console.log("\n");
+         console.log(self.style.green('New project at: "')+self.style.cyan(self.outputPath+'Apps/'+self.projectName));
+         console.log("\n");  
       }
 
 
-/*
- * Call stack for the newProjectGenerator
- */
-  new _ProjectDirMaker(function(){
+    /*
+     * Call stack for the newProjectGenerator
+     */
+      self.sequencer(
+         function(){
+            new _ProjectDirMaker(this).makeOutputDir(self._outP.shift());
+         },
+         function(err,framework){
+            if(err){throw err;}
             self.genStyleCSS();
-      new  _BuildToolsGenerator(function(){
-           new _MainJSGenerator(function(){
-               new _MProjectCopy(function(f){
-                   new _MProjectCopy(function(d){
-                    //END
-                   }).copy(f)
-               })._MProjectCopy()
-           })._generateMainJS()
-      })._generateBuildFiles(self._tools)
-  }).makeOutputDir(self._outP.shift());
-
+            new _BuildToolsGenerator(this)._generateBuildFiles(self._tools);
+         },
+         function(err,framework){
+            if(err){throw err;}
+            new _MainJSGenerator(this)._generateMainJS();
+         },
+         function(err,framework){
+            if(err){throw err;}
+            new _MProjectCopy(this)._MProjectCopy();
+         },
+         function(err,framework){
+            if(err){throw err;}
+            new _MProjectCopy(this).copy(framework);
+         },
+         function(err,framework){
+            if(err){throw err;}
+           //Done
+         }
+      );
   });
 };
 

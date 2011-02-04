@@ -34,13 +34,6 @@ Generator.prototype = new E;
 
 /**
  * @property
- * Using the 'optimist' framework, for parsing the arguments.
- * https://github.com/substack/node-optimist
- */
-//Generator.prototype.argv = require('../lib/optimist').argv;
-
-/**
- * @property
  * The reference to File prototype.
  * 
  * @link <File>
