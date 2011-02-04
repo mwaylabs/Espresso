@@ -33,7 +33,7 @@ var E = require('./e').E,
  *
  * @constructor
  */
-Server = exports.Server = function() {
+Server = exports.Server = function(args) {
 
   /*Properties*/
   this.hostname = '127.0.0.1'; //default address
@@ -44,8 +44,10 @@ Server = exports.Server = function() {
   //this.files = {};  /* = the files, that should be served by  this server */
   this.files;  /* = the files, that should be served by  this server */
 
+  if(args){
+    this.addProperties(this.argv); 
+  }
 
-  this.addProperties(this.argv);
 };
 
 
@@ -69,8 +71,8 @@ Server.prototype._e_.url = require('url');
 
 /**
  * @description
- * Add the properties.
- * @param properties, the properties
+ * Make sure, that the arguments are valid and add the properties.
+ * @param {Object} args, the command line arguments
  */
 Server.prototype.addProperties = function(args){
  var that = this;
@@ -105,7 +107,7 @@ Server.prototype.printHelp = function(){
   console.log(this.style.green("-h, --help                        print this help"));
   console.log(this.style.green("\n"));
   console.log(this.style.green("--- example ---"));
-  console.log(this.style.green("./m-server.js --port 6060         start the built-in server in port '6060'"));
+  console.log(this.style.green("./m-server.js --port 6060         start the built-in server on port '6060'"));
   console.log(this.style.green("\n"));
   process.exit(1);
 };

@@ -68,10 +68,10 @@ var that = this,
 
          });
          _library.refs.forEach(function(ref){
-             var _indexOfFile = _akku.indexOf(ref);
+             var _indexOfFile = _akku.indexOf(ref);  // crosscheck, if all files specified in the config file are existing.
              if(_indexOfFile === -1){
                 console.log('WARN:'+that.style.cyan(' Third party file: ')+that.style.magenta(ref)+ that.style.cyan(' was specified, but cant be found in: "')
-                            +that.style.magenta('frameworks/'+framework.name)+that.style.cyan('" coud be a typo!'));
+                            +that.style.magenta('frameworks/'+framework.name)+that.style.cyan('" could be a typo!'));
              }
              framework.app.librariesNamesForIndexHtml.push(ref);     
          });

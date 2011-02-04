@@ -67,7 +67,6 @@ App = exports.App = function (applicationDirectory,server) {
   this.HEAD_IndexHtml = [],
   this.BODY_IndexHtml = [];  
 
-
   this.target    = {};
   this.librariesNamesForIndexHtml = [];
 
@@ -113,6 +112,10 @@ App.prototype.loadJSONConfig = function() {
         this.addOptions(config);
         if(config.proxies){
            this.server.proxies = config.proxies; //adding proxies, if present.
+        }if(config.m_serverPort){
+           this.server.port = config.m_serverPort; //adding specific port, if present.
+        }if(config.m_serverHostname){
+           this.server.hostname = config.m_serverHostname; //adding specific hostname, if present.
         }
     }catch(ex){
        console.log(this.style.red('ERROR:')+this.style.cyan(' - while reading "config.json", error message: '+ex.message));
@@ -186,7 +189,6 @@ if(this.supportedLanguages.length >= 1){
        return new Framework(_frameworkOptions);
     });
 
-
    this.addFrameworks(_i18n);
 }
 
@@ -199,7 +201,10 @@ if(this.supportedLanguages.length >= 1){
  * @param options
  */
 App.prototype.loadTheMProject = function(options) {
-var that = this, _theMProject, _theMProjectResources;
+var that = this, _theMProject, _theMProjectResources,
+    _path_to_the_m_project = (this.touchPath(that.execPath+'/frameworks/The-M-Project'))
+                             ? that.execPath+'/frameworks/The-M-Project'
+                             : that.execPath+'/frameworks/Mproject';
 
  /*
   * Getting all The-M-Project core files
@@ -207,7 +212,7 @@ var that = this, _theMProject, _theMProjectResources;
   */
  _theMProject = ['core','ui'].map(function(module) {
     var _frameworkOptions  = {};
-        _frameworkOptions.path = that.execPath+'/frameworks/Mproject/modules/' + module;
+        _frameworkOptions.path = _path_to_the_m_project+'/modules/' + module;
         _frameworkOptions.name = module;
         _frameworkOptions.app = that;
         _frameworkOptions.frDelimiter = 'modules/';
@@ -226,7 +231,7 @@ var that = this, _theMProject, _theMProjectResources;
    */
   _theMProjectResources = ['jquery','jquery_mobile','underscore','themes'].map(function(module) {
     var _frameworkOptions  = {};
-        _frameworkOptions.path = that.execPath+'/frameworks/Mproject/modules/' + module;
+        _frameworkOptions.path = _path_to_the_m_project+'/modules/' + module;
         _frameworkOptions.name = module;
         _frameworkOptions.app = that;
         _frameworkOptions.frDelimiter = 'modules/';
@@ -247,7 +252,7 @@ var that = this, _theMProject, _theMProjectResources;
 App.prototype.buildIndexHTML = function(callback,_frameworkNamesForIndexHtml,_HEAD_IndexHtml) {
 var _displayName =  (this.displayName) ? this.displayName : this.name,
     _indexHtml = [];
-
+var that = this;
    _indexHtml.push(
       '<!DOCTYPE html>'
     );
@@ -262,14 +267,16 @@ var _displayName =  (this.displayName) ? this.displayName : this.name,
     ); 
     }
 
-
-
     _indexHtml.push(
       '<head>'
     );
 
     if(_HEAD_IndexHtml.length >= 1){
-      _indexHtml.push(_HEAD_IndexHtml);
+       _HEAD_IndexHtml.forEach(function(head){
+            console.log(that.htmlHeader)
+            _indexHtml.push(head);
+        });
+
     }else{ // Fallback header information.
       _indexHtml.push(
         '<meta name="apple-mobile-web-app-capable" content="yes">'+
@@ -301,6 +308,15 @@ var _displayName =  (this.displayName) ? this.displayName : this.name,
            );
         });
     }
+
+    if(this.phoneGapEnvironment){
+       _indexHtml.push('<script type="text/javascript" charset="utf-8" src="phonegap.js"></script>'+
+                       '<script language="JavaScript">var phoneGap = true ;</script>');
+    }else{
+       _indexHtml.push(
+                       '<script language="JavaScript">var phoneGap = false ;</script>');
+    }
+
 
     _indexHtml.push(
         '<script language="JavaScript">var '+this.name+' = '+this.name+ '|| {}; M.Application.name="'+this.name+'";</script>'+
@@ -492,7 +508,7 @@ var that = this,
                  
                    if(_deviceModel.htmlHeader){
                       that.HEAD_IndexHtml = []; // reset, to override the settings that may be made in config.json
-                      that.HEAD_IndexHtml.push(_deviceModel.htmlHeader.toString());
+                      that.HEAD_IndexHtml = _deviceModel.htmlHeader;
                      // console.log(that.HEAD_IndexHtml);
                    }
              }
@@ -535,7 +551,7 @@ var self = this,
 
 
 if(self.htmlHeader){
-   self.HEAD_IndexHtml.push(self.htmlHeader.toString())
+   self.HEAD_IndexHtml = self.htmlHeader;
 }
 
 if(self.targetQuery){

@@ -79,7 +79,6 @@ E.prototype.sequencer =  require('../lib/step');
  */
 E.prototype.logger = require('../lib/node-logger').logger(module,true);
 
-
 /**
  * @property
  * Using the 'optimist' framework, for parsing the arguments.
@@ -93,4 +92,25 @@ E.prototype.argv = require('../lib/optimist').argv;
  */
 E.prototype.printVersionNumber = function(){
   console.log('version is '+this.__version__);
+};
+
+/**
+ * @description
+ * Test ist the given path is a valid directory or file.
+ * @param path {string} the path to test.
+ * @return {boolean} return true if the given path is valid, false otherwise.
+ */
+E.prototype.touchPath = function (path){
+//TODO: uses this as alternative ?!
+/*
+ * path.exists('/etc/passwd', function (exists) {
+ *    sys.debug(exists ? "it's there" : "no passwd!");
+ * });
+ */
+  try{
+    this._e_.fs.statSync(path);
+    return true;
+  }catch(ex){
+    return false
+  }
 };
