@@ -166,6 +166,25 @@ this.TaskSequencer.sequenceThat(
          return fr; // shifting the framework to the next step in the sequencer
 
       },
+      function iCanHazCircle (err,fr){
+        fr.files.forEach(function(file){
+              var _currentFile = file.getName();
+              fr.files.forEach(function(aFile){
+                  if(file.dependencies.indexOf(aFile.getName()) !== -1){
+                       if(aFile.dependencies.indexOf(file.getName()) !== -1){
+                           console.log('\n');
+                           console.log(that.style.red('ERROR:')+that.style.green(" circle in 'm_require' chain!"));
+                           console.log(that.style.cyan(file.getName() + that.style.green(' has a dependency on ') +that.style.cyan(aFile.getName())));
+                           console.log(that.style.cyan(aFile.getName()+ that.style.green(' has a dependency on ') +that.style.cyan(file.getName())));
+                           console.log('\n');
+                           process.exit(1); /* exit the process, reason: circle in m_require chain*/
+                       }
+                  }
+              });
+
+          });
+          return fr;
+      },
       /*Sort the found dependencies*/
       function sortDependencies(err,fr) {
         var _queue  = []; // the queue, needed for the tree sort algorithm.
