@@ -5,6 +5,9 @@
 // Project: {{appName}}
 // ==========================================================================
 
+var {{appName}}  = {{appName}} || {};
+
+{{appName}}.app.entryPage = 'page1';
 
 {{appName}}.app = M.Application.design({
 
