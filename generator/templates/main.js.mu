@@ -7,9 +7,9 @@
 
 var {{appName}}  = {{appName}} || {};
 
-{{appName}}.app.entryPage = 'page1';
-
 {{appName}}.app = M.Application.design({
+
+    entryPage : 'page1',
 
     page1: M.PageView.design({
 
