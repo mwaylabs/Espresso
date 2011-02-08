@@ -55,7 +55,6 @@ var that = this;
         }
 
     });
-     console.log(framework.app.coreNamesForIndexHtml);
 
 callback(framework);
 };
