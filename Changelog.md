@@ -8,7 +8,7 @@
   * Added property: 'm_serverHostname: "Hostname"' to run the built-in server on a custom hostname.
   * Added property: 'htmlHeader' to customize the HEAD entries in the index.html.
   * Added detection of "circles" in the m_require chain.
-  * Added command line arguments for m-server.js
+  * Added command line arguments for m-server.js.
 
 ** Version 0.0.7-1 - Date 01.02.2011 **
 
