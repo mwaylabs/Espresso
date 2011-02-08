@@ -69,10 +69,12 @@ NewProjectGenerator.prototype.printHelp = function(){
   console.log(this.style.green("--- commands ---"));
   console.log(this.style.green("-p, --project [project name]                a new empty project"));
   console.log(this.style.green("-w, --projectHelloWorld [project name]      a new HelloWorld application"));
+  console.log(this.style.green("-d, --dir [custom project directory]        a custom project directory"));
   console.log(this.style.green("-h, --help                                  print this help"));  
   console.log(this.style.green("\n"));
-  console.log(this.style.green("--- example ---"));
-  console.log(this.style.green("node m-init.js --project myNewProject       will generate a new project called: 'myNewProject'"));
+  console.log(this.style.green("--- example usage---"));
+  console.log(this.style.green("node m-init.js --project myNewProject                   will generate a new project called: 'myNewProject'"));
+  console.log(this.style.green("node m-init.js -d myNewProject -d /Users/Foo/Work      will generate a new project in /Users/Foo/Work"));
   console.log(this.style.green("\n"));
 };
 
@@ -107,52 +109,47 @@ var args = argv, self = this;
 
 NewProjectGenerator.prototype.genProject = function(projectName,args){
  var self = this;
-  //console.log(args);
- /*   
-    if((args.dir || args.d) && ((typeof args.dir === 'string') ||(typeof args.d === 'string'))){
-    
-         console.log('Dir = '+ t);
-    } */
+     self.path = self.outputPath+'Apps/';  
     
       switch(true){
           case((args.dir || args.d) && ((typeof args.dir === 'string') ||(typeof args.d === 'string'))):
-             var t = (args.dir) ? args.dir : args.d;
-          //    console.log('Dir = '+(args.dir) ? args.dir : args.d);
-                  
+             var t = (args.dir) ? args.dir : args.d;            
+             self.path = t+'/';   
           break;
           default:
-         //   console.log('Dir = '+ self.outputPath+'Apps/');
-
+             self.path = self.outputPath+'Apps/';   
       }
 
+    
       self._outP = [];
-      self._outP.push( self.outputPath+'Apps/'+self.projectName);
-      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/app');
-      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/app/resources');
-      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/app/resources/base');
+      self._outP.push( self.path+self.projectName);
+      self._outP.push( self.path+self.projectName+'/app');
+      self._outP.push( self.path+self.projectName+'/app/resources');
+      self._outP.push( self.path+self.projectName+'/app/resources/base');
     
-      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks');
-      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/The-M-Project');
-      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/The-M-Project/modules');
-      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/The-M-Project/modules/core');
-      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/The-M-Project/modules/core/datastore');
-      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/The-M-Project/modules/core/datastore/validators');
-      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/The-M-Project/modules/core/foundation');
-      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/The-M-Project/modules/core/utility');
-      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/The-M-Project/modules/core/utility/cypher_algorithms');
+      self._outP.push( self.path+self.projectName+'/frameworks');
+      self._outP.push( self.path+self.projectName+'/frameworks/The-M-Project');
+      self._outP.push( self.path+self.projectName+'/frameworks/The-M-Project/modules');
+      self._outP.push( self.path+self.projectName+'/frameworks/The-M-Project/modules/core');
+      self._outP.push( self.path+self.projectName+'/frameworks/The-M-Project/modules/core/datastore');
+      self._outP.push( self.path+self.projectName+'/frameworks/The-M-Project/modules/core/datastore/validators');
+      self._outP.push( self.path+self.projectName+'/frameworks/The-M-Project/modules/core/foundation');
+      self._outP.push( self.path+self.projectName+'/frameworks/The-M-Project/modules/core/utility');
+      self._outP.push( self.path+self.projectName+'/frameworks/The-M-Project/modules/core/utility/cypher_algorithms');
 
-      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/The-M-Project/modules/ui');
-      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/The-M-Project/modules/ui/dialogs');
+      self._outP.push( self.path+self.projectName+'/frameworks/The-M-Project/modules/ui');
+      self._outP.push( self.path+self.projectName+'/frameworks/The-M-Project/modules/ui/dialogs');
     
-      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/The-M-Project/modules/jquery');
+      self._outP.push( self.path+self.projectName+'/frameworks/The-M-Project/modules/jquery');
 
-      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/The-M-Project/modules/jquery_mobile');
+      self._outP.push( self.path+self.projectName+'/frameworks/The-M-Project/modules/jquery_mobile');
 
-      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/The-M-Project/modules/themes');
-      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/The-M-Project/modules/themes/jquery_mobile');
-      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/The-M-Project/modules/themes/jquery_mobile/images');
+      self._outP.push( self.path+self.projectName+'/frameworks/The-M-Project/modules/themes');
+      self._outP.push( self.path+self.projectName+'/frameworks/The-M-Project/modules/themes/jquery_mobile');
+      self._outP.push( self.path+self.projectName+'/frameworks/The-M-Project/modules/themes/jquery_mobile/images');
 
-      self._outP.push( self.outputPath+'Apps/'+self.projectName+'/frameworks/The-M-Project/modules/underscore');
+      self._outP.push( self.path+self.projectName+'/frameworks/The-M-Project/modules/underscore');
+
 
 
       /**
@@ -209,6 +206,7 @@ NewProjectGenerator.prototype.genProject = function(projectName,args){
       self.Mu.templateRoot = self._templatePath;
 
        var ctx = {
+            espresso: self.espressoPath,
             appName: self.projectName
         };
 
@@ -220,11 +218,11 @@ NewProjectGenerator.prototype.genProject = function(projectName,args){
               var buffer = '';
               output.addListener('data', function (c) {buffer += c; })
                         .addListener('end', function () {
-                     self._e_.fs.writeFile(self.outputPath+'Apps/'+self.projectName+'/'+_templateFile, buffer, function (err) {
+                     self._e_.fs.writeFile(self.path+self.projectName+'/'+_templateFile, buffer, function (err) {
                         if (err){ throw err; }
                        self._e_.sys.puts(_templateFile+' generated!');
                         /*Making the build tools executable */
-                        self._e_.fs.chmod(self.outputPath+'Apps/'+self.projectName+'/'+_templateFile, 0777, function (err){
+                        self._e_.fs.chmod(self.path+self.projectName+'/'+_templateFile, 0777, function (err){
                                if (err){ throw err; }
                           that._folderCounter -= 1;
                           that._generateBuildFiles(files);
@@ -275,7 +273,7 @@ NewProjectGenerator.prototype.genProject = function(projectName,args){
               var buffer = '';
               output.addListener('data', function (c) {buffer += c; })
                     .addListener('end', function () {
-                      self._e_.fs.writeFile(self.outputPath+'Apps/'+self.projectName+'/app/main.js', buffer, function (err) {
+                      self._e_.fs.writeFile(self.path+self.projectName+'/app/main.js', buffer, function (err) {
                         if (err){ throw err; }
                         self._e_.sys.puts('main.js generated!');
                           that._folderCounter -= 1;
@@ -363,7 +361,7 @@ NewProjectGenerator.prototype.genProject = function(projectName,args){
               var fileTarget = current_File.path.split('frameworks/')[1];
               fileTarget = fileTarget.split(current_File.getBaseName()+current_File.getFileExtension())[0];
               self._e_.sys.pump(self._e_.fs.createReadStream(current_File.path),
-                      self._e_.fs.createWriteStream(self.outputPath+'Apps/'+self.projectName+'/frameworks/'+fileTarget+current_File.getBaseName()+current_File.getFileExtension()),
+                      self._e_.fs.createWriteStream(self.path+self.projectName+'/frameworks/'+fileTarget+current_File.getBaseName()+current_File.getFileExtension()),
                       function(err){
                           if(err) {throw err}
                           that._folderCounter--;
@@ -383,7 +381,7 @@ NewProjectGenerator.prototype.genProject = function(projectName,args){
   self._e_.fs.mkdir(self.outputPath+'Apps', 0777, function(err){
       if(err){
          console.log("\n");
-         console.log(self.style.green('New project at: "')+self.style.cyan(self.outputPath+'Apps/'+self.projectName));
+         console.log(self.style.green('New project at: "')+self.style.cyan(self.path+self.projectName));
          console.log("\n");  
       }
 
@@ -432,7 +430,7 @@ var self = this;
          var buffer = '';
          output.addListener('data', function (c) {buffer += c; })
                 .addListener('end', function () {
-                   self._e_.fs.writeFile(self.outputPath+'Apps/'+self.projectName+'/app/resources/base/style.css', buffer, function (err) {
+                   self._e_.fs.writeFile(self.path+self.projectName+'/app/resources/base/style.css', buffer, function (err) {
                      if (err){ throw err; }
                      self._e_.sys.puts('style.css generated!');
                      //cb();
