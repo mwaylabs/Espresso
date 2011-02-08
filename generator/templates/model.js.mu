@@ -24,4 +24,4 @@
         validators: [M.NumberValidator]
     })
 
-}, M.LocalStorageProvider);
+}, M.DataProviderLocalStorage);
