@@ -57,7 +57,8 @@ Task_Dependency = exports.Task_Dependency = function() {
  */
 Task_Dependency.prototype = new Task;
 
-
+//TODO: Refactor this task, remove the use of TaskSequencer (no use for it anymore).
+//TODO: Spilt the duty function into four functions, to gain more maintainability.
 /**
  * The duty of this task.
  * @param framework the reference to the framework this task is working with. 
@@ -76,8 +77,6 @@ this.TaskSequencer.sequenceThat(
                   * ^[/\*]+\s*m_require
                   * */
                   _re = new RegExp("m_require\\([\"'](.*?)[\"']\\)", "g");
-
-   //console.log('File :'+file.getBaseName()); //+ ' bytes = ' + file.content.toString('utf-8', 0, 50)); //+ ' reg ex = ' + _re.exec(file.content));
                   var f = file.content.toString();
                   while (_match = _re.exec(file.content)) {
                  //     console.log('match : '+_match);
