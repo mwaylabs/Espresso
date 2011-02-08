@@ -42,13 +42,19 @@ Task_MarkCoreFiles.prototype = new Task();
 Task_MarkCoreFiles.prototype.duty = function(framework,callback){
 var that = this;
 
+    if(!framework.app.coreNamesOBj){
+        framework.app.coreNamesOBj = {};
+    }
+
     framework.files.forEach(function(file){
        switch (true) {
             case (file.isJavaScript()):
-              framework.app.coreNamesForIndexHtml.push( '<script type="text/javascript" src="'+file.getBaseName()+file.getFileExtension()+'"></script>');
+              framework.app.coreNamesOBj[framework.name]
+                      = '<script type="text/javascript" src="'+file.getBaseName()+file.getFileExtension()+'"></script>';
               break
             case (file.isStylesheet()):
-              framework.app.coreNamesForIndexHtml.push('<link type="text/css" href="theme/'+file.getBaseName()+file.getFileExtension()+'" rel="stylesheet" />');
+              framework.app.coreNamesOBj[framework.name]
+                      = '<link type="text/css" href="theme/'+file.getBaseName()+file.getFileExtension()+'" rel="stylesheet" />';       
               break;
             default:
               break;

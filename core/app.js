@@ -626,12 +626,16 @@ var _AppBuilder = function(app, callback) {
             new _AppBuilder(self, this).build();
           },
           function(err,frameworks){
-            if(err){throw err;}
-            self.buildIndexHTML(this,self.librariesNamesForIndexHtml,self.HEAD_IndexHtml)
+             if(err){throw err;}
+             self.prepareHTMLGeneration(this);
           },
           function(err,frameworks){
             if(err){throw err;}
-            self.buildManifest(this)
+            self.buildIndexHTML(this,self.librariesNamesForIndexHtml,self.HEAD_IndexHtml);
+          },
+          function(err,frameworks){
+            if(err){throw err;}
+            self.buildManifest(this);
           },
           function(err,frameworks){
             if(err){throw err;}
@@ -641,6 +645,21 @@ var _AppBuilder = function(app, callback) {
 
 };
 
+/**
+ * @description
+ * Sort all resolved entries for index.html.
+ * @param callback
+ */
+App.prototype.prepareHTMLGeneration = function(callback){
+var self = this;
+    
+    self.coreNamesForIndexHtml.push(self.coreNamesOBj['jquery']);
+    self.coreNamesForIndexHtml.push(self.coreNamesOBj['jquery_mobile']);
+    self.coreNamesForIndexHtml.push(self.coreNamesOBj['underscore']);
+    self.coreNamesForIndexHtml.push(self.coreNamesOBj['themes']);
+
+    callback(null,self.frameworks);
+};
 
 /**
  * @description

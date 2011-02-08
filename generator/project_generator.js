@@ -75,7 +75,7 @@ NewProjectGenerator.prototype.printHelp = function(){
   console.log(this.style.green("-h, --help                                  print this help"));  
   console.log(this.style.green("\n"));
   console.log(this.style.green("--- example usage---"));
-  console.log(this.style.green("node m-init.js --project myNewProject                   will generate a new project called: 'myNewProject'"));
+  console.log(this.style.green("node m-init.js --project myNewProject                  will generate a new project called: 'myNewProject'"));
   console.log(this.style.green("node m-init.js -d myNewProject -d /Users/Foo/Work      will generate a new project in /Users/Foo/Work"));
   console.log(this.style.green("\n"));
 };
