@@ -73,6 +73,7 @@ App = exports.App = function (applicationDirectory,server) {
 
   this.target    = {};
   this.librariesNamesForIndexHtml = [];
+  this.coreNamesForIndexHtml      = [];
 
   this.manifest  = {
     "cache"   :[],
@@ -241,7 +242,7 @@ var that = this, _theMProject, _theMProjectResources,
         _frameworkOptions.frDelimiter = 'modules/';
         _frameworkOptions.excludedFolders = that.excludedFolders;
         _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
-        _frameworkOptions.taskChain = new TaskManager(["contentType","manifest"]).getTaskChain();
+        _frameworkOptions.taskChain = new TaskManager(["contentType","markCore","manifest"]).getTaskChain();
        return new Framework(_frameworkOptions);
     });
 
@@ -290,12 +291,22 @@ var that = this;
 
     _indexHtml.push(
         '<meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">'+
-        '<title>'+_displayName+'</title>'+
-        '<link type="text/css" href="theme/jquery.mobile-1.0a3pre.min.css" rel="stylesheet" />'+
+        '<title>'+_displayName+'</title>'
+    );
+
+   // Adding jQuery, jQuery Mobile, jQuery Mobile CSS and underscore.
+    this.coreNamesForIndexHtml.forEach(function(entry){
+             _indexHtml.push(entry);
+    });
+
+ /*  _indexHtml.push(
+        '<link type="text/css" href="theme/jquery.mobile-1.0a3.min.css" rel="stylesheet" />'+
+        '<script type="text/javascript" src="jquery-1.5.min.js"></script>'+
+        '<script type="text/javascript" src="jquery.mobile-1.0a3.min.js"></script>'+
+        '<script type="text/javascript" src="underscore-min.js"></script>'
+    ); */
+   _indexHtml.push(
         '<link type="text/css" href="theme/style.css" rel="stylesheet" />'+
-        '<script type="text/javascript" src="jquery-1.4.4.min.js"></script>'+
-        '<script type="text/javascript" src="jquery.mobile-1.0a3pre.min.js"></script>'+
-        '<script type="text/javascript" src="underscore-min.js"></script>'+
         '<script type="text/javascript" src="core.js"></script>'+
         '<script type="text/javascript" src="ui.js"></script>'
     );
