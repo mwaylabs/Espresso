@@ -39,7 +39,9 @@ var Generator = require('./generator').Generator,
  *
  */
 NewProjectGenerator = exports.NewProjectGenerator = function() {
-
+    
+  this._templatePath = __dirname + '/templates';   
+      
   /* Properties */
   this.projectName = '';
   this.isHelloWorldProject = false;
@@ -54,7 +56,7 @@ NewProjectGenerator = exports.NewProjectGenerator = function() {
 };
 
 
-NewProjectGenerator.prototype = new Generator;
+NewProjectGenerator.prototype = new Generator();
 
 
 /**
@@ -420,6 +422,8 @@ NewProjectGenerator.prototype.genProject = function(projectName,args){
 
 NewProjectGenerator.prototype.genStyleCSS = function(cb){
 var self = this;
+    
+    //__dirname + '/templates
         /*setting the template sources*/
        this.Mu.templateRoot = this._templatePath;
     
