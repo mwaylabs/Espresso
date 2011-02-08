@@ -46,7 +46,7 @@ Server = exports.Server = function(args) {
   //this.files = {};  /* = the files, that should be served by  this server */
   this.files;  /* = the files, that should be served by  this server */
 
-  if(args){
+  if(this.argv.$0 === 'node ./m-server.js'){
     this.addProperties(this.argv); 
   }
 

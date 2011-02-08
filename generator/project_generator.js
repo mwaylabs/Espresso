@@ -89,14 +89,14 @@ var args = argv, self = this;
       case (args.help || args.h):
         self.printHelp();
         break;
-      case ( (args.project || args.p) && ((typeof args.project === 'string') ||(typeof args.p === 'string'))):
+      case ((args.project || args.p) && ((typeof args.project === 'string') ||(typeof args.p === 'string'))):
         self.projectName = (args.project) ? args.project : args.p;
-        self.genProject(self.projectName);
+        self.genProject(self.projectName,argv);
         break;
       case ((args.projectHelloWorld || args.w) && ((typeof args.projectHelloWorld === 'string') ||(typeof args.w === 'string'))):
         self.projectName = (args.projectHelloWorld) ? args.projectHelloWorld : args.w;
         self.isHelloWorldProject = true;      
-        self.genProject(self.projectName);           
+        self.genProject(self.projectName,argv);           
         break;
       default:
         self.printHelp();
@@ -105,8 +105,25 @@ var args = argv, self = this;
 };
 
 
-NewProjectGenerator.prototype.genProject = function(projectName){
-  var self = this;
+NewProjectGenerator.prototype.genProject = function(projectName,args){
+ var self = this;
+  //console.log(args);
+ /*   
+    if((args.dir || args.d) && ((typeof args.dir === 'string') ||(typeof args.d === 'string'))){
+    
+         console.log('Dir = '+ t);
+    } */
+    
+      switch(true){
+          case((args.dir || args.d) && ((typeof args.dir === 'string') ||(typeof args.d === 'string'))):
+             var t = (args.dir) ? args.dir : args.d;
+          //    console.log('Dir = '+(args.dir) ? args.dir : args.d);
+                  
+          break;
+          default:
+         //   console.log('Dir = '+ self.outputPath+'Apps/');
+
+      }
 
       self._outP = [];
       self._outP.push( self.outputPath+'Apps/'+self.projectName);
