@@ -11,7 +11,9 @@
 var E = require('./e').E,
     Server,
     Proxy = require('./proxy').Proxy;
-    App = require('./app').App;
+var App = require('./app').App;
+var userAgent = require( '../lib/useragent' );
+
 
 
 
@@ -36,7 +38,7 @@ var E = require('./e').E,
 Server = exports.Server = function(args) {
 
   /*Properties*/
-  this.hostname = '127.0.0.1'; //default address
+  this.hostname = '127.0.0.1'; //default address    
   this.port = 8000; //default port
 
   this.proxies = [];
@@ -243,8 +245,17 @@ var that = this,
         _requestedURL = that._e_.url.parse(request.url);
         that._e_.sys.puts('requesting : '+_requestedURL.pathname);
 
+        var userAgentString = request.headers['user-agent'],
+			ua_obj = userAgent.parser( userAgentString ),
+			is = userAgent.browser( userAgentString );
+
+        console.log('ua_obj =  '+ JSON.stringify( ua_obj ));
+        console.log('ua_obj =  '+ ua_obj.pretty());
+        console.log('OS =  '+ ua_obj.prettyOs());
+        
         if((_requestedURL.pathname === '/'+_applicationName)){
-            that.files = null;
+
+            that.files = {};
             that.hostedApps = [];  
             var t = that._e_.path.join(__dirname, '..','..', 'Apps', _applicationName);
             console.log('Build '+t);
@@ -262,9 +273,7 @@ var that = this,
                     that.deliverThat(response,_file);
                 })
             });
-
-
-
+            
         }else{
             _file = that.files[(_requestedURL.pathname === '/'+_applicationName) ? '/index.html' : _requestedURL.pathname];
               if (_file === undefined) {

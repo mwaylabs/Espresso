@@ -22,7 +22,7 @@ var E;
  * @constructor
  */
 E = exports.E = function() {
-    this.__version__ = '0.0.8-pre';  // Espresso version.
+    this.__version__ = '0.0.8';  // Espresso version.
 };
 
 /**
@@ -91,7 +91,7 @@ E.prototype.argv = require('../lib/optimist').argv;
  * Prints the current version number of Espresso.
  */
 E.prototype.printVersionNumber = function(){
-  console.log('version is '+this.__version__);
+  console.log('Espresso, version: '+this.__version__);
 };
 
 /**
@@ -101,12 +101,6 @@ E.prototype.printVersionNumber = function(){
  * @return {boolean} return true if the given path is valid, false otherwise.
  */
 E.prototype.touchPath = function (path){
-//TODO: uses this as alternative ?!
-/*
- * path.exists('/etc/passwd', function (exists) {
- *    sys.debug(exists ? "it's there" : "no passwd!");
- * });
- */
   try{
     this._e_.fs.statSync(path);
     return true;

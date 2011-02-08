@@ -42,27 +42,31 @@ App = exports.App = function (applicationDirectory,server) {
 
   /* Build configuration */
   this.displayName;
-  this.excludedFromCaching = [];
   this.targetQuery;
   this.libraries;
 
-  this.clear        = '';
-  this.name         = 'defaultName';
-  this.server       = server;
-  this.buildVersion = Date.now();  // timestamp of the build.
-  this.theme        = 'deafult';
-  this.outputFolder = 'build'; // name of the output folder, default is 'build'.
-  this.jslintCheck  = false;
-  this.minify       = false;  // uses minfiy task ?! default is false
-  this.buildManifestFile = true;  // build with offline manifest ?! default is true
-  this.execPath     = "";  //  the a actually folder name, in which the application is located.
-  this.taskChain    = new Array();
+  this.server            = server;
+  this.buildVersion      = Date.now();  // timestamp of the build.
 
-  this.proxies            = [];
-  this.supportedLanguages = [];
-  this.excludedFolders    = [];
-  this.excludedFiles      = [];
-  this.frameworks         = [];
+  this.clear             = '';
+  this.execPath          = '';  //  the a actually folder name, in which the application is located.  
+  this.name              = 'defaultName';
+  this.theme             = 'deafult';
+  this.outputFolder      = 'build'; // name of the output folder, default is 'build'.
+  this.environment       = 'Web';
+
+  /* Build switches */  
+  this.jslintCheck       = false;
+  this.minify            = false;  // uses minfiy task ?! default is false
+  this.offlineManifest   = true;  // build with offline manifest ?! default is true
+
+  this.taskChain           = [];
+  this.proxies             = [];
+  this.supportedLanguages  = [];
+  this.excludedFolders     = [];
+  this.excludedFiles       = [];
+  this.excludedFromCaching = [];  
+  this.frameworks          = [];
 
   this.HEAD_IndexHtml = [],
   this.BODY_IndexHtml = [];  
@@ -175,22 +179,22 @@ var that = this,
 
  this.addFrameworks(_theApplicationResources);
 
-if(this.supportedLanguages.length >= 1){
+ if(this.supportedLanguages.length >= 1){
 
- _i18n = ['app/resources/i18n'].map(function(module) {
-    var _frameworkOptions  = {};
-        _frameworkOptions.path = that.execPath + '/' + module;
-        _frameworkOptions.name = 'i18n';
-        _frameworkOptions.frDelimiter = that.execPath+'/';
-        _frameworkOptions.excludedFolders = that.excludedFolders;
-        _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
-        _frameworkOptions.app = that;
-        _frameworkOptions.taskChain = new TaskManager(["contentType","manifest"]).getTaskChain();
-       return new Framework(_frameworkOptions);
-    });
+     _i18n = ['app/resources/i18n'].map(function(module) {
+        var _frameworkOptions  = {};
+            _frameworkOptions.path = that.execPath + '/' + module;
+            _frameworkOptions.name = 'i18n';
+            _frameworkOptions.frDelimiter = that.execPath+'/';
+            _frameworkOptions.excludedFolders = that.excludedFolders;
+            _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
+            _frameworkOptions.app = that;
+            _frameworkOptions.taskChain = new TaskManager(["contentType","manifest"]).getTaskChain();
+           return new Framework(_frameworkOptions);
+        });
 
-   this.addFrameworks(_i18n);
-}
+       this.addFrameworks(_i18n);
+ }
 
 };
 
@@ -257,7 +261,7 @@ var that = this;
       '<!DOCTYPE html>'
     );
 
-    if(!this.buildManifestFile){
+    if(!this.offlineManifest){
        _indexHtml.push(
       '<html>'
      );
@@ -273,7 +277,6 @@ var that = this;
 
     if(_HEAD_IndexHtml.length >= 1){
        _HEAD_IndexHtml.forEach(function(head){
-            console.log(that.htmlHeader)
             _indexHtml.push(head);
         });
 
@@ -309,12 +312,12 @@ var that = this;
         });
     }
 
-    if(this.phoneGapEnvironment){
+    if((this.environment) && (this.environment === "PhoneGap" )){
        _indexHtml.push('<script type="text/javascript" charset="utf-8" src="phonegap.js"></script>'+
-                       '<script language="JavaScript">var phoneGap = true ;</script>');
+                       '<script language="JavaScript">var PhoneGap = true;</script>');
     }else{
        _indexHtml.push(
-                       '<script language="JavaScript">var phoneGap = false ;</script>');
+                       '<script language="JavaScript">var PhoneGap = false;</script>');
     }
 
 
@@ -375,7 +378,7 @@ App.prototype.buildManifest = function(callback){
 var self = this, _cacheManifest = [];
 
 
-if(!self.buildManifestFile){
+if(!self.offlineManifest){
    callback();
 }
 
@@ -683,7 +686,7 @@ App.prototype.saveLocal = function(callback){
  * @param callback
  */
 App.prototype.prepareForServer = function(callback){
-    var self = this;
+var self = this;
     
     var _AppPreparer = function(app, callback){
         var that  = this;
