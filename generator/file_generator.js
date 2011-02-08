@@ -37,7 +37,7 @@ var Generator = require('./generator').Generator,
  * @extends Generator
  */
 FileGenerator = exports.FileGenerator = function() {
-  this.Mu.templateRoot = '../../Espresso/' + this._templatePath; //extending the template path from prototype
+  this.Mu.templateRoot = __dirname + '/templates/'; //this._templatePath; //extending the template path from prototype
 };
 
 /**
