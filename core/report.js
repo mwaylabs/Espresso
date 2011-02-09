@@ -37,7 +37,7 @@ Report = exports.Report = function(properties) {
 /*
  * Getting all basic Espresso functions from the root prototype: E
  */
-Report.prototype = new E;
+Report.prototype = new E();
 
 /**
  * Adds the given properties, to the Report object.

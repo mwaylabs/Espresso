@@ -22,7 +22,8 @@ var E = require('../core/e').E,
  */
 Generator = exports.Generator = function() {
   /* Properties */ 
-   this._templatePath = './generator/templates';  // path to mustache templates.
+  // this._templatePath = './generator/templates';  // path to mustache templates.
+  // this._templatePath = __dirname + '/templates/';
    this.projectName = '';   // the name of the application.
    this.outputPath=''; 
 };

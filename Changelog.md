@@ -1,3 +1,11 @@
+** Version 0.0.8-1 - Date 09.02.2011 **
+
+  * Fixed bug: jQuery, jQuery Mobile and underscore are now sorted in the needed order
+    before they are included into the index.html.
+  * Added new command line arguments for m-init.js: '-d, --dir [custom project directory]  a custom project directory'
+    node m-init.js -p myNewProject -d /Users/Foo/Work      will generate a new project in /Users/Foo/Work"
+
+
 ** Version 0.0.8 - Date 08.02.2011 **
 
   * Added property: 'offlineManifest: true/false' in the config.json, to switch on/off the generation of the

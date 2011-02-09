@@ -56,7 +56,7 @@ Server = exports.Server = function(args) {
 /*
  * Getting all basic Espresso functions from the root prototype: M
  */
-Server.prototype = new E;
+Server.prototype = new E();
 
 /**
  * @property
@@ -100,7 +100,7 @@ Server.prototype.addProperties = function(args){
  */
 Server.prototype.printHelp = function(){
   console.log(this.style.green("=== m-server.js === "));
-  console.log(this.style.green("Espresso "+this.__version__));
+  console.log(this.style.green("Espresso v"+this.__version__));
   console.log(this.style.green("command line tool to compile and run the application for testing business in a webbrowser"));
   console.log(this.style.green("\n"));
   console.log(this.style.green("--- commands ---"));
