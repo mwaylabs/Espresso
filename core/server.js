@@ -10,9 +10,9 @@
 
 var E = require('./e').E,
     Server,
-    Proxy = require('./proxy').Proxy;
-var App = require('./app').App;
-var userAgent = require( '../lib/useragent' );
+    Proxy = require('./proxy').Proxy,
+    App = require('./app').App,
+    userAgent = require( '../lib/useragent' );
 
 
 
@@ -35,18 +35,20 @@ var userAgent = require( '../lib/useragent' );
  *
  * @constructor
  */
-Server = exports.Server = function(args) {
+Server = exports.Server = function(dirname) {
 
   /*Properties*/
   this.hostname = '127.0.0.1'; //default address    
   this.port = 8000; //default port
+
+  this.projectDirName = dirname;  
 
   this.proxies = [];
   this.hostedApps = [];   /* = the applications managed by this server */
   //this.files = {};  /* = the files, that should be served by  this server */
   this.files;  /* = the files, that should be served by  this server */
 
-  if(this.argv.$0 === 'node ./m-server.js'){
+  if(this.argv.$0 !== 'node ./m-build.js'){
     this.addProperties(this.argv); 
   }
 
@@ -56,7 +58,7 @@ Server = exports.Server = function(args) {
 /*
  * Getting all basic Espresso functions from the root prototype: M
  */
-Server.prototype = new E();
+require('sys').inherits(Server, E);
 
 /**
  * @property
@@ -123,7 +125,12 @@ Server.prototype.printHelp = function(){
  * @param appOptions, the option/properties for the new App object.
  */
 Server.prototype.getNewApp = function(applicationDirectory) {
- var _app = new App(applicationDirectory,this);
+ var _app;
+
+    _app  = new App(applicationDirectory,this);  
+
+
+// var _app = new App(applicationDirectory,this);
  this.hostedApps.push(_app); /* saving the app in local array */
  return _app;
 };
@@ -234,60 +241,69 @@ var that = this;
  * Run the server, and waiting for requests.
  * @param appName, name of the application.
  */
-Server.prototype.run2 = function(appName) {
+Server.prototype.runDevServer = function(appName) {
 var that = this,
     _file,_requestedURL,
     _applicationName =  (appName) ? appName : '';
 
     that._e_.http.createServer(function (request, response) {
-        // var path = _e_.url.parse(request.url).pathname.slice(1);
-        //  _e_.sys.puts(path);
         _requestedURL = that._e_.url.parse(request.url);
-        that._e_.sys.puts('requesting : '+_requestedURL.pathname);
 
         var userAgentString = request.headers['user-agent'],
-			ua_obj = userAgent.parser( userAgentString ),
-			is = userAgent.browser( userAgentString );
+			_ua      = userAgent.parser( userAgentString ),
+			_browser = userAgent.browser( userAgentString );
 
-        console.log('ua_obj =  '+ JSON.stringify( ua_obj ));
-        console.log('ua_obj =  '+ ua_obj.pretty());
-        console.log('OS =  '+ ua_obj.prettyOs());
-        
-        if((_requestedURL.pathname === '/'+_applicationName)){
+          //console.log( 'requesting : '+_requestedURL.pathname);
 
+        //  console.log(_ua.pretty());
+
+          if((_requestedURL.pathname === '/'+_applicationName)){
             that.files = {};
-            that.hostedApps = [];  
-            var t = that._e_.path.join(__dirname, '..','..', 'Apps', _applicationName);
-            console.log('Build '+t);
-            var app = that.getNewApp(t);
-     
-            app.loadTheApplication();
+            that.hostedApps = [];
+            // var t = that._e_.path.join(that.projectDirName);
+            //console.log('Build '+t);
+            var app = that.getNewApp(that.projectDirName);
+                app.offlineManifest = false;
 
-            app.loadTheMProject();
+              if(_ua.os.family === "iOS"){
+                  app.targetQuery =   {
+                     "vendor" : "apple"
+                 };
 
-            app.buildManifestFile = false;
-            
-            app.build(function (options) {
-                app.prepareForServer(function (opt){
-                    _file = that.files['/index.html'];
-                    that.deliverThat(response,_file);
-                })
-            });
-            
-        }else{
-            _file = that.files[(_requestedURL.pathname === '/'+_applicationName) ? '/index.html' : _requestedURL.pathname];
-              if (_file === undefined) {
-            that.proxyThat(request, response);
-           // response.writeHead(200, {'Content-Type': 'text/plain'});
-           // response.write('Resource "' + _requestedURL.pathname+ '" not found on server!');
+                 console.log(_ua.os.family);
+                 console.log(_ua.prettyOs());
+
+              }else{
+                 console.log(_ua.os.family);
+                 console.log(_ua.prettyOs());
+              }
+
+                app.loadTheApplication();
+                app.loadTheMProject();
+
+                app.build(function (options) {
+                    app.prepareForServer(function (opt){
+                        _file = that.files['/index.html'];
+                        console.log('/index.html');
+                        that.deliverThat(response,_file);
+                    })
+                });
+              
+          }else{
+              console.log(_requestedURL.pathname);
+            _file = that.files[(_requestedURL.pathname)];
+            if (_file === undefined) {
+                that.proxyThat(request, response);
+
             } else {
                 that.deliverThat(response,_file);
             }
-        }
-      //  console.log(that.files[(_requestedURL.pathname === '/'+_applicationName) ? '/index.html' : _requestedURL.pathname]);
+
+          }
 
     }).listen(that.port);
-    console.log('Server running at http://'+that.hostname+':' + that.port+'/'+_applicationName);
+    var _thatPort = (that.commandLinePort) ? that.commandLinePort : that.port;
+    console.log('Server running at http://'+that.hostname+':' + _thatPort +'/'+_applicationName);
 };
 
 
@@ -303,17 +319,12 @@ var that = this,
     _applicationName =  (appName) ? appName : '';
 
     that._e_.http.createServer(function (request, response) {
-        // var path = _e_.url.parse(request.url).pathname.slice(1);
-        //  _e_.sys.puts(path);
         _requestedURL = that._e_.url.parse(request.url);
         that._e_.sys.puts('requesting : '+_requestedURL.pathname);
-
         _file = that.files[(_requestedURL.pathname === '/'+_applicationName) ? '/index.html' : _requestedURL.pathname];
 
         if (_file === undefined) {
             that.proxyThat(request, response);
-           // response.writeHead(200, {'Content-Type': 'text/plain'});
-           // response.write('Resource "' + _requestedURL.pathname+ '" not found on server!');
         } else {
             that.deliverThat(response,_file);
         }          

@@ -49,10 +49,12 @@ Resource = exports.Resource = function (properties) {
   }
 };
 
+
 /*
- * Getting all basic Espresso functions from the root prototype: M
+ * Getting all basic Espresso functions from Framework
  */
-Resource.prototype = new Framework();
+require('sys').inherits(Resource, Framework);
+
 
 /**
  * @description
@@ -117,9 +119,7 @@ Resource.prototype.gatherResources = function (cb) {
  *
  */
 Resource.prototype.evaluateTargetConfig = function () {
-  var _target = this.app.target;
-  //console.log('target = ');
-  //console.log(_target);
+ var _target = this.app.target;
 
   if (_target) {
     if (_target.manufacturer) {

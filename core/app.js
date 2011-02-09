@@ -83,7 +83,9 @@ App = exports.App = function (applicationDirectory,server) {
 
   if(applicationDirectory){
       this.execPath = applicationDirectory;
-      this.loadJSONConfig();
+
+         this.loadJSONConfig(); 
+
   }
   console.log("\n");
 };
@@ -269,8 +271,8 @@ var that = this;
     }else{
            _indexHtml.push(
       '<html manifest="cache.manifest">'
-    ); 
-    }
+        ); 
+    }3
 
     _indexHtml.push(
       '<head>'
@@ -529,8 +531,10 @@ var that = this,
            }
         }
     }catch(ex){
-       console.log(this.style.red('ERROR:')+this.style.cyan(' - while reading "targets.json", error message: '+ex.message));
-       process.exit(1);
+       if(ex.errno !== 2){ // File not found
+         console.log(this.style.red('ERROR:')+this.style.cyan(' - while reading "targets.json", error message: '+ex.message));
+         process.exit(1);  
+       }
     }
 
 };
@@ -559,6 +563,93 @@ var that = this;
  * The function tat builds the application.
  * @param callback that should be called after the build.
  */
+App.prototype.build = function(callback){
+var self = this,
+    _frameworks = [];
+
+
+if(self.htmlHeader){
+   self.HEAD_IndexHtml = self.htmlHeader;
+}
+
+if(self.targetQuery){
+   this.readTargetConfig(self.targetQuery);
+}
+
+
+if(self.libraries){
+   self.libraries.forEach(function(fr){
+         _frameworks.push(fr.name);
+   });
+
+   self.addUsedFrameworks(_frameworks);
+}
+
+var _AppBuilder = function(app, callback) {
+    var that = this;
+    /* amount of used frameworks, for this application. */
+    that._frameworkCounter = app.frameworks.length ;
+
+    /* callback checker, called if all frameworks are built. */
+    that.callbackIfDone = function() {
+      if (callback && that._frameworkCounter <= 0){
+         // console.log('build callback called !');
+          callback(null,self.frameworks);
+      }
+    };
+
+    that.build = function() {
+      console.log(self.style.green("Building components:"));
+      app.frameworks.forEach(function(framework) {
+        framework.build(function(fr) {
+          /* count  = -1 if a framework had been built. */
+          that._frameworkCounter -= 1;
+          console.log(self.style.magenta(fr.name)+self.style.green(': ')+self.style.cyan('done'));
+          //console.log(require('util').inspect(fr.files_with_Dependencies, true, 1));
+          /* check if callback can be called, the condition ist that all frameworks has been build. */
+          that.callbackIfDone();
+        });
+      });
+    };
+  };
+
+  /*
+   *  Build stack:
+   *  1) Build the Application
+   *   11) Build each framework
+   *  2) Build the index.html
+   *  3) Build the cache manifest, after all frameworks had been built.
+   *  4) Call callback, which leads to the next step of the build OR server process.
+   *
+   */
+ // new _AppBuilder(self, function(){self.buildIndexHTML(function(){self.buildManifest(callback)},self.librariesNamesForIndexHtml,_HEAD_IndexHtml)}).build();
+
+     self.sequencer(
+          function(){
+            console.log(self.style.green('Building application: "')+self.style.magenta(this.name)+self.style.green('"'));
+            new _AppBuilder(self, this).build();
+          },
+          function(err,frameworks){
+             if(err){throw err;}
+             self.prepareHTMLGeneration(this);
+          },
+          function(err,frameworks){
+            if(err){throw err;}
+            self.buildIndexHTML(this,self.librariesNamesForIndexHtml,self.HEAD_IndexHtml);
+          },
+          function(err,frameworks){
+            if(err){throw err;}
+            self.buildManifest(this);
+          },
+          function(err,frameworks){
+            if(err){throw err;}
+             callback();
+          }
+     );
+
+};
+
+
 App.prototype.build = function(callback){
 var self = this,
     _frameworks = [];
