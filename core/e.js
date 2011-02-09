@@ -22,7 +22,7 @@ var E;
  * @constructor
  */
 E = exports.E = function() {
-    this.__version__ = '0.0.9-pre';  // Espresso version.
+    this.__version__ = '0.0.8-1';  // Espresso version.
 };
 
 /**

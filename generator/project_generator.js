@@ -65,7 +65,7 @@ NewProjectGenerator.prototype = new Generator();
  */
 NewProjectGenerator.prototype.printHelp = function(){
   console.log(this.style.green("=== m-init.js === "));
-  console.log(this.style.green("Espresso "+this.__version__));  
+  console.log(this.style.green("Espresso v"+this.__version__));  
   console.log(this.style.green("command line tool to generate a new project "));
   console.log(this.style.green("\n"));
   console.log(this.style.green("--- commands ---"));
@@ -76,7 +76,7 @@ NewProjectGenerator.prototype.printHelp = function(){
   console.log(this.style.green("\n"));
   console.log(this.style.green("--- example usage---"));
   console.log(this.style.green("node m-init.js --project myNewProject                  will generate a new project called: 'myNewProject'"));
-  console.log(this.style.green("node m-init.js -d myNewProject -d /Users/Foo/Work      will generate a new project in /Users/Foo/Work"));
+  console.log(this.style.green("node m-init.js -p myNewProject -d /Users/Foo/Work      will generate a new project in /Users/Foo/Work"));
   console.log(this.style.green("\n"));
 };
 
@@ -124,33 +124,28 @@ NewProjectGenerator.prototype.genProject = function(projectName,args){
 
     
       self._outP = [];
-      self._outP.push( self.path+self.projectName);
-      self._outP.push( self.path+self.projectName+'/app');
-      self._outP.push( self.path+self.projectName+'/app/resources');
-      self._outP.push( self.path+self.projectName+'/app/resources/base');
     
-      self._outP.push( self.path+self.projectName+'/frameworks');
-      self._outP.push( self.path+self.projectName+'/frameworks/The-M-Project');
-      self._outP.push( self.path+self.projectName+'/frameworks/The-M-Project/modules');
-      self._outP.push( self.path+self.projectName+'/frameworks/The-M-Project/modules/core');
-      self._outP.push( self.path+self.projectName+'/frameworks/The-M-Project/modules/core/datastore');
-      self._outP.push( self.path+self.projectName+'/frameworks/The-M-Project/modules/core/datastore/validators');
-      self._outP.push( self.path+self.projectName+'/frameworks/The-M-Project/modules/core/foundation');
-      self._outP.push( self.path+self.projectName+'/frameworks/The-M-Project/modules/core/utility');
-      self._outP.push( self.path+self.projectName+'/frameworks/The-M-Project/modules/core/utility/cypher_algorithms');
-
-      self._outP.push( self.path+self.projectName+'/frameworks/The-M-Project/modules/ui');
-      self._outP.push( self.path+self.projectName+'/frameworks/The-M-Project/modules/ui/dialogs');
-    
-      self._outP.push( self.path+self.projectName+'/frameworks/The-M-Project/modules/jquery');
-
-      self._outP.push( self.path+self.projectName+'/frameworks/The-M-Project/modules/jquery_mobile');
-
-      self._outP.push( self.path+self.projectName+'/frameworks/The-M-Project/modules/themes');
-      self._outP.push( self.path+self.projectName+'/frameworks/The-M-Project/modules/themes/jquery_mobile');
-      self._outP.push( self.path+self.projectName+'/frameworks/The-M-Project/modules/themes/jquery_mobile/images');
-
-      self._outP.push( self.path+self.projectName+'/frameworks/The-M-Project/modules/underscore');
+      self._outP.push( self.path + self.projectName );
+      self._outP.push( self.path + self.projectName + '/app' );
+      self._outP.push( self.path + self.projectName + '/app/resources' );
+      self._outP.push( self.path + self.projectName + '/app/resources/base' );    
+      self._outP.push( self.path + self.projectName + '/frameworks' );
+      self._outP.push( self.path + self.projectName + '/frameworks/The-M-Project' );
+      self._outP.push( self.path + self.projectName + '/frameworks/The-M-Project/modules' );
+      self._outP.push( self.path + self.projectName + '/frameworks/The-M-Project/modules/core');
+      self._outP.push( self.path + self.projectName + '/frameworks/The-M-Project/modules/core/datastore' );
+      self._outP.push( self.path + self.projectName + '/frameworks/The-M-Project/modules/core/datastore/validators' );
+      self._outP.push( self.path + self.projectName + '/frameworks/The-M-Project/modules/core/foundation' );
+      self._outP.push( self.path + self.projectName + '/frameworks/The-M-Project/modules/core/utility' );
+      self._outP.push( self.path + self.projectName + '/frameworks/The-M-Project/modules/core/utility/cypher_algorithms' );
+      self._outP.push( self.path + self.projectName + '/frameworks/The-M-Project/modules/ui' );
+      self._outP.push( self.path + self.projectName + '/frameworks/The-M-Project/modules/ui/dialogs' );
+      self._outP.push( self.path + self.projectName + '/frameworks/The-M-Project/modules/jquery' );
+      self._outP.push( self.path + self.projectName + '/frameworks/The-M-Project/modules/jquery_mobile' );
+      self._outP.push( self.path + self.projectName + '/frameworks/The-M-Project/modules/themes' );
+      self._outP.push( self.path + self.projectName + '/frameworks/The-M-Project/modules/themes/jquery_mobile' );
+      self._outP.push( self.path + self.projectName + '/frameworks/The-M-Project/modules/themes/jquery_mobile/images' );
+      self._outP.push( self.path + self.projectName + '/frameworks/The-M-Project/modules/underscore' );
 
 
 

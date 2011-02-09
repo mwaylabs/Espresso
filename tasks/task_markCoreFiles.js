@@ -51,7 +51,7 @@ var that = this;
             case (file.isJavaScript()):
               framework.app.coreNamesOBj[framework.name]
                       = '<script type="text/javascript" src="'+file.getBaseName()+file.getFileExtension()+'"></script>';
-              break
+              break;
             case (file.isStylesheet()):
               framework.app.coreNamesOBj[framework.name]
                       = '<link type="text/css" href="theme/'+file.getBaseName()+file.getFileExtension()+'" rel="stylesheet" />';       
