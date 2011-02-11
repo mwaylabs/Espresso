@@ -177,7 +177,7 @@ FileGenerator.prototype.genNewTargetDevice = function(n){
 var self = this;
 //  console.log("venodr = "+vendor +" resolution = "+resolution);
     if(n.v && n.r){
-       console.log("venodr = "+n.v +" resolution = "+n.r);
+       console.log("vendor = "+n.v +" resolution = "+n.r);
     }
 console.log(self._e_.path.join(self.outputPath, '/app/resources/', n.v ));
     if (n.v && n.r){
