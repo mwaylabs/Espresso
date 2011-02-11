@@ -58,7 +58,8 @@ Server = exports.Server = function(dirname) {
 /*
  * Getting all basic Espresso functions from the root prototype: M
  */
-require('sys').inherits(Server, E);
+Server.prototype = new E();
+
 
 /**
  * @property
@@ -238,13 +239,36 @@ var that = this;
 
 /**
  * @description
+ * Mapping of the user agent strings, to resource targets.
+ * @param osFamily {string}, the os system of the device.
+ * @return {object} - the targetQuery object.
+ */
+Server.prototype.resolveUAMapping = function(osFamily){
+//console.log(osFamily);
+
+     switch (osFamily) {
+      case ("iOS"):
+        return {"vendor" : "apple"};
+      case ("Linux"):
+        return {"vendor" : "android"};
+      default:
+        return {};
+
+     }
+};
+
+
+
+/**
+ * @description
  * Run the server, and waiting for requests.
  * @param appName, name of the application.
  */
 Server.prototype.runDevServer = function(appName) {
 var that = this,
     _file,_requestedURL,
-    _applicationName =  (appName) ? appName : '';
+    _applicationName =  (appName) ? appName : '',
+    _thatPort = (that.commandLinePort) ? that.commandLinePort : that.port;
 
     that._e_.http.createServer(function (request, response) {
         _requestedURL = that._e_.url.parse(request.url);
@@ -253,30 +277,13 @@ var that = this,
 			_ua      = userAgent.parser( userAgentString ),
 			_browser = userAgent.browser( userAgentString );
 
-          //console.log( 'requesting : '+_requestedURL.pathname);
-
-        //  console.log(_ua.pretty());
-
           if((_requestedURL.pathname === '/'+_applicationName)){
             that.files = {};
             that.hostedApps = [];
-            // var t = that._e_.path.join(that.projectDirName);
-            //console.log('Build '+t);
+
             var app = that.getNewApp(that.projectDirName);
                 app.offlineManifest = false;
-
-              if(_ua.os.family === "iOS"){
-                  app.targetQuery =   {
-                     "vendor" : "apple"
-                 };
-
-                 console.log(_ua.os.family);
-                 console.log(_ua.prettyOs());
-
-              }else{
-                 console.log(_ua.os.family);
-                 console.log(_ua.prettyOs());
-              }
+                app.targetQuery = that.resolveUAMapping(_ua.os.family);
 
                 app.loadTheApplication();
                 app.loadTheMProject();
@@ -284,7 +291,6 @@ var that = this,
                 app.build(function (options) {
                     app.prepareForServer(function (opt){
                         _file = that.files['/index.html'];
-                        console.log('/index.html');
                         that.deliverThat(response,_file);
                     })
                 });
@@ -301,8 +307,8 @@ var that = this,
 
           }
 
-    }).listen(that.port);
-    var _thatPort = (that.commandLinePort) ? that.commandLinePort : that.port;
+    }).listen(_thatPort);
+    
     console.log('Server running at http://'+that.hostname+':' + _thatPort +'/'+_applicationName);
 };
 
@@ -316,7 +322,8 @@ var that = this,
 Server.prototype.run = function(appName) {
 var that = this,
     _file,_requestedURL,
-    _applicationName =  (appName) ? appName : '';
+    _applicationName =  (appName) ? appName : '',
+    _thatPort = (that.commandLinePort) ? that.commandLinePort : that.port;
 
     that._e_.http.createServer(function (request, response) {
         _requestedURL = that._e_.url.parse(request.url);
@@ -328,7 +335,7 @@ var that = this,
         } else {
             that.deliverThat(response,_file);
         }          
-    }).listen((that.commandLinePort) ? that.commandLinePort : that.port);
-    var _thatPort = (that.commandLinePort) ? that.commandLinePort : that.port;
+    }).listen(_thatPort);
+
     console.log('Server running at http://'+that.hostname+':' + _thatPort +'/'+_applicationName);
 };

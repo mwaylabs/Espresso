@@ -12,6 +12,7 @@ var E = require('./e').E,
     App,
     TaskManager = require('./task_manager').TaskManager,
     Framework   = require('./framework').Framework,
+    Report      = require('./report').Report,
     Resource    = require('./resource').Resource;
 
 
@@ -81,6 +82,8 @@ App = exports.App = function (applicationDirectory,server) {
     "fallback":[]
   };
 
+  this.reporter = new Report();  
+
   if(applicationDirectory){
       this.execPath = applicationDirectory;
 
@@ -94,7 +97,7 @@ App = exports.App = function (applicationDirectory,server) {
 /*
  * Getting all basic Espresso functions from the root prototype: M
  */
-App.prototype = new E;
+App.prototype = new E();
 
 /**
  * @description
@@ -730,6 +733,7 @@ var _AppBuilder = function(app, callback) {
           },
           function(err,frameworks){
             if(err){throw err;}
+             self.reporter.printReport(); 
              callback();
           }
      );
@@ -833,6 +837,10 @@ var self = this;
             });
         };
     }
+
+     console.log('\n');
+    console.log(self.style.green('=== Server log:'));
+    console.log("\n");
     
     new _AppPreparer(self,callback).prepareForServer();
 };

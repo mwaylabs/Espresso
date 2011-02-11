@@ -123,12 +123,26 @@ Resource.prototype.evaluateTargetConfig = function () {
 
   if (_target) {
     if (_target.manufacturer) {
-      this._BASE_GROUP_ = true;
-      this.deviceGroup  = _target.manufacturer;
+      if(this.touchPath(this.path + '/' + _target.manufacturer)){
+          this._BASE_GROUP_ = true;
+          this.deviceGroup  = _target.manufacturer;
+      }else{
+          this._BASE_GROUP_ = false;
+          this.app.reporter.warnings.push(this.style.cyan('no resource folder found for "')
+                                          + this.style.magenta(_target.manufacturer)
+                                          + this.style.cyan('" using "base" only'));
+      }
     }
     if (_target.resolution && _target.manufacturer) {
-      this._BASE_GROUP_DEVICE_ = true;
-      this.device = _target.resolution;
+      if(this.touchPath(this.path + '/' +  _target.manufacturer + '/' + _target.resolution)){
+          this._BASE_GROUP_DEVICE_ = true;
+          this.device = _target.resolution;
+      }else{
+          this._BASE_GROUP_DEVICE = false;
+          this.app.reporter.warnings.push(this.style.cyan('no resource folder found for "')
+                                          + this.style.magenta( _target.manufacturer + '/' + _target.resolution)
+                                          + this.style.cyan('" using "/base" and /'+_target.manufacturer+' only'));
+      }
     }
   } else {
     this._BASE_ = true;
@@ -254,13 +268,14 @@ Resource.prototype.browseFiles = function (path, should_run, allow_sub_folders, 
  */
 Resource.prototype.listResources = function () {
   var that = this;
-  console.log(this.style.green("=== used resouces ==="));
   this.files.forEach(function (file) {
-      console.log(that.style.cyan(file.path.split(that.frDelimiter)[1]));
+      that.app.reporter.resouces.push(file.path.split(that.frDelimiter)[1]); 
+     // console.log(that.style.cyan(file.path.split(that.frDelimiter)[1]));
     });
+    /*
   this.sassStyleSheets.forEach(function (file) {
       console.log(that.style.cyan(file.path.split(that.frDelimiter)[1]));
-    });
+    }); */
 };
 
 /**

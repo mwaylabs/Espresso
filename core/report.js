@@ -26,7 +26,8 @@ var E = require('./e').E,
 Report = exports.Report = function(properties) {
 
    /* Properties */
-
+  this.resouces = [];
+  this.warnings = [];
 
   if(properties){
     this.addProperties(properties);
@@ -48,4 +49,33 @@ Report.prototype.addProperties = function(properties){
   Object.keys(properties).forEach(function (key) {
      that[key] = properties[key];
   });
+};
+
+
+/**
+ *
+ */
+Report.prototype.printReport = function (){
+var that = this;
+    
+  console.log(this.style.green("\n"));
+  console.log(this.style.green("=== Report:"));
+  console.log(this.style.green("\n"));
+
+  if(this.resouces.length >= 1){
+      console.log(this.style.green("=== used resouces ==="));
+      this.resouces.forEach(function (file) {
+          console.log(that.style.cyan(file));
+        });
+      console.log(this.style.green("\n"));
+  }
+
+
+  if(this.warnings.length >= 1){
+      console.log(this.style.green("=== warnings ==="));
+      this.warnings.forEach(function (warn) {
+          console.log(that.style.cyan(warn));
+        });
+      console.log(this.style.green("\n"));
+  }
 };
