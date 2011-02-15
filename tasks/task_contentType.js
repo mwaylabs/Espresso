@@ -50,6 +50,7 @@ Task_ContentType.prototype = new Task;
  */
 Task_ContentType.prototype.duty = function(framework,callback){
 var self = this;
+    
   framework.files.forEach(function(cF){
   cF.contentType = (self.contentTypes[cF.getFileExtension()]) ? self.contentTypes[cF.getFileExtension()] :  'text/plain';
 

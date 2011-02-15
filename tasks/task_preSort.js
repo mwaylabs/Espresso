@@ -58,17 +58,20 @@ Task_PreSort.prototype.duty = function(framework,callback){
     _files.forEach(function(file){
         if(file.path.search('/controllers/')!== -1){            
            _controllers.push(file);
-        }else if (file.path.search('/models/')!== -1){
-            _models.push(file);
         }else if (file.path.search('/views/')!== -1){
             _views.push(file);
+         }else if (file.path.search('/models/')!== -1){
+            _models.push(file);
         }else{
             _misc.push(file);
         }
     });
-    
-    _sorted = _sorted.concat(_models,_controllers,_views,_misc);
-    
+
+   // _models.concat(_controllers,_views,_misc);
+  //  _models.concat(_views);
+  //  _models.concat(_misc);
+
+     _sorted = _sorted.concat(_models, _views,_controllers,_misc);
     framework.files = _sorted;
     callback(framework);
 };

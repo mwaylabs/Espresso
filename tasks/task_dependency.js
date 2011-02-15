@@ -58,7 +58,7 @@ Task_Dependency = exports.Task_Dependency = function() {
 Task_Dependency.prototype = new Task;
 
 //TODO: Refactor this task, remove the use of TaskSequencer (no use for it anymore).
-//TODO: Spilt the duty function into four functions, to gain more maintainability.
+//TODO: Spilt the duty function into 4 functions, to gain maintainability.
 /**
  * The duty of this task.
  * @param framework the reference to the framework this task is working with. 
