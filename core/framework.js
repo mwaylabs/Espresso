@@ -342,11 +342,12 @@ Framework.prototype.save = function (callback) {
  * @param callback, the function, that is executed after the prepareForServer() is done.
  */
 Framework.prototype.prepareForServer = function (server, callback) {
+ var appName = this.app.name;
   this.files.forEach(function (file) {
       if (!server.files) {
         server.files = {};
       }
-      server.files['/' + file.requestPath] = file;
+      server.files['/'+appName+'/' + file.requestPath] = file;
     });
   callback();
 };

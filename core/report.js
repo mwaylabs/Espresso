@@ -70,7 +70,6 @@ var that = this;
       console.log(this.style.green("\n"));
   }
 
-
   if(this.warnings.length >= 1){
       console.log(this.style.green("=== warnings ==="));
       this.warnings.forEach(function (warn) {

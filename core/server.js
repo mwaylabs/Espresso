@@ -39,11 +39,11 @@ Server = exports.Server = function(dirname) {
 
   /*Properties*/
   this.hostname = '127.0.0.1'; //default address    
-  this.port = 8000; //default port
+  this.port     = 8000; //default port
 
   this.projectDirName = dirname;  
 
-  this.proxies = [];
+  this.proxies    = [];
   this.hostedApps = [];   /* = the applications managed by this server */
   //this.files = {};  /* = the files, that should be served by  this server */
   this.files;  /* = the files, that should be served by  this server */
@@ -92,6 +92,9 @@ Server.prototype.addProperties = function(args){
       case ((args.port || args.p) && ((typeof args.port === 'string') ||(typeof args.p === 'string'))):
         that.commandLinePort = (args.port) ? args.port : args.p;
         break;
+      case ((args.manifest || args.m)):
+        that.manifest = (args.manifest) ? args.manifest : args.m;
+        break;
       default:
        break;
  };
@@ -126,11 +129,7 @@ Server.prototype.printHelp = function(){
  * @param appOptions, the option/properties for the new App object.
  */
 Server.prototype.getNewApp = function(applicationDirectory) {
- var _app;
-
-    _app  = new App(applicationDirectory,this);  
-
-
+ var  _app  = new App(applicationDirectory,this);  
 // var _app = new App(applicationDirectory,this);
  this.hostedApps.push(_app); /* saving the app in local array */
  return _app;
@@ -277,27 +276,32 @@ var that = this,
 			_ua      = userAgent.parser( userAgentString ),
 			_browser = userAgent.browser( userAgentString );
 
-          if((_requestedURL.pathname === '/'+_applicationName)){
+        if((_requestedURL.pathname === '/'+_applicationName) || (_requestedURL.pathname === '/'+_applicationName+'/')){
+              var _headers = {};
+                  _headers['Location'] = '/'+_applicationName+'/'+'index.html';
+                  response.writeHead(301, _headers);
+                  response.end();
+
+        } else if((_requestedURL.pathname === '/'+_applicationName+'/'+'index.html')  ){
             that.files = {};
             that.hostedApps = [];
-
             var app = that.getNewApp(that.projectDirName);
                 app.offlineManifest = false;
-                app.targetQuery = that.resolveUAMapping(_ua.os.family);
+                //app.targetQuery = that.resolveUAMapping(_ua.os.family);
 
                 app.loadTheApplication();
                 app.loadTheMProject();
 
                 app.build(function (options) {
                     app.prepareForServer(function (opt){
-                        _file = that.files['/index.html'];
+                        _file = that.files['/'+_applicationName+'/index.html'];
                         that.deliverThat(response,_file);
                     })
                 });
               
-          }else{
+        }else{
               console.log(_requestedURL.pathname);
-            _file = that.files[(_requestedURL.pathname)];
+            _file = that.files[_requestedURL.pathname];
             if (_file === undefined) {
                 that.proxyThat(request, response);
 
@@ -305,7 +309,7 @@ var that = this,
                 that.deliverThat(response,_file);
             }
 
-          }
+        }
 
     }).listen(_thatPort);
     
@@ -328,13 +332,24 @@ var that = this,
     that._e_.http.createServer(function (request, response) {
         _requestedURL = that._e_.url.parse(request.url);
         that._e_.sys.puts('requesting : '+_requestedURL.pathname);
-        _file = that.files[(_requestedURL.pathname === '/'+_applicationName) ? '/index.html' : _requestedURL.pathname];
 
-        if (_file === undefined) {
-            that.proxyThat(request, response);
-        } else {
-            that.deliverThat(response,_file);
-        }          
+
+        if((_requestedURL.pathname === '/'+_applicationName)){
+              var _headers = {};
+                  _headers['Location'] = '/'+_applicationName+'/'+'index.html';
+                  response.writeHead(301, _headers);
+                  response.end();
+
+        }else{
+            _file = that.files[(_requestedURL.pathname === '/'+_applicationName) ? '/index.html' : _requestedURL.pathname];
+            if (_file === undefined) {
+                that.proxyThat(request, response);
+            } else {
+                that.deliverThat(response,_file);
+            }
+
+        }
+
     }).listen(_thatPort);
 
     console.log('Server running at http://'+that.hostname+':' + _thatPort +'/'+_applicationName);

@@ -59,7 +59,7 @@ App = exports.App = function (applicationDirectory,server) {
   /* Build switches */  
   this.jslintCheck       = false;
   this.minify            = false;  // uses minfiy task ?! default is false
-  this.offlineManifest   = true;  // build with offline manifest ?! default is true
+  this.offlineManifest   = true;   // build with offline manifest ?! default is true
 
   this.taskChain           = [];
   this.proxies             = [];
@@ -239,7 +239,7 @@ var that = this, _theMProject, _theMProjectResources,
    * Getting the The-M-Project resources and third party frameworks,
    * like: jquery.js or underscore.js
    */
-  _theMProjectResources = ['jquery','jquery_mobile','underscore','themes'].map(function(module) {
+  _theMProjectResources = ['jquery','jquery_mobile','underscore','themes','bootstrapping'].map(function(module) {
     var _frameworkOptions  = {};
         _frameworkOptions.path = _path_to_the_m_project+'/modules/' + module;
         _frameworkOptions.name = module;
@@ -275,7 +275,7 @@ var that = this;
            _indexHtml.push(
       '<html manifest="cache.manifest">'
         ); 
-    }3
+    }
 
     _indexHtml.push(
       '<head>'
@@ -512,25 +512,33 @@ var that = this,
         var targets = JSON.parse(this._e_.fs.readFileSync(_targetsJSON, 'utf8'));
 
         if(targets){
-           if(targets[tar.vendor]){
-               var _vendor = targets[tar.vendor];
-             //  console.log(_vendor);
-             //  console.log(_vendor[tar.deviceModel]);
-               that.target.manufacturer = tar.vendor; 
-              if(_vendor[tar.deviceModel]) {
-                   var _deviceModel = _vendor[tar.deviceModel];
+           if(targets[tar.group]){
+               var _group = targets[tar.group];
+               that.target.group = tar.group;
+              if(_group[tar.subGroup]) {
+                   var _subGroup = _group[tar.subGroup];
                   
-                   if(_deviceModel.resolution){
-                    //  console.log("_deviceModel.resolution "+_deviceModel.resolution);
-                      that.target.resolution = _deviceModel.resolution;                      
+                   if(_subGroup.dedicatedResources){
+                      that.target.dedicatedResources = _subGroup.dedicatedResources;
+                   }else{
+                    that.reporter.warnings.push(this.style.cyan('No dedicatedResources defined, for "')
+                                          + this.style.magenta(tar.subGroup)
+                                          + this.style.cyan('" using "base" and "'+ tar.group +'" only.'));
                    }
                  
-                   if(_deviceModel.htmlHeader){
+                   if(_subGroup.htmlHeader){
                       that.HEAD_IndexHtml = []; // reset, to override the settings that may be made in config.json
-                      that.HEAD_IndexHtml = _deviceModel.htmlHeader;
-                     // console.log(that.HEAD_IndexHtml);
+                      that.HEAD_IndexHtml = _subGroup.htmlHeader;
                    }
-             }
+             }else{
+               that.reporter.warnings.push(this.style.cyan('No subGroup defined, for "')
+                                          + this.style.magenta(tar.subGroup)
+                                          + this.style.cyan('" using "base" and "'+ tar.group +'" only.'));
+              }
+           }else{
+           that.reporter.warnings.push(this.style.cyan('No group ')
+                                        //  + this.style.magenta(tar.group)
+                                          + this.style.cyan('specified, using "base" only.'));
            }
         }
     }catch(ex){
@@ -749,9 +757,10 @@ App.prototype.prepareHTMLGeneration = function(callback){
 var self = this;
     
     self.coreNamesForIndexHtml.push(self.coreNamesOBj['jquery']);
+    self.coreNamesForIndexHtml.push(self.coreNamesOBj['bootstrapping']);
     self.coreNamesForIndexHtml.push(self.coreNamesOBj['jquery_mobile']);
     self.coreNamesForIndexHtml.push(self.coreNamesOBj['underscore']);
-    self.coreNamesForIndexHtml.push(self.coreNamesOBj['themes']);
+    self.coreNamesForIndexHtml.push(self.coreNamesOBj['themes']);    
 
     callback(null,self.frameworks);
 };
@@ -838,7 +847,7 @@ var self = this;
         };
     }
 
-     console.log('\n');
+    console.log('\n');
     console.log(self.style.green('=== Server log:'));
     console.log("\n");
     

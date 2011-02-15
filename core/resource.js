@@ -30,9 +30,9 @@ var File = require('./file').File;
 Resource = exports.Resource = function (properties) {
 
   /* Properties */
-  this.__resourceBase__  = '/base';
-  this.deviceGroup       = '';
-  this.device            = '';
+  this.__resourceBase__    = '/base';
+  this.group               = '';
+  this.dedicatedResources  = '';
 
   this.markedResources = [];
   this.sassStyleSheets = [];
@@ -68,7 +68,7 @@ Resource.prototype.gatherResources = function (cb) {
       return that.evaluateTargetConfig();
     },
     function readDeviceSpecific() {
-      that.browseFiles(that.path + '/' + that.deviceGroup + '/' + that.device, that._BASE_GROUP_DEVICE_, true, this);
+      that.browseFiles(that.path + '/' + that.group + '/' + that.dedicatedResources, that._BASE_GROUP_DEVICE_, true, this);
     },
     function readGroupSpecific(err, obj) {
       if (err) {
@@ -78,7 +78,7 @@ Resource.prototype.gatherResources = function (cb) {
       if (obj) {
         console.log(obj);
       }
-      that.browseFiles(that.path + '/' + that.deviceGroup, that._BASE_GROUP_, false, this);
+      that.browseFiles(that.path + '/' + that.group, that._BASE_GROUP_, false, this);
     },
     function readBase(err, obj) {
       if (err) {
@@ -120,33 +120,32 @@ Resource.prototype.gatherResources = function (cb) {
  */
 Resource.prototype.evaluateTargetConfig = function () {
  var _target = this.app.target;
-
   if (_target) {
-    if (_target.manufacturer) {
-      if(this.touchPath(this.path + '/' + _target.manufacturer)){
+    if (_target.group) {
+      if(this.touchPath(this.path + '/' + _target.group)){
           this._BASE_GROUP_ = true;
-          this.deviceGroup  = _target.manufacturer;
+          this.group  = _target.group;
       }else{
           this._BASE_GROUP_ = false;
-          this.app.reporter.warnings.push(this.style.cyan('no resource folder found for "')
-                                          + this.style.magenta(_target.manufacturer)
+          this.app.reporter.warnings.push(this.style.cyan('no resource folder found for group: "')
+                                          + this.style.magenta(_target.group)
                                           + this.style.cyan('" using "base" only'));
       }
     }
-    if (_target.resolution && _target.manufacturer) {
-      if(this.touchPath(this.path + '/' +  _target.manufacturer + '/' + _target.resolution)){
+    if (_target.dedicatedResources && _target.group) {
+      if(this.touchPath(this.path + '/' +  _target.group + '/' + _target.dedicatedResources)){
           this._BASE_GROUP_DEVICE_ = true;
-          this.device = _target.resolution;
+          this.dedicatedResources = _target.dedicatedResources;
       }else{
           this._BASE_GROUP_DEVICE = false;
           this.app.reporter.warnings.push(this.style.cyan('no resource folder found for "')
-                                          + this.style.magenta( _target.manufacturer + '/' + _target.resolution)
-                                          + this.style.cyan('" using "/base" and /'+_target.manufacturer+' only'));
+                                          + this.style.magenta(_target.group + '/' + _target.dedicatedResources)
+                                          + this.style.cyan('" using "base" and "/'+_target.group+'" only'));
       }
     }
   } else {
     this._BASE_ = true;
-  }
+  }  
   return true;
 };
 
@@ -160,7 +159,6 @@ Resource.prototype.evaluateTargetConfig = function () {
  */
 Resource.prototype.browseFiles = function (path, should_run, allow_sub_folders, cb) {
   var self = this;
-
   var _FileBrowser = function (cb) {
 
     var that = this;
@@ -217,7 +215,7 @@ Resource.prototype.browseFiles = function (path, should_run, allow_sub_folders, 
                     if (err) {
                       throw err;
                     }
-                    //    console.log('Path ='+path+' subpath.length '+subpaths.length+'  _resourceCounter '+that._resourceCounter);
+                      // console.log('Path ='+path+' subpath.length '+subpaths.length+'  _resourceCounter '+that._resourceCounter);
                     if (subpaths.length === 0) {
                       that.callbackIfDone();
                     }
@@ -226,6 +224,8 @@ Resource.prototype.browseFiles = function (path, should_run, allow_sub_folders, 
                       });
                   });
                 that._allowSubFolders = false;
+              } else{
+                that.callbackIfDone();
               }
             } else {
               if (!that.checkIfFileShouldBeExcluded(path)) {
