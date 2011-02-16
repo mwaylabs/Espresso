@@ -71,7 +71,7 @@ Task_PreSort.prototype.duty = function(framework,callback){
   //  _models.concat(_views);
   //  _models.concat(_misc);
 
-     _sorted = _sorted.concat(_models, _views,_controllers,_misc);
+     _sorted = _sorted.concat(_models, _controllers, _views,_misc);
     framework.files = _sorted;
     callback(framework);
 };
