@@ -41,7 +41,12 @@ Server = exports.Server = function(dirname) {
   this.hostname = '127.0.0.1'; //default address    
   this.port     = 8000; //default port
 
-  this.projectDirName = dirname;  
+  this.projectDirName = dirname;
+
+  this._DEVMODE_      = 1;
+  this._MANIFESTMODE_ = 0;
+
+  this.runMode =  this._DEVMODE_ ;
 
   this.proxies    = [];
   this.hostedApps = [];   /* = the applications managed by this server */
@@ -89,15 +94,36 @@ Server.prototype.addProperties = function(args){
         that.printVersionNumber();
         process.exit(1);      
         break;
-      case ((args.port || args.p) && ((typeof args.port === 'string') ||(typeof args.p === 'string'))):
-        that.commandLinePort = (args.port) ? args.port : args.p;
-        break;
       case ((args.manifest || args.m)):
-        that.manifest = (args.manifest) ? args.manifest : args.m;
+        that.runMode  = that._MANIFESTMODE_;
         break;
       default:
+        that.runMode  = that._DEVMODE_;
        break;
  };
+};
+
+
+Server.prototype.run = function(appname){
+var that = this,
+    args = that.argv;
+
+    if((args.port || args.p) && ((typeof args.port === 'string') ||(typeof args.p === 'string'))){
+        that.commandLinePort = (args.port) ? args.port : args.p;
+    }
+
+    switch(that.runMode){
+      case that._DEVMODE_:
+        that.runDevServer(appname);
+        break;
+      case that._MANIFESTMODE_:
+        that.runManifestServer(appname);
+        break;
+      default:
+        that.runDevServer(appname);
+        break;
+
+    };
 };
 
 /**
@@ -323,34 +349,51 @@ var that = this,
  * Run the server, and waiting for requests.
  * @param appName, name of the application.
  */
-Server.prototype.run = function(appName) {
+Server.prototype.runManifestServer = function(appName) {
 var that = this,
     _file,_requestedURL,
-    _applicationName =  (appName) ? appName : '',
+    _applicationName =  (appName) ? appName : that.app.name,
     _thatPort = (that.commandLinePort) ? that.commandLinePort : that.port;
 
-    that._e_.http.createServer(function (request, response) {
-        _requestedURL = that._e_.url.parse(request.url);
-        that._e_.sys.puts('requesting : '+_requestedURL.pathname);
+    function startServer(){
+        that._e_.http.createServer(function (request, response) {
+            _requestedURL = that._e_.url.parse(request.url);
+            that._e_.sys.puts('requesting : '+_requestedURL.pathname);
 
 
-        if((_requestedURL.pathname === '/'+_applicationName)){
-              var _headers = {};
-                  _headers['Location'] = '/'+_applicationName+'/'+'index.html';
-                  response.writeHead(301, _headers);
-                  response.end();
+            if((_requestedURL.pathname === '/'+_applicationName)){
+                  var _headers = {};
+                      _headers['Location'] = '/'+_applicationName+'/'+'index.html';
+                      response.writeHead(301, _headers);
+                      response.end();
 
-        }else{
-            _file = that.files[(_requestedURL.pathname === '/'+_applicationName) ? '/index.html' : _requestedURL.pathname];
-            if (_file === undefined) {
-                that.proxyThat(request, response);
-            } else {
-                that.deliverThat(response,_file);
+            }else{
+                _file = that.files[(_requestedURL.pathname === '/'+_applicationName) ? '/index.html' : _requestedURL.pathname];
+                if (_file === undefined) {
+                    that.proxyThat(request, response);
+                } else {
+                    that.deliverThat(response,_file);
+                }
+
             }
 
-        }
+        }).listen(_thatPort);
 
-    }).listen(_thatPort);
+        console.log('Server running at http://'+that.hostname+':' + _thatPort +'/'+_applicationName);
+    };
 
-    console.log('Server running at http://'+that.hostname+':' + _thatPort +'/'+_applicationName);
+
+    var app = that.getNewApp(that.projectDirName);
+
+        app.loadTheApplication();
+        app.loadTheMProject();
+
+        app.build(function (options) {
+            app.prepareForServer(function (opt){
+               startServer();
+            })
+        });
+
+
+
 };
