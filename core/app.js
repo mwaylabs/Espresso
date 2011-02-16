@@ -239,7 +239,7 @@ var that = this, _theMProject, _theMProjectResources,
    * Getting the The-M-Project resources and third party frameworks,
    * like: jquery.js or underscore.js
    */
-  _theMProjectResources = ['jquery','jquery_mobile','underscore','themes','bootstrapping'].map(function(module) {
+  _theMProjectResources = ['jquery','jquery_mobile','jquery_mobile_plugins','underscore','themes','bootstrapping'].map(function(module) {
     var _frameworkOptions  = {};
         _frameworkOptions.path = _path_to_the_m_project+'/modules/' + module;
         _frameworkOptions.name = module;
@@ -247,7 +247,7 @@ var that = this, _theMProject, _theMProjectResources,
         _frameworkOptions.frDelimiter = 'modules/';
         _frameworkOptions.excludedFolders = that.excludedFolders;
         _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
-        _frameworkOptions.taskChain = new TaskManager(["contentType","markCore","manifest"]).getTaskChain();
+        _frameworkOptions.taskChain = new TaskManager(["contentType","merge","markCore","manifest"]).getTaskChain();
        return new Framework(_frameworkOptions);
     });
 
@@ -759,6 +759,7 @@ var self = this;
     self.coreNamesForIndexHtml.push(self.coreNamesOBj['jquery']);
     self.coreNamesForIndexHtml.push(self.coreNamesOBj['bootstrapping']);
     self.coreNamesForIndexHtml.push(self.coreNamesOBj['jquery_mobile']);
+    self.coreNamesForIndexHtml.push(self.coreNamesOBj['jquery_mobile_plugins']);
     self.coreNamesForIndexHtml.push(self.coreNamesOBj['underscore']);
     self.coreNamesForIndexHtml.push(self.coreNamesOBj['themes']);    
 
