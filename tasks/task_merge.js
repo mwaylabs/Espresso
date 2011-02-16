@@ -45,11 +45,14 @@ Task_Merge.prototype.duty = function(framework,callback){
 
   var that = this;
   that.files = [];
+  that.notJSfiles = [];
 
   /*Merge all files together*/
   framework.files.forEach(function(file){
-        if(file.isJavaScript){
+        if(file.isJavaScript()){
             that.mergedFile += file.content;
+        }else{
+            that.notJSfiles.push(file);
         }
   });
 
@@ -65,7 +68,7 @@ Task_Merge.prototype.duty = function(framework,callback){
                   );
 
 
-  framework.files = that.files;
+  framework.files = that.files.concat(that.notJSfiles);
 
   callback(framework);
 
