@@ -8,11 +8,9 @@
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
-var E = require('./e').E,
-Framework,
-File = require('./file').File;
-
-
+var E = require('./e').E;
+var Framework;
+var File = require('./file').File;
 
 /**
  * @class
@@ -91,44 +89,75 @@ Framework.prototype.isVirtual = function () {
  * Reads the content of the files connected to a framework.
  * Needs a array with File objects, to read the content.
  *
- * @param arrayOfFiles {object}, the Array containing the files
  * @param callback {function}, the callback function.
  */
-Framework.prototype.readFiles = function (arrayOfFiles, callback) {
+Framework.prototype.readFiles = function (callback) {
   var self = this;
+  var resourceCounter = self.files.length;
 
-  if (Array.isArray(arrayOfFiles)) {
+  if (self.files.length === 0) {
+    callback(null, self.files);
+  }
 
-    if (arrayOfFiles.length === 0) {
-      callback(null, arrayOfFiles);
+  function callbackIfDone() {
+    if (resourceCounter <= 0) {
+      callback(null, self.files);
     }
+  }
 
-    var _FileReader = function (cb, array) {
-      var that = this;
-      this._resourceCounter = array.length;
-      that.callbackIfDone = function () {
-        if (that._resourceCounter <= 0) {
-          cb(null, self.files);
-        }
-      };
+  self.files.forEach(function (file) {
+      var _cFPath  = file.path;
+      self._e_.fs.readFile(_cFPath, function (err, data) { // data is a buffer object, if no encoding was specified!
+          if (err) {
+            throw err;
+          } else {
+            file.content = data;
+            resourceCounter -= 1;
+            callbackIfDone();
+          }
+        });
+    });
+};
 
-      that.read = function () {
-        array.forEach(function (file) {
-            var _cFPath  = file.path;
-            self._e_.fs.readFile(_cFPath, function (err, data) { // data is a buffer object, if no encoding was specified!
-                if (err) {
-                  throw err;
-                } else {
-                  file.content = data;
-                  that._resourceCounter -= 1;
-                  that.callbackIfDone();
-                }
+/**
+ * @description
+ * Delegates reading of needed files to the appropriate method
+ * @param path, the path to look for resources.
+ * @param callback, the function, that is called after all resources haven been loaded.
+ */
+Framework.prototype.getFiles = function getFiles(path, callback) {
+  var that = this;
+  var manifest = path + '/manifest.json';
+
+  this._e_.fs.stat(manifest, function (err, stat) {
+      if (err) {
+        that.browseFiles(path, callback);
+      } else {
+        that.readManifest(manifest, path, callback);
+      }
+    });
+};
+
+Framework.prototype.readManifest = function readManifest(manifest, path, callback) {
+  var that = this;
+  this._e_.fs.readFile(manifest, 'utf8', function (err, content) {
+      if (err) {
+        throw err;
+      }
+      try {
+        that.files = JSON.parse(content).manifest.map(function (file) {
+            return new File({
+                frDelimiter: that.frDelimiter,
+                name: path + '/' + file,
+                path: path + '/' + file,
+                framework: that 
               });
           });
-      };
-    }
-    new _FileReader(callback, arrayOfFiles).read();
-  }
+        callback(null);
+      } catch (ex) {
+        callback(ex);
+      }
+    });
 };
 
 /**
@@ -149,7 +178,7 @@ Framework.prototype.browseFiles = function (path, callback) {
     that.callbackIfDone = function () {
       if (that._folderCounter <= 0) {
         //           console.log('framework '+framework.name+'  _folderCounter '+that._folderCounter);
-        callback(null, framework.files);
+        callback(null);
       }
     };
 
@@ -162,11 +191,7 @@ Framework.prototype.browseFiles = function (path, callback) {
       if (that.checkIfFolderShouldBeExcluded(path)) {
         return true;
       }
-      if (self.excludedFiles.indexOf(_fileBaseName[_fileBaseName.length - 1]) === -1) {
-        return false;
-      } else {
-        return true;
-      }
+      return !(self.excludedFiles.indexOf(_fileBaseName[_fileBaseName.length - 1]) === -1);
     };
 
     /*
@@ -207,11 +232,11 @@ Framework.prototype.browseFiles = function (path, callback) {
               if (!that.checkIfFileShouldBeExcluded(path)) {
                 framework.files.push(
                   new File({
-                    frDelimiter: framework.frDelimiter,
-                    name: path,
-                    path: path,
-                    framework: framework
-                  })
+                      frDelimiter: framework.frDelimiter,
+                      name: path,
+                      path: path,
+                      framework: framework
+                    })
                 );
               }
               that.callbackIfDone();
@@ -241,14 +266,17 @@ Framework.prototype.build = function (callback) {
   } else {
     that.sequencer(
       function () {
-        that.browseFiles(that.path, this);
+        that.getFiles(that.path, this);
       },
-      function (err, files) {
+
+      function (err) {
         if (err) {
           throw err;
         }
-        that.readFiles(files, this);
+        console.dir(this);
+        that.readFiles(this);
       },
+
       function (err, files) {
         if (err) {
           throw err;
@@ -322,7 +350,7 @@ Framework.prototype.save = function (callback) {
            case (_cF.isSASS_Stylesheet()):
              that.writeFile(files, _outputPath+'/theme/'+_cF.getBaseName()+'.css', _cF.content);
              break; */
-        // case (_cF.isVirtual()):
+          // case (_cF.isVirtual()):
         default:
           var _fileName =  (self.combinedScripts) ? self.name + '.js' : _cF.getBaseName() + _cF.getFileExtension();
           that.writeFile(files, _outputPath + '/' + _fileName, _cF.content);
@@ -342,7 +370,7 @@ Framework.prototype.save = function (callback) {
  * @param callback, the function, that is executed after the prepareForServer() is done.
  */
 Framework.prototype.prepareForServer = function (server, callback) {
- var appName = this.app.name;
+  var appName = this.app.name;
   this.files.forEach(function (file) {
       if (!server.files) {
         server.files = {};

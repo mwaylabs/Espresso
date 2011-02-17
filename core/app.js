@@ -239,7 +239,7 @@ var that = this, _theMProject, _theMProjectResources,
    * Getting the The-M-Project resources and third party frameworks,
    * like: jquery.js or underscore.js
    */
-  _theMProjectResources = ['jquery','jquery_mobile','underscore','themes','bootstrapping'].map(function(module) {
+  _theMProjectResources = ['jquery','underscore','themes','bootstrapping'].map(function(module) {
     var _frameworkOptions  = {};
         _frameworkOptions.path = _path_to_the_m_project+'/modules/' + module;
         _frameworkOptions.name = module;
@@ -253,6 +253,19 @@ var that = this, _theMProject, _theMProjectResources,
 
   this.addFrameworks(_theMProjectResources);
 
+  _jquery = ['jquery_mobile'].map(function(module) {
+    var _frameworkOptions  = {};
+        _frameworkOptions.path = _path_to_the_m_project+'/modules/' + module;
+        _frameworkOptions.name = module;
+        _frameworkOptions.app = that;
+        _frameworkOptions.frDelimiter = 'modules/';
+        _frameworkOptions.excludedFolders = that.excludedFolders;
+        _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
+        _frameworkOptions.taskChain = new TaskManager(["merge", "contentType","markCore","manifest"]).getTaskChain();
+       return new Framework(_frameworkOptions);
+    });
+
+  this.addFrameworks(_jquery);
 };
 
 /**
