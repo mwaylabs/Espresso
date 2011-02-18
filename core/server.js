@@ -218,10 +218,12 @@ var that = this;
         response.writeHead(404);
         response.end();
       });
+//client.request(method='GET', path, [request_headers])
 
-      // making the proxy request.
-      var proxyRequest =  proxyClient.request(_proxy.requestMethod, _inquiredData,
-                                              {'host':  _proxy.host});
+      request.headers['host']  = _proxy.host;
+      var _requestMethod  = request.method;
+      var proxyRequest =  proxyClient.request(_requestMethod, _inquiredData,
+                                              request.headers);
 
       proxyRequest.on('response', function (proxyResponse) {
         console.log('HOST RESPONDING');
