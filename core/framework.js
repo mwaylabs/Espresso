@@ -41,6 +41,7 @@ Framework = exports.Framework = function (properties) {
   this.app     = null;
   this.virtual = false;
   this.library = false;
+  this.is_a_plugin  = false;
   this.path = '';
   this.name = '';
   this.frDelimiter = '';
@@ -126,7 +127,7 @@ Framework.prototype.readFiles = function (arrayOfFiles, callback) {
               });
           });
       };
-    }
+    };
     new _FileReader(callback, arrayOfFiles).read();
   }
 };
@@ -316,13 +317,15 @@ Framework.prototype.save = function (callback) {
           that.copyFile(files, _cF.path, _outputPath + '/theme/images/' + _cF.getBaseName() + _cF.getFileExtension());
           break;
         case (_cF.isStylesheet()):
-          that.copyFile(files, _cF.path, _outputPath + '/theme/' + _cF.getBaseName() + _cF.getFileExtension());
+             (_cF.containsMergedContent) ?
+                that.writeFile(files,  _outputPath + '/theme/' + _cF.getBaseName() + _cF.getFileExtension(), _cF.content) :
+                that.copyFile(files, _cF.path, _outputPath + '/theme/' + _cF.getBaseName() + _cF.getFileExtension());
           break;
           /*
            case (_cF.isSASS_Stylesheet()):
              that.writeFile(files, _outputPath+'/theme/'+_cF.getBaseName()+'.css', _cF.content);
              break; */
-        // case (_cF.isVirtual()):
+           // case (_cF.isVirtual()):
         default:
           var _fileName =  (self.combinedScripts) ? self.name + '.js' : _cF.getBaseName() + _cF.getFileExtension();
           that.writeFile(files, _outputPath + '/' + _fileName, _cF.content);

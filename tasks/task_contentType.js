@@ -40,7 +40,7 @@ Task_ContentType = exports.Task_ContentType = function() {
 };
 
 
-Task_ContentType.prototype = new Task;
+Task_ContentType.prototype = new Task();
 
 
 /**

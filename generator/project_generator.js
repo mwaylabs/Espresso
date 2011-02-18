@@ -52,7 +52,6 @@ NewProjectGenerator = exports.NewProjectGenerator = function() {
   this._tools =[]; // array with names of build tools, used in the a new project.
   this._tools.push('m-build.js');
   this._tools.push('m-server.js');
- // this._tools.push('m-dev-server.js');
   this._tools.push('m-gen.js');
   this._tools.push('config.json');
 };

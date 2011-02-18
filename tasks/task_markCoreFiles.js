@@ -46,21 +46,26 @@ var that = this;
         framework.app.coreNamesOBj = {};
     }
 
+    
+
     framework.files.forEach(function(file){
-       switch (true) {
-            case (file.isJavaScript()):
-              framework.app.coreNamesOBj[framework.name]
-                      = '<script type="text/javascript" src="'+file.getBaseName()+file.getFileExtension()+'"></script>';
-              break;
-            case (file.isStylesheet()):
-              framework.app.coreNamesOBj[framework.name]
-                      = '<link type="text/css" href="theme/'+file.getBaseName()+file.getFileExtension()+'" rel="stylesheet" />';       
-              break;
-            default:
-              break;
-        }
+           switch (true) {
+                case (file.isJavaScript()):
+                  framework.app.coreNamesOBj[framework.name]
+                          = '<script type="text/javascript" src="'+file.getBaseName()+file.getFileExtension()+'"></script>';
+                  break;
+                case (file.isStylesheet()):
+                  var frName = (framework.is_a_plugin) ? framework.name+'-theme' :  framework.name;      
+                  framework.app.coreNamesOBj[frName]
+                          = '<link type="text/css" href="theme/'+file.getBaseName()+file.getFileExtension()+'" rel="stylesheet" />';
+                  break;
+                default:
+                  break;
+            }
 
     });
+
+
 
 callback(framework);
 };

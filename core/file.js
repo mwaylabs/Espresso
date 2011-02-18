@@ -30,21 +30,26 @@ var E = require('./e').E,
 File = exports.File = function(properties) {
  
    /* Properties */
-  this.virtual = false;  
-  this.path = '';
-  this.framework = '';
-  this.children = '';
-  this.isHtml = false;
-  this.content =  {}; // buffer object, to hold the content of a file.
-  this.contentType = '';
-  this.requestPath ='';
+  this.virtual               = false;
+  this.containsMergedContent = false;
+  this.isHtml                = false;
+    
+  this.path                  = '';
+  this.framework             = '';
+  this.children              = '';
+  this.contentType           = '';
+  this.requestPath           = '';
+  this.name                  = '';
+
+  this.content               = {}; // buffer object, to hold the content of a file.
+
+  this.dependencies          = [];
+  this.resourceExtensions    = ['.png', '.jpg', '.gif', '.svg'];
 
   this.extname;
   this.basename;
   this.frDelimiter;
-  this.name = '';
-  this.dependencies       = [];
-  this.resourceExtensions = ['.png', '.jpg', '.gif', '.svg'];
+
 
   /* Adding the properties */
   if(properties){
@@ -52,15 +57,15 @@ File = exports.File = function(properties) {
   }
 };
 
-/*
+/**
  * Getting all basic Espresso functions from the root prototype: M
  */
-File.prototype = new E;
+File.prototype = new E();
 
 /**
  * @description
  * Add the properties for File.
- * @param properties
+ * @param properties {object}, the properties fo this file.
  */
 File.prototype.addProperties = function(properties){
     var that = this;
@@ -74,6 +79,7 @@ File.prototype.addProperties = function(properties){
  * @description
  * True if file is virtual.
  * A file is virtual, if it is generated during the build.
+ * @return {boolean}, true if file is virtual.
  * @example
  * index.html
  */
@@ -83,38 +89,47 @@ File.prototype.isVirtual = function(){
 
 /**
  * @description
- * Getting the name of the File
+ * Getting the name of the File.
+ * @return {string}, the name of the file.
  */
 File.prototype.getName = function(){
-      var _filename =  this.name.split(this.frDelimiter);
-      return _filename[1];
+  var _filename =  this.name.split(this.frDelimiter);
+  return _filename[1];
 };
 
 /**
  * @description
- * Returns the name of the File without the file extension.
+ * Returns the name of the file without the file extension.
+ * @return {string}, the base name of this file.
  */
 File.prototype.getBaseName = function(){
   if (this.basename === undefined) {
-    this.basename = this._e_.path.basename(this.path,this._e_.path.extname(this.path));
+   return this._e_.path.basename(this.path,this._e_.path.extname(this.path));
   }
   return this.basename;
 };
 
 /**
  * @description
- * Returns the file extension.
+ * Getting the file extension of this File.
+ * @return {string}, the file extension.
+ * @example
+ *  .png,
+ *  .jpg,
+ *  .gif,
+ *  .svg
  */
 File.prototype.getFileExtension = function() {
   if (this.extname === undefined) {
-    this.extname = this._e_.path.extname(this.path);
+   return this._e_.path.extname(this.path);
   }
   return this.extname;
 };
 
 /**
  * @description
- * Returns 'true' if file is a stylesheet.
+ * Test if a File is a CSS stylesheet.
+ * @return {boolean}, true if file is a stylesheet.
  */
 File.prototype.isStylesheet = function() {
   return this.getFileExtension() === '.css';
@@ -123,7 +138,8 @@ File.prototype.isStylesheet = function() {
 
 /**
  * @description
- * Returns 'true' if file is a stylesheet.
+ * Test if a File is a SASS stylesheet. Ending by .sass
+ * @return {boolean}, true if file is a stylesheet.
  */
 File.prototype.isSASS_Stylesheet = function() {
   return this.getFileExtension() === '.sass';
@@ -131,7 +147,8 @@ File.prototype.isSASS_Stylesheet = function() {
 
 /**
  * @description
- * True if file is a stylesheet.
+ * Test if a File is a HTML file.
+ * @return {boolean}, true if file is a stylesheet.
  */
 File.prototype.isHTML = function() {
   return this.getFileExtension() === '.html';
@@ -139,7 +156,8 @@ File.prototype.isHTML = function() {
 
 /**
  * @description
- * Returns 'true' if file is JavaScript.
+ * Test if a File is a JavaScript file.
+ * @return {boolean}, true if file is JavaScript.
  */
 File.prototype.isJavaScript = function() {
   return this.getFileExtension() === '.js'; 
@@ -148,7 +166,8 @@ File.prototype.isJavaScript = function() {
 
 /**
  * @description
- * Returns 'true' if file is JavaScript.
+ * Test if a File is a cache.manifest file. Ending by .manifest
+ * @return {boolean}, true if file is JavaScript.
  */
 File.prototype.isManifest = function() {
   return this.getFileExtension() === '.manifest'; 
@@ -156,8 +175,10 @@ File.prototype.isManifest = function() {
 
 /**
  * @description
- * Returns 'true' if file is a Image.
+ * Test if a File is a image. 
  * Based on the possible resource extensions.
+ *
+ * @return {boolean}, true if file is a Image.
  * @example
  *  .png,
  *  .jpg,
@@ -176,11 +197,15 @@ var that = this;
 };
 
 
+/**
+ * @description
+ * Compare the basename of this File object with a other file.
+ * @param otherFile {object}, the file object to compare with this.
+ * @return {boolean} true if this has the same base name as otherFile, false otherwise.
+ */
 File.prototype.equalBaseName = function (otherFile){
   if(otherFile instanceof File){
-    if(this.getBaseName() === otherFile.getBaseName()){
-       return true;
-    }
+    return (this.getBaseName() === otherFile.getBaseName())    
   }
     return false;
 };

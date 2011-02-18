@@ -42,7 +42,7 @@ TaskManager = exports.TaskManager = function(Tasks) {
 /*
  * Getting all basic Espresso functions from the root prototype: M
  */
-TaskManager.prototype = new E;
+TaskManager.prototype = new E();
 
 /**
  * Load the all tasks that had been registered in managed_tasks.js.

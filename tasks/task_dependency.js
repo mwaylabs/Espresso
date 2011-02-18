@@ -55,7 +55,7 @@ Task_Dependency = exports.Task_Dependency = function() {
  * Get the run() function from Task
  * @param framework
  */
-Task_Dependency.prototype = new Task;
+Task_Dependency.prototype = new Task();
 
 //TODO: Refactor this task, remove the use of TaskSequencer (no use for it anymore).
 //TODO: Spilt the duty function into 4 functions, to gain maintainability.

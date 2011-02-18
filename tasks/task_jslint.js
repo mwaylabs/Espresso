@@ -30,7 +30,7 @@ Task_JSLINT = exports.Task_JSLINT = function() {
  * Get the run() function from Task
  * @param framework
  */
-Task_JSLINT.prototype = new Task;
+Task_JSLINT.prototype = new Task();
 
 /**
  * Checking the file sin the framework, according to jslint.

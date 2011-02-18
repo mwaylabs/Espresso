@@ -44,7 +44,7 @@ FileGenerator = exports.FileGenerator = function() {
 /**
  * Extending FileGenerator«s prototype by the prototype of <Generator>
  */
-FileGenerator.prototype = new Generator;
+FileGenerator.prototype = new Generator();
 
 /**
  * @description

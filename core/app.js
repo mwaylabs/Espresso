@@ -211,7 +211,7 @@ var that = this,
  * @param options
  */
 App.prototype.loadTheMProject = function(options) {
-var that = this, _theMProject, _theMProjectResources,
+var that = this, _theMProject, _theMProjectResources, _jQueryPlugins,
     _path_to_the_m_project = (this.touchPath(that.execPath+'/frameworks/The-M-Project'))
                              ? that.execPath+'/frameworks/The-M-Project'
                              : that.execPath+'/frameworks/Mproject';
@@ -239,7 +239,7 @@ var that = this, _theMProject, _theMProjectResources,
    * Getting the The-M-Project resources and third party frameworks,
    * like: jquery.js or underscore.js
    */
-  _theMProjectResources = ['jquery','jquery_mobile','jquery_mobile_plugins','underscore','themes','bootstrapping'].map(function(module) {
+  _theMProjectResources = ['jquery','jquery_mobile','underscore','themes','bootstrapping'].map(function(module) {
     var _frameworkOptions  = {};
         _frameworkOptions.path = _path_to_the_m_project+'/modules/' + module;
         _frameworkOptions.name = module;
@@ -247,12 +247,32 @@ var that = this, _theMProject, _theMProjectResources,
         _frameworkOptions.frDelimiter = 'modules/';
         _frameworkOptions.excludedFolders = that.excludedFolders;
         _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
-        _frameworkOptions.taskChain = new TaskManager(["contentType","merge","markCore","manifest"]).getTaskChain();
+        _frameworkOptions.taskChain = new TaskManager(["contentType","markCore","manifest"]).getTaskChain();
        return new Framework(_frameworkOptions);
     });
 
   this.addFrameworks(_theMProjectResources);
 
+  /*
+   * Load some jQuery Mobile plugins.
+   * NOTE: Implemented this only for testing of datepicker and splitview.
+   *       As long as there is not clear definition of how to refer plugins 
+   *       automatically, this stays here.
+   */
+  _jQueryPlugins = ['jquery_mobile_plugins'].map(function(module) {
+    var _frameworkOptions  = {};
+        _frameworkOptions.path = _path_to_the_m_project+'/modules/' + module;
+        _frameworkOptions.name = module;
+        _frameworkOptions.app = that;
+        _frameworkOptions.is_a_plugin = true;
+        _frameworkOptions.frDelimiter = 'modules/';
+        _frameworkOptions.excludedFolders = that.excludedFolders;
+        _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
+        _frameworkOptions.taskChain = new TaskManager(["merge","markCore","contentType","manifest"]).getTaskChain();
+       return new Framework(_frameworkOptions);
+    });
+
+  this.addFrameworks(_jQueryPlugins);
 };
 
 /**
@@ -304,12 +324,6 @@ var that = this;
              _indexHtml.push(entry);
     });
 
- /*  _indexHtml.push(
-        '<link type="text/css" href="theme/jquery.mobile-1.0a3.min.css" rel="stylesheet" />'+
-        '<script type="text/javascript" src="jquery-1.5.min.js"></script>'+
-        '<script type="text/javascript" src="jquery.mobile-1.0a3.min.js"></script>'+
-        '<script type="text/javascript" src="underscore-min.js"></script>'
-    ); */
    _indexHtml.push(
         '<link type="text/css" href="theme/style.css" rel="stylesheet" />'+
         '<script type="text/javascript" src="core.js"></script>'+
@@ -397,7 +411,7 @@ var self = this, _cacheManifest = [];
 if(!self.offlineManifest){
    callback();
 }
-
+ 
  /* adding entries for the Explicit CACHE section*/
  _cacheManifest.push(
    'CACHE MANIFEST',
@@ -755,11 +769,13 @@ var _AppBuilder = function(app, callback) {
  */
 App.prototype.prepareHTMLGeneration = function(callback){
 var self = this;
-    
+
+
     self.coreNamesForIndexHtml.push(self.coreNamesOBj['jquery']);
     self.coreNamesForIndexHtml.push(self.coreNamesOBj['bootstrapping']);
     self.coreNamesForIndexHtml.push(self.coreNamesOBj['jquery_mobile']);
     self.coreNamesForIndexHtml.push(self.coreNamesOBj['jquery_mobile_plugins']);
+    self.coreNamesForIndexHtml.push(self.coreNamesOBj['jquery_mobile_plugins-theme']);
     self.coreNamesForIndexHtml.push(self.coreNamesOBj['underscore']);
     self.coreNamesForIndexHtml.push(self.coreNamesOBj['themes']);    
 

@@ -31,7 +31,7 @@ Task_SASS = exports.Task_SASS = function() {
  * @description
  * Get the run() function from Task.
  */
-Task_SASS.prototype = new Task;
+Task_SASS.prototype = new Task();
 
 /**
  * @description

@@ -39,7 +39,7 @@ Task_PreSort = exports.Task_PreSort = function() {
  * @description
  * Get the run() function from Task.
  */
-Task_PreSort.prototype = new Task;
+Task_PreSort.prototype = new Task();
 
 
 /**
