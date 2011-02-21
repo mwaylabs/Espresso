@@ -28,7 +28,7 @@ Proxy = exports.Proxy = function(properties) {
 
    /* Properties */
   this.host          = null;
-  this.hostPort      = '80';
+  this.hostPort      = '8080';
   this.proxyAlias    = null;
   this.requestMethod = null;
 

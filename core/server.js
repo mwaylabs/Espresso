@@ -196,7 +196,16 @@ Server.prototype.deliverThat = function (response,file){
  */
 Server.prototype.proxyThat = function (request, response){
 var that = this;
+var _requestMethod  = request.method;
+var data = '';
 
+  request.addListener('data', function (chunk) {
+       that.data+=chunk;
+       console.log('chunk  = '+chunk);
+  });
+
+
+    
   request.addListener('end', function() {   
   var _proxy,
       _path = that._e_.url.parse(request.url).pathname.slice(1),
@@ -221,14 +230,16 @@ var that = this;
 //client.request(method='GET', path, [request_headers])
 
       request.headers['host']  = _proxy.host;
-      var _requestMethod  = request.method;
-      var proxyRequest =  proxyClient.request(_requestMethod, _inquiredData,
+   //   var _requestMethod  = request.method;
+    console.log("Request Methode "+_requestMethod);
+      var proxyRequest =  proxyClient.request(request.method, _inquiredData,
                                               request.headers);
 
       proxyRequest.on('response', function (proxyResponse) {
         console.log('HOST RESPONDING');
         console.log('Status: ' + proxyResponse.statusCode);
         console.log('Content Type: ' + proxyResponse.headers['content-type']);
+        console.log(proxyResponse.headers);
         response.writeHead(proxyResponse.statusCode, proxyResponse.headers);
         proxyResponse.on('data', function (chunk) {
           response.write(chunk);
@@ -237,7 +248,18 @@ var that = this;
           response.end();
         });
       });
+
+        if(_requestMethod !== 'GET'){
+              proxyRequest.write(data);
+        }
+            
+
+
+
       proxyRequest.end();
+
+
+    // proxyRequest.end();
    }else{ // nor proxy entry found!
      console.log('ERROR: no proxy host entry found for: "'+_pr+'"');
      response.writeHead(404);
@@ -296,11 +318,12 @@ Server.prototype.resolveUAMapping = function(osFamily){
  */
 Server.prototype.runDevServer = function(appName) {
 var that = this,
-    _file,_requestedURL,
+    _file,_requestedURL,data ='',
     _applicationName =  (appName) ? appName : '',
     _thatPort = (that.commandLinePort) ? that.commandLinePort : that.port;
 
     that._e_.http.createServer(function (request, response) {
+
         _requestedURL = that._e_.url.parse(request.url);
 
         var userAgentString = request.headers['user-agent'],
@@ -334,6 +357,7 @@ var that = this,
               console.log(_requestedURL.pathname);
             _file = that.files[_requestedURL.pathname];
             if (_file === undefined) {
+
                 that.proxyThat(request, response);
 
             } else {

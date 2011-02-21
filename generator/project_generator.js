@@ -145,6 +145,8 @@ NewProjectGenerator.prototype.genProject = function(projectName,args){
       self._outP.push( self.path + self.projectName + '/frameworks/The-M-Project/modules/ui/dialogs' );
       self._outP.push( self.path + self.projectName + '/frameworks/The-M-Project/modules/jquery' );
       self._outP.push( self.path + self.projectName + '/frameworks/The-M-Project/modules/jquery_mobile' );
+      self._outP.push( self.path + self.projectName + '/frameworks/The-M-Project/modules/jquery_mobile_plugins' );
+      self._outP.push( self.path + self.projectName + '/frameworks/The-M-Project/modules/jquery_mobile_plugins/datepicker' );
       self._outP.push( self.path + self.projectName + '/frameworks/The-M-Project/modules/themes' );
       self._outP.push( self.path + self.projectName + '/frameworks/The-M-Project/modules/themes/jquery_mobile' );
       self._outP.push( self.path + self.projectName + '/frameworks/The-M-Project/modules/themes/jquery_mobile/images' );

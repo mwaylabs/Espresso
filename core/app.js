@@ -81,15 +81,14 @@ App = exports.App = function (applicationDirectory,server) {
     "network" :[],
     "fallback":[]
   };
-
+   
   this.reporter = new Report();  
 
   if(applicationDirectory){
       this.execPath = applicationDirectory;
-
          this.loadJSONConfig(); 
-
   }
+    
   console.log("\n");
 };
 
@@ -126,6 +125,8 @@ App.prototype.loadJSONConfig = function() {
            this.server.port = config.m_serverPort; //adding specific port, if present.
         }if(config.m_serverHostname){
            this.server.hostname = config.m_serverHostname; //adding specific hostname, if present.
+        }if(config.cacheFallbacks){
+           this.manifest.fallback = config.cacheFallbacks; //adding specific fallbacks for cache.manifest
         }
     }catch(ex){
        console.log(this.style.red('ERROR:')+this.style.cyan(' - while reading "config.json", error message: '+ex.message));
@@ -272,7 +273,10 @@ var that = this, _theMProject, _theMProjectResources, _jQueryPlugins,
        return new Framework(_frameworkOptions);
     });
 
-  this.addFrameworks(_jQueryPlugins);
+  if (this.touchPath(that.execPath+'/frameworks/The-M-Project/modules/jquery_mobile_plugins')){
+      this.addFrameworks(_jQueryPlugins);
+  }
+
 };
 
 /**

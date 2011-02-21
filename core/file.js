@@ -205,7 +205,7 @@ var that = this;
  */
 File.prototype.equalBaseName = function (otherFile){
   if(otherFile instanceof File){
-    return (this.getBaseName() === otherFile.getBaseName())    
+    return (this.getBaseName() === otherFile.getBaseName());    
   }
     return false;
 };

@@ -36,7 +36,7 @@ Task_JSLINT.prototype = new Task();
  * Checking the file sin the framework, according to jslint.
  * @param framework the reference to the framework this task is working with. 
  */
-Task_JSLINT.prototype.duty = function(framework){
+Task_JSLINT.prototype.duty = function(framework,callback){
 var files = framework.files;
 var that = this;
 
@@ -60,6 +60,6 @@ this._e_.sys.puts('Running Task JSLINT');
       }
      });
 
-    return framework;
+    callback(framework);
 
 };

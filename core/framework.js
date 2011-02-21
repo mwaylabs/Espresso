@@ -148,8 +148,8 @@ Framework.prototype.browseFiles = function (path, callback) {
     that._folderCounter = 0;
 
     that.callbackIfDone = function () {
+        console.log(that._folderCounter );
       if (that._folderCounter <= 0) {
-        //           console.log('framework '+framework.name+'  _folderCounter '+that._folderCounter);
         callback(null, framework.files);
       }
     };
