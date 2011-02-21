@@ -99,7 +99,7 @@ Resource.prototype.gatherResources = function (cb) {
         console.log(obj);
       }
       that.listResources();
-      cb(null, that.files);
+      cb(null);
     }
   );
 };
@@ -334,7 +334,7 @@ Resource.prototype.build = function (callback) {
         if (err) {
           throw err;
         }
-        that.readFiles(files, this);
+        that.readFiles(this);
       },/*
          function mergeSASSFiles(err,files) {
          that.mergeSASSFiles(that.sassStyleSheets,this);

@@ -192,7 +192,7 @@ var that = this,
         var _frameworkOptions  = {};
             _frameworkOptions.path = that.execPath + '/' + module;
             _frameworkOptions.name = 'i18n';
-            _frameworkOptions.frDelimiter = that.execPath+'/';
+            _frameworkOptions.frDelimiter = that.execPath+'/';sdsd
             _frameworkOptions.excludedFolders = that.excludedFolders;
             _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
             _frameworkOptions.app = that;
@@ -212,7 +212,7 @@ var that = this,
  * @param options
  */
 App.prototype.loadTheMProject = function(options) {
-var that = this, _theMProject, _theMProjectResources, _jQueryPlugins,
+var that = this, _theMProject, _theMProjectResources, _jQueryPlugins,_jquery,
     _path_to_the_m_project = (this.touchPath(that.execPath+'/frameworks/The-M-Project'))
                              ? that.execPath+'/frameworks/The-M-Project'
                              : that.execPath+'/frameworks/Mproject';
@@ -240,7 +240,7 @@ var that = this, _theMProject, _theMProjectResources, _jQueryPlugins,
    * Getting the The-M-Project resources and third party frameworks,
    * like: jquery.js or underscore.js
    */
-  _theMProjectResources = ['jquery','jquery_mobile','underscore','themes','bootstrapping'].map(function(module) {
+  _theMProjectResources = ['jquery','underscore','themes','bootstrapping'].map(function(module) {
     var _frameworkOptions  = {};
         _frameworkOptions.path = _path_to_the_m_project+'/modules/' + module;
         _frameworkOptions.name = module;
@@ -253,6 +253,7 @@ var that = this, _theMProject, _theMProjectResources, _jQueryPlugins,
     });
 
   this.addFrameworks(_theMProjectResources);
+
 
   /*
    * Load some jQuery Mobile plugins.
@@ -276,6 +277,20 @@ var that = this, _theMProject, _theMProjectResources, _jQueryPlugins,
   if (this.touchPath(that.execPath+'/frameworks/The-M-Project/modules/jquery_mobile_plugins')){
       this.addFrameworks(_jQueryPlugins);
   }
+
+  _jquery = ['jquery_mobile'].map(function(module) {
+    var _frameworkOptions  = {};
+        _frameworkOptions.path = _path_to_the_m_project+'/modules/' + module;
+        _frameworkOptions.name = module;
+        _frameworkOptions.app = that;
+        _frameworkOptions.frDelimiter = 'modules/';
+        _frameworkOptions.excludedFolders = that.excludedFolders;
+        _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
+        _frameworkOptions.taskChain = new TaskManager(["merge", "contentType","markCore","manifest"]).getTaskChain();
+       return new Framework(_frameworkOptions);
+    });
+
+  this.addFrameworks(_jquery);
 
 };
 
