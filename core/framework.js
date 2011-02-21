@@ -147,13 +147,22 @@ Framework.prototype.readManifest = function readManifest(manifest, path, callbac
       }
       try {
         that.files = JSON.parse(content).manifest.map(function (file) {
-            return new File({
-                frDelimiter: that.frDelimiter,
-                name: path + '/' + file,
-                path: path + '/' + file,
-                framework: that 
-              });
-          });
+            if (that.touchPath(path + '/' + file)) {
+                return new File({
+                    frDelimiter: that.frDelimiter,
+                    name: path + '/' + file,
+                    path: path + '/' + file,
+                    framework: that
+                });
+            } else {
+               console.log("\n");
+               console.log(that.style.red('ERROR:')+that.style.green(' File "')+that.style.cyan(path.split(that.frDelimiter)[1] + '/' + file)
+                          + that.style.green('" was referencd in "') + that.style.cyan(path.split(that.frDelimiter)[1] + '/'+'manifest.json')
+                          + that.style.green('" but not found in directory. '));
+               console.log("\n");
+               process.exit(1); /* exit the process, reason: file not found*/
+            }
+        });
         callback(null);
       } catch (ex) {
         callback(ex);
