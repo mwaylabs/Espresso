@@ -53,5 +53,5 @@
             anchorLocation: M.BOTTOM
        })
        */
-})
+});
 

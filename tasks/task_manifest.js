@@ -28,7 +28,7 @@ Task_Manifest = exports.Task_Manifest = function() {
  * Get the run() function from Task.
  * @property
  */
-Task_Manifest.prototype = new Task;
+Task_Manifest.prototype = new Task();
 
 /**
  * @description

@@ -26,6 +26,7 @@ var Generator = require('./generator').Generator,
  * -v, --validator [validator name]       a new validator
  * -m, --model [model name]               a new model
  * -i, --i18n                             two i18n sample files, for 'en_us' & 'de_de'
+ * -t, --target                           a new 'targets.json' sample file'
  * -h, --help                             print this help
  *
  * Usage:
@@ -43,7 +44,7 @@ FileGenerator = exports.FileGenerator = function() {
 /**
  * Extending FileGenerator«s prototype by the prototype of <Generator>
  */
-FileGenerator.prototype = new Generator;
+FileGenerator.prototype = new Generator();
 
 /**
  * @description
@@ -61,6 +62,7 @@ FileGenerator.prototype.printHelp = function(){
   console.log(this.style.green("-v, --validator [validator name]       a new validator"));
   console.log(this.style.green("-m, --model [model name]               a new model"));
   console.log(this.style.green("-i, --i18n                             two i18n sample files, for 'en_us' & 'de_de'"));
+  console.log(this.style.green("-t, --target                           a new 'targets.json' sample file'"));
   console.log(this.style.green("-h, --help                             print this help"));
   console.log(this.style.green("\n"));
   console.log(this.style.green("--- example usage---"));
@@ -87,9 +89,9 @@ var args = argv, self = this;
       case (args.help || args.h):
         self.printHelp();
         break;
-      //case (args.n):
-      //  self.genNewTargetDevice(args); //(args.v) ? args.v : args.vendor, (args.r) ? args.r : args.resolution);
-      //  break;
+      case ((args.target || args.t) ):
+         self.genNewTargetFile(); 
+        break;
       case ((args.page || args.p) && ((typeof args.page === 'string') ||(typeof args.p === 'string'))):
         self.genPage((args.page) ? args.page : args.p);
         break;
@@ -165,40 +167,16 @@ FileGenerator.prototype.generate = function(templateName, fileName, filePath, ct
 };
 
 
-FileGenerator.prototype.makeFolder  = function(path, cb){
 
-
-
-
-
-};
-
-FileGenerator.prototype.genNewTargetDevice = function(n){
+FileGenerator.prototype.genNewTargetFile = function(){
 var self = this;
-//  console.log("venodr = "+vendor +" resolution = "+resolution);
-    if(n.v && n.r){
-       console.log("venodr = "+n.v +" resolution = "+n.r);
-    }
-console.log(self._e_.path.join(self.outputPath, '/app/resources/', n.v ));
-    if (n.v && n.r){
-      self._e_.fs.mkdir(self.outputPath+'/app/resources/'+n.v, 0777 ,function(err){
-         if(err){
-           if(err.errno === 17){ /* 17 = error code for: folder: controllers exists!, but do it anyway*/
-            //  self.generate('controller.js', controllerName+'.js', self.outputPath+'/app/controllers/', _ctx);
-               console.log("done");
-           }
-           else{
-             throw err;
-           }
-         }else{
-         // self.generate('controller.js', controllerName+'.js', self.outputPath+'/app/controllers/', _ctx);
-         }
-      });
-   } else {
-     this._e_.sys.puts(this.style.red('ERROR:') + this.style.magenta(' no arguments given'));
-     this._e_.sys.puts(this.style.cyan('Usage: "-view:\<page name\>"'));
-   }
+   var self = this,
+       _ctx = {
+                appName: self.projectName,
+                e_Version: self.__version__
+              };
 
+       self.generate('targets.json', 'targets.json', self.outputPath+'/', _ctx);
 };
 
 

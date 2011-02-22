@@ -22,8 +22,6 @@ var E = require('../core/e').E,
  */
 Generator = exports.Generator = function() {
   /* Properties */ 
-  // this._templatePath = './generator/templates';  // path to mustache templates.
-  // this._templatePath = __dirname + '/templates/';
    this.projectName = '';   // the name of the application.
    this.outputPath=''; 
 };
@@ -31,7 +29,7 @@ Generator = exports.Generator = function() {
 /*
  * Getting all basic Espresso functions from the root prototype: M 
  */
-Generator.prototype = new E;
+Generator.prototype = new E();
 
 /**
  * @property

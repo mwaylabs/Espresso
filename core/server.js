@@ -10,9 +10,9 @@
 
 var E = require('./e').E,
     Server,
-    Proxy = require('./proxy').Proxy;
-var App = require('./app').App;
-var userAgent = require( '../lib/useragent' );
+    Proxy = require('./proxy').Proxy,
+    App = require('./app').App,
+    userAgent = require( '../lib/useragent' );
 
 
 
@@ -35,18 +35,25 @@ var userAgent = require( '../lib/useragent' );
  *
  * @constructor
  */
-Server = exports.Server = function(args) {
+Server = exports.Server = function(dirname) {
 
   /*Properties*/
   this.hostname = '127.0.0.1'; //default address    
-  this.port = 8000; //default port
+  this.port     = 8000; //default port
 
-  this.proxies = [];
+  this.projectDirName = dirname;
+
+  this._DEVMODE_      = 1;
+  this._MANIFESTMODE_ = 0;
+
+  this.runMode =  this._DEVMODE_ ;
+
+  this.proxies    = [];
   this.hostedApps = [];   /* = the applications managed by this server */
   //this.files = {};  /* = the files, that should be served by  this server */
-  this.files;  /* = the files, that should be served by  this server */
+  this.files = [];  /* = the files, that should be served by  this server */
 
-  if(this.argv.$0 === 'node ./m-server.js'){
+  if(this.argv.$0 !== 'node ./m-build.js'){
     this.addProperties(this.argv); 
   }
 
@@ -57,6 +64,7 @@ Server = exports.Server = function(args) {
  * Getting all basic Espresso functions from the root prototype: M
  */
 Server.prototype = new E();
+
 
 /**
  * @property
@@ -86,12 +94,36 @@ Server.prototype.addProperties = function(args){
         that.printVersionNumber();
         process.exit(1);      
         break;
-      case ((args.port || args.p) && ((typeof args.port === 'string') ||(typeof args.p === 'string'))):
-        that.commandLinePort = (args.port) ? args.port : args.p;
+      case ((args.manifest || args.m)):
+        that.runMode  = that._MANIFESTMODE_;
         break;
       default:
+        that.runMode  = that._DEVMODE_;
        break;
  };
+};
+
+
+Server.prototype.run = function(appname){
+var that = this,
+    args = that.argv;
+
+    if((args.port || args.p) && ((typeof args.port === 'string') ||(typeof args.p === 'string'))){
+        that.commandLinePort = (args.port) ? args.port : args.p;
+    }
+
+    switch(that.runMode){
+      case that._DEVMODE_:
+        that.runDevServer(appname);
+        break;
+      case that._MANIFESTMODE_:
+        that.runManifestServer(appname);
+        break;
+      default:
+        that.runDevServer(appname);
+        break;
+
+    };
 };
 
 /**
@@ -104,12 +136,15 @@ Server.prototype.printHelp = function(){
   console.log(this.style.green("command line tool to compile and run the application for testing business in a webbrowser"));
   console.log(this.style.green("\n"));
   console.log(this.style.green("--- commands ---"));
-  console.log(this.style.green("-p, --port [port]                 specify the port"));
-  console.log(this.style.green("-v, --version                     print Espresso version number"));
-  console.log(this.style.green("-h, --help                        print this help"));
+  console.log(this.style.green("-m, --manifest                    start the server in manifest mode. Enable generation of cache.menifest."));
+  console.log(this.style.green("-p, --port [port]                 specify a custom port."));
+  console.log(this.style.green("-v, --version                     print Espresso version number."));
+  console.log(this.style.green("-h, --help                        print this help."));
   console.log(this.style.green("\n"));
-  console.log(this.style.green("--- example ---"));
-  console.log(this.style.green("./m-server.js --port 6060         start the built-in server on port '6060'"));
+  console.log(this.style.green("--- example usage---"));
+  console.log(this.style.green("./m-server.js                     start the server. (Default)"));
+  console.log(this.style.green("./m-server.js --port 6060         start the server on port '6060'."));
+  console.log(this.style.green("./m-server.js -m -p 1234          start the server in manifest mode on port '1234'."));
   console.log(this.style.green("\n"));
   process.exit(1);
 };
@@ -123,7 +158,8 @@ Server.prototype.printHelp = function(){
  * @param appOptions, the option/properties for the new App object.
  */
 Server.prototype.getNewApp = function(applicationDirectory) {
- var _app = new App(applicationDirectory,this);
+ var  _app  = new App(applicationDirectory,this);  
+// var _app = new App(applicationDirectory,this);
  this.hostedApps.push(_app); /* saving the app in local array */
  return _app;
 };
@@ -160,7 +196,16 @@ Server.prototype.deliverThat = function (response,file){
  */
 Server.prototype.proxyThat = function (request, response){
 var that = this;
+var _requestMethod  = request.method;
+var body = '';
 
+  request.addListener('data', function (chunk) {
+       body+=chunk;
+       console.log('chunk  = '+chunk);
+  });
+
+
+    
   request.addListener('end', function() {   
   var _proxy,
       _path = that._e_.url.parse(request.url).pathname.slice(1),
@@ -174,7 +219,9 @@ var that = this;
 
    if(_proxy){ // if proxy entry was found.
       var _inquiredData =  request.url.split(_pr)[1];
-      that._e_.sys.puts("proxy request on = "+_proxy.host+_inquiredData);
+      var url = _proxy.host + ':' + _proxy.hostPort;
+
+      that._e_.sys.puts("proxy request on = "+url+_inquiredData);
       var proxyClient  =  that._e_.http.createClient(_proxy.hostPort, _proxy.host);
 
       proxyClient.addListener('error', function(err) {
@@ -183,9 +230,16 @@ var that = this;
         response.end();
       });
 
-      // making the proxy request.
-      var proxyRequest =  proxyClient.request(_proxy.requestMethod, _inquiredData,
-                                              {'host':  _proxy.host});
+      request.headers['host']  = _proxy.host;
+      request.headers['content-length'] = body.length;
+
+      var proxyRequest =  proxyClient.request(request.method,
+                                              _inquiredData,
+                                              request.headers);
+
+      if (body.length > 0) {
+        proxyRequest.write(body);
+      }
 
       proxyRequest.on('response', function (proxyResponse) {
         console.log('HOST RESPONDING');
@@ -199,7 +253,9 @@ var that = this;
           response.end();
         });
       });
-      proxyRequest.end();
+
+    proxyRequest.end();
+
    }else{ // nor proxy entry found!
      console.log('ERROR: no proxy host entry found for: "'+_pr+'"');
      response.writeHead(404);
@@ -231,63 +287,89 @@ var that = this;
 
 /**
  * @description
+ * Mapping of the user agent strings, to resource targets.
+ * @param osFamily {string}, the os system of the device.
+ * @return {object} - the targetQuery object.
+ */
+Server.prototype.resolveUAMapping = function(osFamily){
+//console.log(osFamily);
+
+     switch (osFamily) {
+      case ("iOS"):
+        return {"vendor" : "apple"};
+      case ("Linux"):
+        return {"vendor" : "android"};
+      default:
+        return {};
+
+     }
+};
+
+Server.prototype.close = function(){
+    this.appServer.close();
+}
+
+
+/**
+ * @description
  * Run the server, and waiting for requests.
  * @param appName, name of the application.
  */
-Server.prototype.run2 = function(appName) {
+Server.prototype.runDevServer = function(appName) {
 var that = this,
-    _file,_requestedURL,
-    _applicationName =  (appName) ? appName : '';
+    _file,_requestedURL,data ='',
+    _applicationName =  (appName) ? appName : '',
+    _thatPort = (that.commandLinePort) ? that.commandLinePort : that.port;
 
-    that._e_.http.createServer(function (request, response) {
-        // var path = _e_.url.parse(request.url).pathname.slice(1);
-        //  _e_.sys.puts(path);
+  this.appServer = that._e_.http.createServer(function (request, response) {
+
         _requestedURL = that._e_.url.parse(request.url);
-        that._e_.sys.puts('requesting : '+_requestedURL.pathname);
 
         var userAgentString = request.headers['user-agent'],
-			ua_obj = userAgent.parser( userAgentString ),
-			is = userAgent.browser( userAgentString );
+			_ua      = userAgent.parser( userAgentString ),
+			_browser = userAgent.browser( userAgentString );
 
-        console.log('ua_obj =  '+ JSON.stringify( ua_obj ));
-        console.log('ua_obj =  '+ ua_obj.pretty());
-        console.log('OS =  '+ ua_obj.prettyOs());
-        
-        if((_requestedURL.pathname === '/'+_applicationName)){
+        if((_requestedURL.pathname === '/'+_applicationName) || (_requestedURL.pathname === '/'+_applicationName+'/')){
+              var _headers = {};
+                  _headers['Location'] = '/'+_applicationName+'/'+'index.html';
+                  response.writeHead(301, _headers);
+                  response.end();
 
+        } else if((_requestedURL.pathname === '/'+_applicationName+'/'+'index.html')  ){
             that.files = {};
-            that.hostedApps = [];  
-            var t = that._e_.path.join(__dirname, '..','..', 'Apps', _applicationName);
-            console.log('Build '+t);
-            var app = that.getNewApp(t);
-     
-            app.loadTheApplication();
+            that.hostedApps = [];
+            var app = that.getNewApp(that.projectDirName);
+                app.offlineManifest = false;
+                //app.targetQuery = that.resolveUAMapping(_ua.os.family);
 
-            app.loadTheMProject();
+                app.loadTheApplication();
+                app.loadTheMProject();
 
-            app.buildManifestFile = false;
-            
-            app.build(function (options) {
-                app.prepareForServer(function (opt){
-                    _file = that.files['/index.html'];
-                    that.deliverThat(response,_file);
-                })
-            });
-            
+                app.build(function (options) {
+                    app.prepareForServer(function (opt){
+                        _file = that.files['/'+_applicationName+'/index.html'];
+                        that.deliverThat(response,_file);
+                    })
+                });
+              
         }else{
-            _file = that.files[(_requestedURL.pathname === '/'+_applicationName) ? '/index.html' : _requestedURL.pathname];
-              if (_file === undefined) {
-            that.proxyThat(request, response);
-           // response.writeHead(200, {'Content-Type': 'text/plain'});
-           // response.write('Resource "' + _requestedURL.pathname+ '" not found on server!');
+              console.log(_requestedURL.pathname);
+            _file = that.files[_requestedURL.pathname];
+            if (_file === undefined) {
+
+                that.proxyThat(request, response);
+
             } else {
                 that.deliverThat(response,_file);
             }
-        }
-      //  console.log(that.files[(_requestedURL.pathname === '/'+_applicationName) ? '/index.html' : _requestedURL.pathname]);
 
-    }).listen(that.port);
-    console.log('Server running at http://'+that.hostname+':' + that.port+'/'+_applicationName);
+        }
+
+    });
+
+    this.appServer.listen(_thatPort);
+    
+    console.log('Server running at http://'+that.hostname+':' + _thatPort +'/'+_applicationName);
 };
 
 
@@ -297,27 +379,53 @@ var that = this,
  * Run the server, and waiting for requests.
  * @param appName, name of the application.
  */
-Server.prototype.run = function(appName) {
+Server.prototype.runManifestServer = function(appName) {
 var that = this,
     _file,_requestedURL,
-    _applicationName =  (appName) ? appName : '';
+    _applicationName =  (appName) ? appName : that.app.name,
+    _thatPort = (that.commandLinePort) ? that.commandLinePort : that.port;
 
-    that._e_.http.createServer(function (request, response) {
-        // var path = _e_.url.parse(request.url).pathname.slice(1);
-        //  _e_.sys.puts(path);
-        _requestedURL = that._e_.url.parse(request.url);
-        that._e_.sys.puts('requesting : '+_requestedURL.pathname);
+    function startServer(){
+    this.appServer =   that._e_.http.createServer(function (request, response) {
+            _requestedURL = that._e_.url.parse(request.url);
+            that._e_.sys.puts('requesting : '+_requestedURL.pathname);
 
-        _file = that.files[(_requestedURL.pathname === '/'+_applicationName) ? '/index.html' : _requestedURL.pathname];
 
-        if (_file === undefined) {
-            that.proxyThat(request, response);
-           // response.writeHead(200, {'Content-Type': 'text/plain'});
-           // response.write('Resource "' + _requestedURL.pathname+ '" not found on server!');
-        } else {
-            that.deliverThat(response,_file);
-        }          
-    }).listen((that.commandLinePort) ? that.commandLinePort : that.port);
-    var _thatPort = (that.commandLinePort) ? that.commandLinePort : that.port;
-    console.log('Server running at http://'+that.hostname+':' + _thatPort +'/'+_applicationName);
+            if((_requestedURL.pathname === '/'+_applicationName)){
+                  var _headers = {};
+                      _headers['Location'] = '/'+_applicationName+'/'+'index.html';
+                      response.writeHead(301, _headers);
+                      response.end();
+
+            }else{
+                _file = that.files[(_requestedURL.pathname === '/'+_applicationName) ? '/index.html' : _requestedURL.pathname];
+                if (_file === undefined) {
+                    that.proxyThat(request, response);
+                } else {
+                    that.deliverThat(response,_file);
+                }
+
+            }
+
+        });
+
+      this.appServer.listen(_thatPort);   
+
+        console.log('Server running at http://'+that.hostname+':' + _thatPort +'/'+_applicationName);
+    };
+
+
+    var app = that.getNewApp(that.projectDirName);
+
+        app.loadTheApplication();
+        app.loadTheMProject();
+
+        app.build(function (options) {
+            app.prepareForServer(function (opt){
+               startServer();
+            })
+        });
+
+
+
 };

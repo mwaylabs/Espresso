@@ -26,6 +26,7 @@ Task_Merge = exports.Task_Merge = function() {
   /* Properties */
   this.name = 'merge';
   this.mergedFile = ''; /*The merged output file*/ 
+  this.mergedCSSFile = ''; /*The merged output file*/
 
 };
 
@@ -34,7 +35,7 @@ Task_Merge = exports.Task_Merge = function() {
  * Get the run() function from Task
  * @param framework
  */
-Task_Merge.prototype = new Task;
+Task_Merge.prototype = new Task();
 
 /**
  * @description
@@ -45,11 +46,16 @@ Task_Merge.prototype.duty = function(framework,callback){
 
   var that = this;
   that.files = [];
+  that.notJSfiles = [];
+
 
   /*Merge all files together*/
   framework.files.forEach(function(file){
-        if(file.isJavaScript){
+        if(file.isJavaScript()){
             that.mergedFile += file.content;
+        }else if (file.isStylesheet()&& framework.is_a_plugin){
+            that.mergedCSSFile += file.content;
+            //that.notJSfiles.push(file);
         }
   });
 
@@ -58,14 +64,27 @@ Task_Merge.prototype.duty = function(framework,callback){
                              frDelimiter: framework.frDelimiter,
                              name: framework.name,
                              path: framework.name+'.js',
+                             containsMergedContent : true,
                              framework: framework,
                              content: that.mergedFile
                             })
 
                   );
 
+  if(framework.is_a_plugin)  {
+      that.files.push( new File({
+                                 frDelimiter: framework.frDelimiter,
+                                 name: framework.name,
+                                 path: framework.name+'.css',
+                                 containsMergedContent : true,
+                                 framework: framework,
+                                 content: that.mergedCSSFile
+                                })
 
-  framework.files = that.files;
+                      );
+  }
+    
+  framework.files = that.files;//concat(that.mergedCSSFile);
 
   callback(framework);
 

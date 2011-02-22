@@ -18,6 +18,8 @@ var  E = require('../core/e').E,
  * The Task prototype. This is the prototype of every task used in Espresso.
  * This prototype is definition of the core feature of a task.
  *
+ * @extends E
+ *
  */
 Task = exports.Task = function() {
 
@@ -30,7 +32,7 @@ Task = exports.Task = function() {
 /*
  * Getting all basic Espresso functions from the root prototype: M
  */
-Task.prototype = new E;
+Task.prototype = new E();
 
 /**
  * @description
@@ -48,8 +50,9 @@ Task.prototype.TaskSequencer = require('../lib/sequencer');
  * Execute the callback (that should be called after the build finishes) instead.
  * If a next task is defined, call its run function, and pass over the framework object and the callback,
  * that should be called when the build is done.
- * @param framework the framework, this task is working with
- * @param callback the function, that should be called after the all tasks finished there job.
+ *
+ * @param framework {object}, the framework, this task is working with
+ * @param callback {function} the function, that should be called after the all tasks finished there job.
  * The framework in callback may be modified by the duty() function.
  */
 Task.prototype.run = function(framework,callback){
@@ -70,8 +73,9 @@ var that = this;
  * @description
  * This function should be overridden by any Task implementation.
  * The duty() function contains the implementation of the action, provided by this task.
- * @param framework the framework, this task is working with
- * @param callback  the function, that should be called after the all tasks finished there job.
+ * @param framework  {object} the framework, this task is working with
+ * 
+ * @param callback {function} the function, that should be called after the all tasks finished there job.
  */
 Task.prototype.duty = function(framework,callback){
   this._e_.sys.puts("No duty() function implemented for: '" +this.name + "' !");

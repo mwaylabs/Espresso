@@ -31,7 +31,7 @@ Task_Void = exports.Task_Void = function() {
  * @description
  * Get the run() function from Task.
  */
-Task_Void.prototype = new Task;
+Task_Void.prototype = new Task();
 
 /**
  * @description

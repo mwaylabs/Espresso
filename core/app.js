@@ -12,6 +12,7 @@ var E = require('./e').E,
     App,
     TaskManager = require('./task_manager').TaskManager,
     Framework   = require('./framework').Framework,
+    Report      = require('./report').Report,
     Resource    = require('./resource').Resource;
 
 
@@ -58,7 +59,7 @@ App = exports.App = function (applicationDirectory,server) {
   /* Build switches */  
   this.jslintCheck       = false;
   this.minify            = false;  // uses minfiy task ?! default is false
-  this.offlineManifest   = true;  // build with offline manifest ?! default is true
+  this.offlineManifest   = true;   // build with offline manifest ?! default is true
 
   this.taskChain           = [];
   this.proxies             = [];
@@ -80,11 +81,14 @@ App = exports.App = function (applicationDirectory,server) {
     "network" :[],
     "fallback":[]
   };
+   
+  this.reporter = new Report();  
 
   if(applicationDirectory){
       this.execPath = applicationDirectory;
-      this.loadJSONConfig();
+         this.loadJSONConfig(); 
   }
+    
   console.log("\n");
 };
 
@@ -92,7 +96,7 @@ App = exports.App = function (applicationDirectory,server) {
 /*
  * Getting all basic Espresso functions from the root prototype: M
  */
-App.prototype = new E;
+App.prototype = new E();
 
 /**
  * @description
@@ -121,6 +125,8 @@ App.prototype.loadJSONConfig = function() {
            this.server.port = config.m_serverPort; //adding specific port, if present.
         }if(config.m_serverHostname){
            this.server.hostname = config.m_serverHostname; //adding specific hostname, if present.
+        }if(config.cacheFallbacks){
+           this.manifest.fallback = config.cacheFallbacks; //adding specific fallbacks for cache.manifest
         }
     }catch(ex){
        console.log(this.style.red('ERROR:')+this.style.cyan(' - while reading "config.json", error message: '+ex.message));
@@ -206,7 +212,7 @@ var that = this,
  * @param options
  */
 App.prototype.loadTheMProject = function(options) {
-var that = this, _theMProject, _theMProjectResources,
+var that = this, _theMProject, _theMProjectResources, _jQueryPlugins,_jquery,
     _path_to_the_m_project = (this.touchPath(that.execPath+'/frameworks/The-M-Project'))
                              ? that.execPath+'/frameworks/The-M-Project'
                              : that.execPath+'/frameworks/Mproject';
@@ -234,7 +240,7 @@ var that = this, _theMProject, _theMProjectResources,
    * Getting the The-M-Project resources and third party frameworks,
    * like: jquery.js or underscore.js
    */
-  _theMProjectResources = ['jquery','jquery_mobile','underscore','themes'].map(function(module) {
+  _theMProjectResources = ['jquery','underscore','themes','bootstrapping'].map(function(module) {
     var _frameworkOptions  = {};
         _frameworkOptions.path = _path_to_the_m_project+'/modules/' + module;
         _frameworkOptions.name = module;
@@ -247,6 +253,44 @@ var that = this, _theMProject, _theMProjectResources,
     });
 
   this.addFrameworks(_theMProjectResources);
+
+
+  /*
+   * Load some jQuery Mobile plugins.
+   * NOTE: Implemented this only for testing of datepicker and splitview.
+   *       As long as there is not clear definition of how to refer plugins 
+   *       automatically, this stays here.
+   */
+  _jQueryPlugins = ['jquery_mobile_plugins'].map(function(module) {
+    var _frameworkOptions  = {};
+        _frameworkOptions.path = _path_to_the_m_project+'/modules/' + module;
+        _frameworkOptions.name = module;
+        _frameworkOptions.app = that;
+        _frameworkOptions.is_a_plugin = true;
+        _frameworkOptions.frDelimiter = 'modules/';
+        _frameworkOptions.excludedFolders = that.excludedFolders;
+        _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
+        _frameworkOptions.taskChain = new TaskManager(["merge","markCore","contentType","manifest"]).getTaskChain();
+       return new Framework(_frameworkOptions);
+    });
+
+  if (this.touchPath(that.execPath+'/frameworks/The-M-Project/modules/jquery_mobile_plugins')){
+      this.addFrameworks(_jQueryPlugins);
+  }
+
+  _jquery = ['jquery_mobile'].map(function(module) {
+    var _frameworkOptions  = {};
+        _frameworkOptions.path = _path_to_the_m_project+'/modules/' + module;
+        _frameworkOptions.name = module;
+        _frameworkOptions.app = that;
+        _frameworkOptions.frDelimiter = 'modules/';
+        _frameworkOptions.excludedFolders = that.excludedFolders;
+        _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
+        _frameworkOptions.taskChain = new TaskManager(["merge", "contentType","markCore","manifest"]).getTaskChain();
+       return new Framework(_frameworkOptions);
+    });
+
+  this.addFrameworks(_jquery);
 
 };
 
@@ -269,7 +313,7 @@ var that = this;
     }else{
            _indexHtml.push(
       '<html manifest="cache.manifest">'
-    ); 
+        ); 
     }
 
     _indexHtml.push(
@@ -299,12 +343,6 @@ var that = this;
              _indexHtml.push(entry);
     });
 
- /*  _indexHtml.push(
-        '<link type="text/css" href="theme/jquery.mobile-1.0a3.min.css" rel="stylesheet" />'+
-        '<script type="text/javascript" src="jquery-1.5.min.js"></script>'+
-        '<script type="text/javascript" src="jquery.mobile-1.0a3.min.js"></script>'+
-        '<script type="text/javascript" src="underscore-min.js"></script>'
-    ); */
    _indexHtml.push(
         '<link type="text/css" href="theme/style.css" rel="stylesheet" />'+
         '<script type="text/javascript" src="core.js"></script>'+
@@ -392,7 +430,7 @@ var self = this, _cacheManifest = [];
 if(!self.offlineManifest){
    callback();
 }
-
+ 
  /* adding entries for the Explicit CACHE section*/
  _cacheManifest.push(
    'CACHE MANIFEST',
@@ -507,30 +545,40 @@ var that = this,
         var targets = JSON.parse(this._e_.fs.readFileSync(_targetsJSON, 'utf8'));
 
         if(targets){
-           if(targets[tar.vendor]){
-               var _vendor = targets[tar.vendor];
-             //  console.log(_vendor);
-             //  console.log(_vendor[tar.deviceModel]);
-               that.target.manufacturer = tar.vendor; 
-              if(_vendor[tar.deviceModel]) {
-                   var _deviceModel = _vendor[tar.deviceModel];
+           if(targets[tar.group]){
+               var _group = targets[tar.group];
+               that.target.group = tar.group;
+              if(_group[tar.subGroup]) {
+                   var _subGroup = _group[tar.subGroup];
                   
-                   if(_deviceModel.resolution){
-                    //  console.log("_deviceModel.resolution "+_deviceModel.resolution);
-                      that.target.resolution = _deviceModel.resolution;                      
+                   if(_subGroup.dedicatedResources){
+                      that.target.dedicatedResources = _subGroup.dedicatedResources;
+                   }else{
+                    that.reporter.warnings.push(this.style.cyan('No dedicatedResources defined, for "')
+                                          + this.style.magenta(tar.subGroup)
+                                          + this.style.cyan('" using "base" and "'+ tar.group +'" only.'));
                    }
                  
-                   if(_deviceModel.htmlHeader){
+                   if(_subGroup.htmlHeader){
                       that.HEAD_IndexHtml = []; // reset, to override the settings that may be made in config.json
-                      that.HEAD_IndexHtml = _deviceModel.htmlHeader;
-                     // console.log(that.HEAD_IndexHtml);
+                      that.HEAD_IndexHtml = _subGroup.htmlHeader;
                    }
-             }
+             }else{
+               that.reporter.warnings.push(this.style.cyan('No subGroup defined, for "')
+                                          + this.style.magenta(tar.subGroup)
+                                          + this.style.cyan('" using "base" and "'+ tar.group +'" only.'));
+              }
+           }else{
+           that.reporter.warnings.push(this.style.cyan('No group ')
+                                        //  + this.style.magenta(tar.group)
+                                          + this.style.cyan('specified, using "base" only.'));
            }
         }
     }catch(ex){
-       console.log(this.style.red('ERROR:')+this.style.cyan(' - while reading "targets.json", error message: '+ex.message));
-       process.exit(1);
+       if(ex.errno !== 2){ // File not found
+         console.log(this.style.red('ERROR:')+this.style.cyan(' - while reading "targets.json", error message: '+ex.message));
+         process.exit(1);  
+       }
     }
 
 };
@@ -645,6 +693,94 @@ var _AppBuilder = function(app, callback) {
 
 };
 
+
+App.prototype.build = function(callback){
+var self = this,
+    _frameworks = [];
+
+
+if(self.htmlHeader){
+   self.HEAD_IndexHtml = self.htmlHeader;
+}
+
+if(self.targetQuery){
+   this.readTargetConfig(self.targetQuery);
+}
+
+
+if(self.libraries){
+   self.libraries.forEach(function(fr){
+         _frameworks.push(fr.name);
+   });
+
+   self.addUsedFrameworks(_frameworks);
+}
+
+var _AppBuilder = function(app, callback) {
+    var that = this;
+    /* amount of used frameworks, for this application. */
+    that._frameworkCounter = app.frameworks.length ;
+
+    /* callback checker, called if all frameworks are built. */
+    that.callbackIfDone = function() {
+      if (callback && that._frameworkCounter <= 0){
+         // console.log('build callback called !');
+          callback(null,self.frameworks);
+      }
+    };
+
+    that.build = function() {
+      console.log(self.style.green("Building components:"));
+      app.frameworks.forEach(function(framework) {
+        framework.build(function(fr) {
+          /* count  = -1 if a framework had been built. */
+          that._frameworkCounter -= 1;
+          console.log(self.style.magenta(fr.name)+self.style.green(': ')+self.style.cyan('done'));
+          //console.log(require('util').inspect(fr.files_with_Dependencies, true, 1));
+          /* check if callback can be called, the condition ist that all frameworks has been build. */
+          that.callbackIfDone();
+        });
+      });
+    };
+  };
+
+  /*
+   *  Build stack:
+   *  1) Build the Application
+   *   11) Build each framework
+   *  2) Build the index.html
+   *  3) Build the cache manifest, after all frameworks had been built.
+   *  4) Call callback, which leads to the next step of the build OR server process.
+   *
+   */
+ // new _AppBuilder(self, function(){self.buildIndexHTML(function(){self.buildManifest(callback)},self.librariesNamesForIndexHtml,_HEAD_IndexHtml)}).build();
+
+     self.sequencer(
+          function(){
+            console.log(self.style.green('Building application: "')+self.style.magenta(this.name)+self.style.green('"'));
+            new _AppBuilder(self, this).build();
+          },
+          function(err,frameworks){
+             if(err){throw err;}
+             self.prepareHTMLGeneration(this);
+          },
+          function(err,frameworks){
+            if(err){throw err;}
+            self.buildIndexHTML(this,self.librariesNamesForIndexHtml,self.HEAD_IndexHtml);
+          },
+          function(err,frameworks){
+            if(err){throw err;}
+            self.buildManifest(this);
+          },
+          function(err,frameworks){
+            if(err){throw err;}
+             self.reporter.printReport(); 
+             callback();
+          }
+     );
+
+};
+
 /**
  * @description
  * Sort all resolved entries for index.html.
@@ -652,11 +788,15 @@ var _AppBuilder = function(app, callback) {
  */
 App.prototype.prepareHTMLGeneration = function(callback){
 var self = this;
-    
+
+
     self.coreNamesForIndexHtml.push(self.coreNamesOBj['jquery']);
+    self.coreNamesForIndexHtml.push(self.coreNamesOBj['bootstrapping']);
     self.coreNamesForIndexHtml.push(self.coreNamesOBj['jquery_mobile']);
+    self.coreNamesForIndexHtml.push(self.coreNamesOBj['jquery_mobile_plugins']);
+    self.coreNamesForIndexHtml.push(self.coreNamesOBj['jquery_mobile_plugins-theme']);
     self.coreNamesForIndexHtml.push(self.coreNamesOBj['underscore']);
-    self.coreNamesForIndexHtml.push(self.coreNamesOBj['themes']);
+    self.coreNamesForIndexHtml.push(self.coreNamesOBj['themes']);    
 
     callback(null,self.frameworks);
 };
@@ -742,6 +882,10 @@ var self = this;
             });
         };
     }
+
+    console.log('\n');
+    console.log(self.style.green('=== Server log:'));
+    console.log("\n");
     
     new _AppPreparer(self,callback).prepareForServer();
 };

@@ -10,7 +10,7 @@ var {{appName}}  = {{appName}} || {};
 
 {{appName}}.app = M.Application.design({
 
-    entryPage : 'page1',
+    entryPage : 'page1',  // define the entry/start page of your app. This property must be provided!
 
     page1: M.PageView.design({
 

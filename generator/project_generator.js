@@ -46,12 +46,13 @@ NewProjectGenerator = exports.NewProjectGenerator = function() {
   this.projectName = '';
   this.isHelloWorldProject = false;
   this.outputPath='';
-  this.espressoPath='';    
+  this.espressoPath='';
+  this.pathToEspress = '../../Espresso';
 
   this._tools =[]; // array with names of build tools, used in the a new project.
   this._tools.push('m-build.js');
   this._tools.push('m-server.js');
-  this._tools.push('m-gen.js');  
+  this._tools.push('m-gen.js');
   this._tools.push('config.json');
 };
 
@@ -116,7 +117,8 @@ NewProjectGenerator.prototype.genProject = function(projectName,args){
       switch(true){
           case((args.dir || args.d) && ((typeof args.dir === 'string') ||(typeof args.d === 'string'))):
              var t = (args.dir) ? args.dir : args.d;            
-             self.path = t+'/';   
+             self.path = t+'/';
+             self.pathToEspress = self.espressoPath;    
           break;
           default:
              self.path = self.outputPath+'Apps/';   
@@ -132,6 +134,7 @@ NewProjectGenerator.prototype.genProject = function(projectName,args){
       self._outP.push( self.path + self.projectName + '/frameworks' );
       self._outP.push( self.path + self.projectName + '/frameworks/The-M-Project' );
       self._outP.push( self.path + self.projectName + '/frameworks/The-M-Project/modules' );
+      self._outP.push( self.path + self.projectName + '/frameworks/The-M-Project/modules/bootstrapping' );
       self._outP.push( self.path + self.projectName + '/frameworks/The-M-Project/modules/core');
       self._outP.push( self.path + self.projectName + '/frameworks/The-M-Project/modules/core/datastore' );
       self._outP.push( self.path + self.projectName + '/frameworks/The-M-Project/modules/core/datastore/validators' );
@@ -142,6 +145,8 @@ NewProjectGenerator.prototype.genProject = function(projectName,args){
       self._outP.push( self.path + self.projectName + '/frameworks/The-M-Project/modules/ui/dialogs' );
       self._outP.push( self.path + self.projectName + '/frameworks/The-M-Project/modules/jquery' );
       self._outP.push( self.path + self.projectName + '/frameworks/The-M-Project/modules/jquery_mobile' );
+      self._outP.push( self.path + self.projectName + '/frameworks/The-M-Project/modules/jquery_mobile_plugins' );
+      self._outP.push( self.path + self.projectName + '/frameworks/The-M-Project/modules/jquery_mobile_plugins/datepicker' );
       self._outP.push( self.path + self.projectName + '/frameworks/The-M-Project/modules/themes' );
       self._outP.push( self.path + self.projectName + '/frameworks/The-M-Project/modules/themes/jquery_mobile' );
       self._outP.push( self.path + self.projectName + '/frameworks/The-M-Project/modules/themes/jquery_mobile/images' );
@@ -203,7 +208,7 @@ NewProjectGenerator.prototype.genProject = function(projectName,args){
       self.Mu.templateRoot = self._templatePath;
 
        var ctx = {
-            espresso: self.espressoPath,
+            espresso: self.pathToEspress,
             appName: self.projectName
         };
 

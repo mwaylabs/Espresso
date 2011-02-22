@@ -28,7 +28,7 @@ Proxy = exports.Proxy = function(properties) {
 
    /* Properties */
   this.host          = null;
-  this.hostPort      = '80';
+  this.hostPort      = '8080';
   this.proxyAlias    = null;
   this.requestMethod = null;
 
@@ -41,7 +41,7 @@ Proxy = exports.Proxy = function(properties) {
 /*
  * Getting all basic Espresso functions from the root prototype: M
  */
-Proxy.prototype = new E;
+Proxy.prototype = new E();
 
 /**
  * Adds the given properties, to the proxy object.

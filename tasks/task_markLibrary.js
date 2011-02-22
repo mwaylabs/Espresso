@@ -30,7 +30,7 @@ Task_MarkLibrary = exports.Task_MarkLibrary = function() {
  * @description
  * Get the run() function from Task.
  */
-Task_MarkLibrary.prototype = new Task;
+Task_MarkLibrary.prototype = new Task();
 
 /**
  * @description

@@ -1,3 +1,11 @@
+** Version 0.0.9 - Date 22.02.2011 **
+
+  * Added new feature: when starting m-server and running the application in a browser, the application
+    is automatically re-build every time the browser is getting refreshed. Not cache.manifest is generated during the build.
+  * Added new command line arguments for m-server.js: -m, --manifest run the server in manifest mode, to compile and
+    the application with cache.manifest.  
+  * Fixed bug: server is now handling POST requests correctly.  
+
 ** Version 0.0.8-1 - Date 09.02.2011 **
 
   * Fixed bug: jQuery, jQuery Mobile and underscore are now sorted in the needed order

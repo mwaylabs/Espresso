@@ -22,7 +22,7 @@ Task_Minify = exports.Task_Minify = function() {
  * Get the run() function from Task
  * @param framework
  */
-Task_Minify.prototype = new Task;
+Task_Minify.prototype = new Task();
 
 /**
  * minifiy files. 
