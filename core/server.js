@@ -219,12 +219,8 @@ var body = '';
 
    if(_proxy){ // if proxy entry was found.
       var _inquiredData =  request.url.split(_pr)[1];
-    //  var url = _proxy.host + ':' + _proxy.hostPort;
-      /*
-      if(_inquiredData) {
-           url = _inquiredData
-      }
-*/
+      var url = _proxy.host + ':' + _proxy.hostPort;
+
       that._e_.sys.puts("proxy request on = "+url+_inquiredData);
       var proxyClient  =  that._e_.http.createClient(_proxy.hostPort, _proxy.host);
 
@@ -233,13 +229,9 @@ var body = '';
         response.writeHead(404);
         response.end();
       });
-//client.request(method='GET', path, [request_headers])
 
       request.headers['host']  = _proxy.host;
       request.headers['content-length'] = body.length;
-
-      console.log("Request Methode "+request.method);
-      console.log(request.headers);
 
       var proxyRequest =  proxyClient.request(request.method,
                                               _inquiredData,
@@ -266,8 +258,6 @@ var body = '';
 
     proxyRequest.end();
 
-
-    // proxyRequest.end();
    }else{ // nor proxy entry found!
      console.log('ERROR: no proxy host entry found for: "'+_pr+'"');
      response.writeHead(404);
