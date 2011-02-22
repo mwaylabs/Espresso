@@ -51,7 +51,7 @@ Server = exports.Server = function(dirname) {
   this.proxies    = [];
   this.hostedApps = [];   /* = the applications managed by this server */
   //this.files = {};  /* = the files, that should be served by  this server */
-  this.files;  /* = the files, that should be served by  this server */
+  this.files = [];  /* = the files, that should be served by  this server */
 
   if(this.argv.$0 !== 'node ./m-build.js'){
     this.addProperties(this.argv); 
@@ -197,10 +197,10 @@ Server.prototype.deliverThat = function (response,file){
 Server.prototype.proxyThat = function (request, response){
 var that = this;
 var _requestMethod  = request.method;
-var data = '';
+var body = '';
 
   request.addListener('data', function (chunk) {
-       that.data+=chunk;
+       body+=chunk;
        console.log('chunk  = '+chunk);
   });
 
@@ -219,7 +219,13 @@ var data = '';
 
    if(_proxy){ // if proxy entry was found.
       var _inquiredData =  request.url.split(_pr)[1];
-      that._e_.sys.puts("proxy request on = "+_proxy.host+_inquiredData);
+    //  var url = _proxy.host + ':' + _proxy.hostPort;
+      /*
+      if(_inquiredData) {
+           url = _inquiredData
+      }
+*/
+      that._e_.sys.puts("proxy request on = "+url+_inquiredData);
       var proxyClient  =  that._e_.http.createClient(_proxy.hostPort, _proxy.host);
 
       proxyClient.addListener('error', function(err) {
@@ -230,10 +236,19 @@ var data = '';
 //client.request(method='GET', path, [request_headers])
 
       request.headers['host']  = _proxy.host;
-   //   var _requestMethod  = request.method;
-    console.log("Request Methode "+_requestMethod);
-      var proxyRequest =  proxyClient.request(request.method, _inquiredData,
+      request.headers['content-length'] = body.length;
+
+      console.log("Request Methode "+request.method);
+      console.log(request.headers);
+
+      var proxyRequest =  proxyClient.request(request.method,
+                                              _inquiredData,
                                               request.headers);
+
+
+      if (body.length > 0) {
+        proxyRequest.write(body);
+      }
 
       proxyRequest.on('response', function (proxyResponse) {
         console.log('HOST RESPONDING');
@@ -249,14 +264,7 @@ var data = '';
         });
       });
 
-        if(_requestMethod !== 'GET'){
-              proxyRequest.write(data);
-        }
-            
-
-
-
-      proxyRequest.end();
+    proxyRequest.end();
 
 
     // proxyRequest.end();
@@ -309,6 +317,9 @@ Server.prototype.resolveUAMapping = function(osFamily){
      }
 };
 
+Server.prototype.close = function(){
+    this.appServer.close();
+}
 
 
 /**
@@ -322,7 +333,7 @@ var that = this,
     _applicationName =  (appName) ? appName : '',
     _thatPort = (that.commandLinePort) ? that.commandLinePort : that.port;
 
-    that._e_.http.createServer(function (request, response) {
+  this.appServer = that._e_.http.createServer(function (request, response) {
 
         _requestedURL = that._e_.url.parse(request.url);
 
@@ -366,7 +377,9 @@ var that = this,
 
         }
 
-    }).listen(_thatPort);
+    });
+
+    this.appServer.listen(_thatPort);
     
     console.log('Server running at http://'+that.hostname+':' + _thatPort +'/'+_applicationName);
 };
@@ -385,7 +398,7 @@ var that = this,
     _thatPort = (that.commandLinePort) ? that.commandLinePort : that.port;
 
     function startServer(){
-        that._e_.http.createServer(function (request, response) {
+    this.appServer =   that._e_.http.createServer(function (request, response) {
             _requestedURL = that._e_.url.parse(request.url);
             that._e_.sys.puts('requesting : '+_requestedURL.pathname);
 
@@ -406,7 +419,9 @@ var that = this,
 
             }
 
-        }).listen(_thatPort);
+        });
+
+      this.appServer.listen(_thatPort);   
 
         console.log('Server running at http://'+that.hostname+':' + _thatPort +'/'+_applicationName);
     };
