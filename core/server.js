@@ -237,7 +237,6 @@ var body = '';
                                               _inquiredData,
                                               request.headers);
 
-
       if (body.length > 0) {
         proxyRequest.write(body);
       }
