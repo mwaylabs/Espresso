@@ -246,7 +246,6 @@ var body = '';
         console.log('HOST RESPONDING');
         console.log('Status: ' + proxyResponse.statusCode);
         console.log('Content Type: ' + proxyResponse.headers['content-type']);
-        console.log(proxyResponse.headers);
         response.writeHead(proxyResponse.statusCode, proxyResponse.headers);
         proxyResponse.on('data', function (chunk) {
           response.write(chunk);
