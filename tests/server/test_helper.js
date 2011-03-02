@@ -13,9 +13,7 @@ exports.port = 42230;
 
 var URL = 'http://127.0.0.1:8000/echoServer/';
 var Http = require('wwwdude');
-//var Quip = require('../support/quip');
 var Connect = require('connect');
-//var log = require('../support/log4js/lib/log4js')().getLogger();
 
 var client = Http.createClient({
     headers: {
@@ -40,8 +38,7 @@ function echoServer() {
   //exports.port += 1;
 
   var server = Connect.createServer(
-    Connect.gzip(),
-    Connect.bodyDecoder(),
+    Connect.bodyParser(),
     Connect.router(function (app) {
         app.post('/', handler);
       })
@@ -82,34 +79,34 @@ var mserver =  require('../../core/server').Server;
 
 var M_Server = new mserver(__dirname);
 
- M_Server.addProxies([
-                    { "host":"localhost",
-                      "proxyAlias": "echoServer",
-                      "requestMethod": "POST",
-                      "hostPort": echo.port
-                    }
-                    ]);
+M_Server.addProxies([
+    { "host": "http://localhost",
+      "proxyAlias": "echoServer",
+      "requestMethod": "POST",
+      "hostPort": echo.port
+    }
+  ]);
 
 /*
-.createProxy({
-    log: log,
-    url: echo.url
+ .createProxy({
+ log: log,
+ url: echo.url
   });  */
 
 /*
-var server = Connect.createServer(
-  Connect.gzip(),
-  Connect.bodyDecoder(),
-  Connect.router(Proxy.route),
-  Connect.errorHandler({showStack: true, dumpExceptions: true})
+ var server = Connect.createServer(
+ Connect.gzip(),
+ Connect.bodyDecoder(),
+ Connect.router(Proxy.route),
+ Connect.errorHandler({showStack: true, dumpExceptions: true})
 ); */
 
 
 var post = exports.post = function (payload, headers, callback) {
   payload = JSON.stringify(payload);
 
-  M_Server.runDevServer('M_ServerTest');//(3000, 'localhost');
-    
+  M_Server.runDevServer('M_ServerTest'); //(3000, 'localhost');
+
   client.post(URL, payload, headers)
   .on('error', function (err) {
       callback(err);
@@ -127,6 +124,6 @@ var post = exports.post = function (payload, headers, callback) {
       callback(null, parsed, resp);
     })
   .on('complete', function () {
-       M_Server.close();
+      M_Server.close();
     });
 };
