@@ -108,8 +108,9 @@ Framework.prototype.readFiles = function (callback) {
 
   self.files.forEach(function (file) {
       var _cFPath  = file.path;
-      self._e_.fs.readFile(_cFPath, function (err, data) { // data is a buffer object, if no encoding was specified!
-          if (err) {
+
+      // data is a buffer object, if no encoding was specified!
+      self._e_.fs.readFile(_cFPath, function (err, data) {          if (err) {
             throw err;
           } else {
             file.content = data;
