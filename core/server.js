@@ -14,7 +14,6 @@ var App = require('./app').App;
 var userAgent = require('../lib/useragent');
 var wwwdude = require('../lib/wwwdude');
 
-
 /**
  * @class
  *
@@ -198,17 +197,31 @@ Server.prototype.proxyThat = function (request, response) {
   var _requestMethod  = request.method;
   var body = '';
 
-  request.addListener('data', function (chunk) {
+  request.on('data', function (chunk) {
       body += chunk;
       console.log('chunk  = ' + chunk);
     });
 
+  request.on('end', function () {
+      var _path = that._e_.url.parse(request.url).pathname.slice(1);
+      var _pr = _path.split('/')[0];
+      var _proxy;
 
+      function _respondNetError(err) {
+        response.writeHead(500);
+        response.end(err.toString());
+      }
 
-  request.addListener('end', function () {
-      var _proxy,
-      _path = that._e_.url.parse(request.url).pathname.slice(1),
-      _pr = _path.split('/')[0];
+      function _respondRequestSuccess(data, resp) {
+        response.writeHead(200, resp.headers);
+        response.end(data);
+      }
+
+      function _respondRequestError(err, resp) {
+        response.writeHead(500);
+        response.end(err);
+      }
+
       //TODO: can this done better ?!
       that.proxies.forEach(function (p) {  // looking for proxy entries.
           if (p.proxyAlias === _pr) {
@@ -217,49 +230,34 @@ Server.prototype.proxyThat = function (request, response) {
         });
 
       if (_proxy) { // if proxy entry was found.
-        var _inquiredData =  request.url.split(_pr)[1];
-        var url = _proxy.host + ':' + _proxy.hostPort;
+        var _inquiredData = request.url.split(_pr)[1];
+        var url = _proxy.host + ':' + _proxy.hostPort + _inquiredData;
+        var method = request.method.toLowerCase();
 
-        that._e_.sys.puts("proxy request on = " + url + _inquiredData);
-        var proxyClient  =  that._e_.http.createClient(_proxy.hostPort, _proxy.host);
+        that._e_.sys.puts("proxy request to " + url);
+        var proxyClient  = wwwdude.createClient();
+        var proxyRequest;
 
-        proxyClient.addListener('error', function (err) {
-            console.log('ERROR: "' + err.message + '" for proxy request on ' + _proxy.host + ':' + _proxy.hostPort);
-            response.writeHead(404);
-            response.end();
-          });
-
-        request.headers['host']  = _proxy.host;
-        request.headers['content-length'] = body.length;
-
-        var proxyRequest =  proxyClient.request(request.method,
-          _inquiredData,
-          request.headers);
-
-        if (body.length > 0) {
-          proxyRequest.write(body);
+        if (method === 'post' || method === 'put') {
+          proxyRequest = proxyClient[method](url, body, request.headers);
+        } else {
+          proxyRequest = proxyClient[method](url, request.headers);
         }
 
-        proxyRequest.on('response', function (proxyResponse) {
-            console.log('HOST RESPONDING');
-            console.log('Status: ' + proxyResponse.statusCode);
-            console.log('Content Type: ' + proxyResponse.headers['content-type']);
-            response.writeHead(proxyResponse.statusCode, proxyResponse.headers);
-            proxyResponse.on('data', function (chunk) {
-                response.write(chunk);
-              });
-            proxyResponse.addListener('end', function () {
-                response.end();
-              });
+        proxyRequest.on('error', function (err) {
+            _respondNetError(err);
+          })
+        .on('http-error', function (err, resp) {
+            _respondRequestError(err, resp);
+          })
+        .on('success', function (data, resp) {
+            _respondRequestSuccess(data, resp);
+          })
+        .on('complete', function (data, resp) {
+            console.log('Finished request to: ' + url);
           });
-
-        proxyRequest.end();
-
-      } else { // nor proxy entry found!
-        console.log('ERROR: no proxy host entry found for: "' + _pr + '"');
-        response.writeHead(404);
-        response.end();
       }
+
     });
 };
 
@@ -315,15 +313,15 @@ Server.prototype.close = function () {
  * @param appName, name of the application.
  */
 Server.prototype.runDevServer = function (appName) {
-  var that = this,
-  _file, _requestedURL, data = '',
-  _thatPort = (that.commandLinePort) ? that.commandLinePort : that.port;
+  var that = this;
+  var data = '';
+
+  port = that.commandLinePort || that.port;
   appName = appName || '';
 
-
   this.appServer = that._e_.http.createServer(function (request, response) {
-
-      _requestedURL = that._e_.url.parse(request.url);
+      var _file;
+      var _requestedURL = that._e_.url.parse(request.url);
 
       var userAgentString = request.headers['user-agent'],
       _ua = userAgent.parser(userAgentString),
@@ -364,8 +362,8 @@ Server.prototype.runDevServer = function (appName) {
 
     });
 
-  this.appServer.listen(_thatPort, function () {
-      console.log('Server running at http://' + that.hostname + ':' + _thatPort + '/' + appName);
+  this.appServer.listen(port, function () {
+      console.log('Server running at http://' + that.hostname + ':' + port + '/' + appName);
     });
 };
 
@@ -379,24 +377,21 @@ Server.prototype.runDevServer = function (appName) {
 Server.prototype.runManifestServer = function (appName) {
   var that = this,
   _file, _requestedURL,
-  _applicationName =  (appName) ? appName : that.app.name,
-  _thatPort = (that.commandLinePort) ? that.commandLinePort : that.port;
+  port = that.commandLinePort || that.port;
+
+  appName = appName || this.app.name;
 
   function startServer() {
     this.appServer =   that._e_.http.createServer(function (request, response) {
         _requestedURL = that._e_.url.parse(request.url);
         that._e_.sys.puts('requesting : ' + _requestedURL.pathname);
 
-
-        if ((_requestedURL.pathname === '/' + _applicationName)) {
-          var _headers = {};
-          _headers['Location'] = '/' + _applicationName + '/' + 'index.html';
-          response.writeHead(301, _headers);
+        if ((_requestedURL.pathname === '/' + appName)) { // requested app
+          response.writeHead(301, { Location: '/' + appName + '/' + 'index.html' });
           response.end();
-
         } else {
-          _file = that.files[(_requestedURL.pathname === '/' + _applicationName) ? '/index.html' : _requestedURL.pathname];
-          if (_file === undefined) {
+          _file = that.files[(_requestedURL.pathname === '/' + appName) ? '/index.html' : _requestedURL.pathname];
+          if (!_file) { // -> proxy request
             that.proxyThat(request, response);
           } else {
             that.deliverThat(response, _file);
@@ -406,11 +401,10 @@ Server.prototype.runManifestServer = function (appName) {
 
       });
 
-    this.appServer.listen(_thatPort);
-
-    console.log('Server running at http://' + that.hostname + ':' + _thatPort + '/' + _applicationName);
+    this.appServer.listen(port, function() {
+        console.log('Server running at http://' + that.hostname + ':' + port + '/' + appName);
+      });
   }
-
 
   var app = that.getNewApp(that.projectDirName);
 
