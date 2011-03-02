@@ -9,9 +9,6 @@
 // ==========================================================================
 
 
-var E;
-
-
 /**
  * @class
  * The root prototype in Espresso.
@@ -21,7 +18,7 @@ var E;
  *
  * @constructor
  */
-E = exports.E = function() {
+var E = exports.E = function() {
     this.__version__ = '0.0.9';  // Espresso version.
 };
 
@@ -90,8 +87,8 @@ E.prototype.argv = require('../lib/optimist').argv;
  * @function
  * Prints the current version number of Espresso.
  */
-E.prototype.printVersionNumber = function(){
-  console.log('Espresso, version: '+this.__version__);
+E.prototype.printVersionNumber = function () {
+  console.log('Espresso, version: ' + this.__version__);
 };
 
 /**
@@ -101,10 +98,10 @@ E.prototype.printVersionNumber = function(){
  * @return {boolean} return true if the given path is valid, false otherwise.
  */
 E.prototype.touchPath = function (path){
-  try{
+  try {
     this._e_.fs.statSync(path);
     return true;
-  }catch(ex){
+  } catch (ex){
     return false
   }
 };
