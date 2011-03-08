@@ -7,3 +7,12 @@
 [submodule "lib/step"]
 	path = lib/step
 	url = https://github.com/creationix/step.git
+[submodule "lib/optimist"]
+	path = lib/optimist
+	url = https://github.com/substack/node-optimist.git
+[submodule "lib/mu"]
+	path = lib/mu
+	url = https://github.com/raycmorgan/Mu.git
+[submodule "lib/sass"]
+	path = lib/sass
+	url = https://github.com/visionmedia/sass.js.git
