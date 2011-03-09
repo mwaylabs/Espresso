@@ -12,15 +12,15 @@ Espresso : The-M-Projects build tools using node.js.
 Usage
 =====
 
-1.) Install node.js. see description here: http://nodejs.org/#download
-2.) Checkout Espresso: git clone https://github.com/mwaylabs/Espresso.git
-3.) Initialize submodules: git submodule update --init
-4.) Browse to the espresso folder and run: node m-init.js -projectHelloWorld:myFirstApp on the shell.
+# Install node.js. see description here: http://nodejs.org/#download
+# Checkout Espresso: git clone https://github.com/mwaylabs/Espresso.git
+# Initialize submodules: git submodule update --init
+# Browse to the espresso folder and run: node m-init.js -projectHelloWorld:myFirstApp on the shell.
     a new MProject was generated. Type in:
     cd ..
     cd Apps/myFirstApp
     node m-server.js
-5.) copy & paste the url into your browser
+# copy & paste the url into your browser
 
 
 Installing node.js on Windows
