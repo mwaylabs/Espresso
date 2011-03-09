@@ -11,7 +11,6 @@
 var E = require('./e').E;
 var Proxy = require('./proxy').Proxy;
 var App = require('./app').App;
-var userAgent = require('../lib/useragent');
 var wwwdude = require('../lib/wwwdude');
 
 /**
@@ -323,10 +322,6 @@ Server.prototype.runDevServer = function (appName) {
       var _file;
       var _requestedURL = that._e_.url.parse(request.url);
 
-      var userAgentString = request.headers['user-agent'],
-      _ua = userAgent.parser(userAgentString),
-      _browser = userAgent.browser(userAgentString);
-
       if ((_requestedURL.pathname === '/' + appName) || (_requestedURL.pathname === '/' + appName + '/')) {
         var _headers = {};
         _headers.Location = '/' + appName + '/' + 'index.html';
@@ -337,7 +332,6 @@ Server.prototype.runDevServer = function (appName) {
         that.hostedApps = [];
         var app = that.getNewApp(that.projectDirName);
         app.offlineManifest = false;
-        //app.targetQuery = that.resolveUAMapping(_ua.os.family);
 
         app.loadTheApplication();
         app.loadTheMProject();
