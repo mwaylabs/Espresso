@@ -230,12 +230,15 @@ Server.prototype.proxyThat = function (request, response) {
 
       if (_proxy) { // if proxy entry was found.
         var _inquiredData = request.url.split(_pr)[1];
-        var url = _proxy.host + ':' + _proxy.hostPort + _inquiredData;
+        var url = _proxy.baseUrl + _inquiredData;
         var method = request.method.toLowerCase();
 
         that._e_.sys.puts("proxy request to " + url);
-        var proxyClient  = wwwdude.createClient();
+        var proxyClient  = wwwdude.createClient({ gzip: false });
         var proxyRequest;
+
+        // clean gzip header field
+        delete request.headers['accept-encoding'];
 
         if (method === 'post' || method === 'put') {
           proxyRequest = proxyClient[method](url, body, request.headers);
@@ -255,6 +258,8 @@ Server.prototype.proxyThat = function (request, response) {
         .on('complete', function (data, resp) {
             console.log('Finished request to: ' + url);
           });
+      } else {
+        console.log('No proxy found for: ' + _pr);
       }
 
     });

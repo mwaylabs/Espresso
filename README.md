@@ -13,11 +13,17 @@ Usage
 
 1. Install node.js. see description here: http://nodejs.org/#download
 2. Checkout Espresso:
+
     `git clone https://github.com/mwaylabs/Espresso.git`
+
 3. Initialize submodules: git
+
     `submodule update --init`
+
 4. Browse to the espresso folder and run: node m-init.js -projectHelloWorld:myFirstApp on the shell. A new MProject was generated. Type in:
+
     `cd .. ; cd Apps/myFirstApp ; node m-server.js`
+
 5. copy & paste the url into your browser
 
 
