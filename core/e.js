@@ -61,20 +61,6 @@ E.prototype.style = require('../lib/color');
  */
 E.prototype.sequencer =  require('../lib/step');
 
-/**
- * @property
- * The reference to the logger object.
- * Espresso is using the "node-logger" framework.
- * https://github.com/igo/node-logger
- *
- * @example
- * logger.info(Info message);
- * logger.debug('Debug message');
- * logger.warn('Warning message');
- * logger.error('Error message');
- * logger.trace('Trace message');
- */
-E.prototype.logger = require('../lib/node-logger').logger(module,true);
 
 /**
  * @property
