@@ -1,7 +1,7 @@
-=== NOTE ===
+NOTE
+====
 
 This is the development branch of Espresso, and heavily under construction !
-
 
 ----------------------------------------------------------------------------
 
@@ -9,7 +9,8 @@ Espresso readme:
 
 Espresso : The-M-Projects build tools using node.js.
 
-=== Using ===
+Usage
+=====
 
 1.) Install node.js. see description here: http://nodejs.org/#download
 2.) Checkout Espresso: git clone https://github.com/mwaylabs/Espresso.git
@@ -22,15 +23,16 @@ Espresso : The-M-Projects build tools using node.js.
 5.) copy & paste the url into your browser
 
 
-=== Installing node.js on Windows ===
+Installing node.js on Windows
+=============================
 
 Read the instructions here:
 https://github.com/ry/node/wiki/Building-node.js-on-Cygwin-%28Windows%29
 
 - Tested with node 0.2.5 on Windows 7
 
-
-=== Licensing ===
+Licensing
+=========
 
 All license information about Espresso and used third-party components can be found in the LICENSE file,
 Or in the concrete third-party component.
