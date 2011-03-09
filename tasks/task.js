@@ -9,8 +9,7 @@
 // ==========================================================================
 
 
-var  E = require('../core/e').E,
-     Task;
+var  E = require('../core/e').E;
 
 /**
  * @class
@@ -21,26 +20,16 @@ var  E = require('../core/e').E,
  * @extends E
  *
  */
-Task = exports.Task = function() {
-
+var Task = exports.Task = function() {
   this.framework; /* reference to the framework*/
   this.name = 'your task with no name'; /* the name of the task*/
   this.next;  /* the reference to the next task in the chain.*/
-    
 };
 
 /*
  * Getting all basic Espresso functions from the root prototype: M
  */
 Task.prototype = new E();
-
-/**
- * @description
- * Adding the TaskSequencer to Task definition, any Task that uses this object as prototype
- * getting access to tha TaskSequencer.
- * @property
- */
-Task.prototype.TaskSequencer = require('../lib/sequencer');
 
 /**
  * @description 
