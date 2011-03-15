@@ -8,10 +8,13 @@
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
+var Http = require('http');
+var Url = require('url');
 var E = require('./e').E;
 var Proxy = require('./proxy').Proxy;
 var App = require('./app').App;
 var wwwdude = require('../lib/wwwdude');
+
 
 /**
  * @class
@@ -60,20 +63,6 @@ var Server = exports.Server = function (dirname) {
  * Getting all basic Espresso functions from the root prototype: M
  */
 Server.prototype = new E();
-
-
-/**
- * @property
- * http to get access to nodes http handling
- */
-Server.prototype._e_.http = require('http');
-
-/**
- * @property
- * http to get access to nodes url parsing and handling
- */
-Server.prototype._e_.url = require('url');
-
 
 /**
  * @description
@@ -202,7 +191,7 @@ Server.prototype.proxyThat = function (request, response) {
     });
 
   request.on('end', function () {
-      var _path = that._e_.url.parse(request.url).pathname.slice(1);
+      var _path = Url.parse(request.url).pathname.slice(1);
       var _pr = _path.split('/')[0];
       var _proxy;
 
@@ -237,8 +226,10 @@ Server.prototype.proxyThat = function (request, response) {
         var proxyClient  = wwwdude.createClient({ gzip: false });
         var proxyRequest;
 
-        // clean gzip header field
+        // clean headers
         delete request.headers['accept-encoding'];
+        delete request.headers['connection'];
+        delete request.headers['content-length'];
 
         if (method === 'post' || method === 'put') {
           proxyRequest = proxyClient[method](url, body, request.headers);
@@ -323,9 +314,9 @@ Server.prototype.runDevServer = function (appName) {
   port = that.commandLinePort || that.port;
   appName = appName || '';
 
-  this.appServer = that._e_.http.createServer(function (request, response) {
+  this.appServer = Http.createServer(function (request, response) {
       var _file;
-      var _requestedURL = that._e_.url.parse(request.url);
+      var _requestedURL = Url.parse(request.url);
 
       if ((_requestedURL.pathname === '/' + appName) || (_requestedURL.pathname === '/' + appName + '/')) {
         var _headers = {};
@@ -367,7 +358,6 @@ Server.prototype.runDevServer = function (appName) {
 };
 
 
-
 /**
  * @description
  * Run the server, and waiting for requests.
@@ -381,8 +371,8 @@ Server.prototype.runManifestServer = function (appName) {
   appName = appName || this.app.name;
 
   function startServer() {
-    this.appServer =   that._e_.http.createServer(function (request, response) {
-        _requestedURL = that._e_.url.parse(request.url);
+    this.appServer = Http.createServer(function (request, response) {
+        _requestedURL = Url.parse(request.url);
         that._e_.sys.puts('requesting : ' + _requestedURL.pathname);
 
         if ((_requestedURL.pathname === '/' + appName)) { // requested app
