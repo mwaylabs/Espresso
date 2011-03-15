@@ -15,7 +15,6 @@ var Proxy = require('./proxy').Proxy;
 var App = require('./app').App;
 var wwwdude = require('../lib/wwwdude');
 
-
 /**
  * @class
  *
@@ -230,6 +229,7 @@ Server.prototype.proxyThat = function (request, response) {
         delete request.headers['accept-encoding'];
         delete request.headers['connection'];
         delete request.headers['content-length'];
+        delete request.headers['if-none-match'];
 
         if (method === 'post' || method === 'put') {
           proxyRequest = proxyClient[method](url, body, request.headers);
