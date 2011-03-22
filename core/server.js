@@ -209,6 +209,11 @@ Server.prototype.proxyThat = function (request, response) {
         response.end(err);
       }
 
+      function _respond404(err) {
+        response.writeHead(404);
+        response.end(err);
+      }
+
       //TODO: can this done better ?!
       that.proxies.forEach(function (p) {  // looking for proxy entries.
           if (p.proxyAlias === _pr) {
@@ -217,7 +222,7 @@ Server.prototype.proxyThat = function (request, response) {
         });
 
       if (_proxy) { // if proxy entry was found.
-        var _inquiredData = request.url.split(_pr)[1];
+        var _inquiredData = request.url.replace(new RegExp('^/' + _pr), '');
         var url = _proxy.baseUrl + _inquiredData;
         var method = request.method.toLowerCase();
 
@@ -230,6 +235,7 @@ Server.prototype.proxyThat = function (request, response) {
         delete request.headers['connection'];
         delete request.headers['content-length'];
         delete request.headers['if-none-match'];
+        delete request.headers['host'];
 
         if (method === 'post' || method === 'put') {
           proxyRequest = proxyClient[method](url, body, request.headers);
@@ -243,6 +249,9 @@ Server.prototype.proxyThat = function (request, response) {
         .on('http-error', function (err, resp) {
             _respondRequestError(err, resp);
           })
+        .on('redirect', function (data, resp) {
+            console.log('Redirecting to: ' + resp.headers['location']);
+          })
         .on('success', function (data, resp) {
             _respondRequestSuccess(data, resp);
           })
@@ -250,7 +259,9 @@ Server.prototype.proxyThat = function (request, response) {
             console.log('Finished request to: ' + url);
           });
       } else {
-        console.log('No proxy found for: ' + _pr);
+        var proxyError = 'No proxy found for: ' + _pr;
+        _respond404(proxyError);
+        console.log(proxyError);
       }
 
     });
