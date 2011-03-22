@@ -90,24 +90,22 @@ Server.prototype.addProperties = function (args) {
 
 
 Server.prototype.run = function (appname) {
-  var that = this;
-  var args = that.argv;
+  var args = this.argv;
 
-  if ((args.port || args.p) && ((typeof args.port === 'string') || (typeof args.p === 'string'))) {
-    that.commandLinePort = (args.port) ? args.port : args.p;
+  if (args.port || args.p) {
+    this.commandLinePort = args.port || args.p;
   }
 
-  switch (that.runMode) {
-  case that._DEVMODE_:
-    that.runDevServer(appname);
+  switch (this.runMode) {
+  case this._DEVMODE_:
+    this.runDevServer(appname);
     break;
-  case that._MANIFESTMODE_:
-    that.runManifestServer(appname);
+  case this._MANIFESTMODE_:
+    this.runManifestServer(appname);
     break;
   default:
-    that.runDevServer(appname);
+    this.runDevServer(appname);
     break;
-
   }
 };
 
@@ -321,9 +319,8 @@ Server.prototype.close = function () {
 Server.prototype.runDevServer = function (appName) {
   var that = this;
   var data = '';
-
-  port = that.commandLinePort || that.port;
-  appName = appName || '';
+  var port = this.commandLinePort || that.port;
+  var appName = appName || '';
 
   this.appServer = Http.createServer(function (request, response) {
       var _file;
