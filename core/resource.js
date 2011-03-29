@@ -119,33 +119,33 @@ Resource.prototype.gatherResources = function (cb) {
  *
  */
 Resource.prototype.evaluateTargetConfig = function () {
- var _target = this.app.target;
+  var _target = this.app.target;
   if (_target) {
     if (_target.group) {
       if(this.touchPath(this.path + '/' + _target.group)){
-          this._BASE_GROUP_ = true;
-          this.group  = _target.group;
+        this._BASE_GROUP_ = true;
+        this.group  = _target.group;
       }else{
-          this._BASE_GROUP_ = false;
-          this.app.reporter.warnings.push(this.style.cyan('no resource folder found for group: "')
-                                          + this.style.magenta(_target.group)
-                                          + this.style.cyan('" using "base" only'));
+        this._BASE_GROUP_ = false;
+        this.app.reporter.warnings.push(this.style.cyan('no resource folder found for group: "')
+          + this.style.magenta(_target.group)
+          + this.style.cyan('" using "base" only'));
       }
     }
     if (_target.dedicatedResources && _target.group) {
       if(this.touchPath(this.path + '/' +  _target.group + '/' + _target.dedicatedResources)){
-          this._BASE_GROUP_DEVICE_ = true;
-          this.dedicatedResources = _target.dedicatedResources;
+        this._BASE_GROUP_DEVICE_ = true;
+        this.dedicatedResources = _target.dedicatedResources;
       }else{
-          this._BASE_GROUP_DEVICE = false;
-          this.app.reporter.warnings.push(this.style.cyan('no resource folder found for "')
-                                          + this.style.magenta(_target.group + '/' + _target.dedicatedResources)
-                                          + this.style.cyan('" using "base" and "/'+_target.group+'" only'));
+        this._BASE_GROUP_DEVICE = false;
+        this.app.reporter.warnings.push(this.style.cyan('no resource folder found for "')
+          + this.style.magenta(_target.group + '/' + _target.dedicatedResources)
+          + this.style.cyan('" using "base" and "/'+_target.group+'" only'));
       }
     }
   } else {
     this._BASE_ = true;
-  }  
+  }
   return true;
 };
 
@@ -175,28 +175,32 @@ Resource.prototype.browseFiles = function (path, should_run, allow_sub_folders, 
      * @param path, the path to check.
      */
     that.checkIfFileShouldBeExcluded = function (path) {
+      // exclude hidden files
+      if (/\/\.[\w]+\/(\.[\w]+)?/.test(path)) {
+        return true;
+      }
       var _fileBaseName = path.split('/');
       if (that.checkIfFolderShouldBeExcluded(path)) {
         return true;
       }
-      if (self.excludedFiles.indexOf(_fileBaseName[_fileBaseName.length - 1]) === -1) {
-        return false;
-      } else {
-        return true;
-      }
+      return !(self.excludedFiles.indexOf(_fileBaseName[_fileBaseName.length - 1]) === -1);
     };
 
     /*
      * Check if a file path contains a folder, that should be excluded.
      */
     that.checkIfFolderShouldBeExcluded = function (path) {
-      var _exclude = false;
+      // exclude hidden folders
+      if (/\/\.[\w]+\//.test(path)) {
+        return true;
+      }
+
       self.excludedFolders.forEach(function (folder) {
           if (path.search('/' + folder + '/') !== -1) {
-            _exclude = true;
+            return true;
           }
         });
-      return _exclude;
+      return false;
     };
 
     that.browse = function (path) {
@@ -215,7 +219,7 @@ Resource.prototype.browseFiles = function (path, should_run, allow_sub_folders, 
                     if (err) {
                       throw err;
                     }
-                      // console.log('Path ='+path+' subpath.length '+subpaths.length+'  _resourceCounter '+that._resourceCounter);
+                    // console.log('Path ='+path+' subpath.length '+subpaths.length+'  _resourceCounter '+that._resourceCounter);
                     if (subpaths.length === 0) {
                       that.callbackIfDone();
                     }
@@ -269,13 +273,13 @@ Resource.prototype.browseFiles = function (path, should_run, allow_sub_folders, 
 Resource.prototype.listResources = function () {
   var that = this;
   this.files.forEach(function (file) {
-      that.app.reporter.resouces.push(file.path.split(that.frDelimiter)[1]); 
-     // console.log(that.style.cyan(file.path.split(that.frDelimiter)[1]));
+      that.app.reporter.resouces.push(file.path.split(that.frDelimiter)[1]);
+      // console.log(that.style.cyan(file.path.split(that.frDelimiter)[1]));
     });
-    /*
-  this.sassStyleSheets.forEach(function (file) {
-      console.log(that.style.cyan(file.path.split(that.frDelimiter)[1]));
-    }); */
+  /*
+   this.sassStyleSheets.forEach(function (file) {
+   console.log(that.style.cyan(file.path.split(that.frDelimiter)[1]));
+ }); */
 };
 
 /**

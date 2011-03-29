@@ -149,21 +149,21 @@ Framework.prototype.readManifest = function readManifest(manifest, path, callbac
       try {
         that.files = JSON.parse(content).manifest.map(function (file) {
             if (that.touchPath(path + '/' + file)) {
-                return new File({
-                    frDelimiter: that.frDelimiter,
-                    name: path + '/' + file,
-                    path: path + '/' + file,
-                    framework: that
+              return new File({
+                  frDelimiter: that.frDelimiter,
+                  name: path + '/' + file,
+                  path: path + '/' + file,
+                  framework: that
                 });
             } else {
-               console.log("\n");
-               console.log(that.style.red('ERROR:')+that.style.green(' File "')+that.style.cyan(path.split(that.frDelimiter)[1] + '/' + file)
-                          + that.style.green('" was referencd in "') + that.style.cyan(path.split(that.frDelimiter)[1] + '/'+'manifest.json')
-                          + that.style.green('" but not found in directory. '));
-               console.log("\n");
-               process.exit(1); /* exit the process, reason: file not found*/
+              console.log("\n");
+              console.log(that.style.red('ERROR:')+that.style.green(' File "')+that.style.cyan(path.split(that.frDelimiter)[1] + '/' + file)
+                + that.style.green('" was referencd in "') + that.style.cyan(path.split(that.frDelimiter)[1] + '/'+'manifest.json')
+                + that.style.green('" but not found in directory. '));
+              console.log("\n");
+              process.exit(1); /* exit the process, reason: file not found*/
             }
-        });
+          });
         callback(null);
       } catch (ex) {
         callback(ex);
@@ -198,6 +198,10 @@ Framework.prototype.browseFiles = function (path, callback) {
      * @param path, the path to check.
      */
     that.checkIfFileShouldBeExcluded = function (path) {
+      // exclude hidden files
+      if (/\/\.[\w]+\/(\.[\w]+)?/.test(path)) {
+        return true;
+      }
       var _fileBaseName = path.split('/');
       if (that.checkIfFolderShouldBeExcluded(path)) {
         return true;
@@ -209,13 +213,13 @@ Framework.prototype.browseFiles = function (path, callback) {
      * Check if a file path contains a folder, that should be excluded.
      */
     that.checkIfFolderShouldBeExcluded = function (path) {
-      var _exclude = false;
+
       self.excludedFolders.forEach(function (folder) {
           if (path.search('/' + folder + '/') !== -1) {
-            _exclude = true;
+            return true;
           }
         });
-      return _exclude;
+      return false;
     };
 
     that.browse = function (path) {
@@ -284,7 +288,7 @@ Framework.prototype.build = function (callback) {
         if (err) {
           throw err;
         }
-      //  console.dir(this);
+        //  console.dir(this);
         that.readFiles(this);
       },
 
@@ -359,11 +363,11 @@ Framework.prototype.save = function (callback) {
           that.writeFile(files,  _outputPath + '/theme/' + _cF.getBaseName() + _cF.getFileExtension(), _cF.content) :
           that.copyFile(files, _cF.path, _outputPath + '/theme/' + _cF.getBaseName() + _cF.getFileExtension());
           break;
-        /*
-        case (_cF.isSASS_Stylesheet()):
+          /*
+           case (_cF.isSASS_Stylesheet()):
              that.writeFile(files, _outputPath+'/theme/'+_cF.getBaseName()+'.css', _cF.content);
              break; */
-     // case (_cF.isVirtual()):
+          // case (_cF.isVirtual()):
         default:
           var _fileName =  (self.combinedScripts) ? self.name + '.js' : _cF.getBaseName() + _cF.getFileExtension();
           that.writeFile(files, _outputPath + '/' + _fileName, _cF.content);
