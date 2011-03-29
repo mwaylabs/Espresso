@@ -4,14 +4,13 @@
  */
 
 
-exports.description = 'Development server to compile and run the application for testing business in a webbrowser';
+exports.description = 'Command to run the Development server';
 
 exports.name = 'server';
 
 exports.examples = [
-  'server',
-  'server --port 8080',
-  'server -m --p 2342 --config config.json'
+  '--port 8080 --manifest',
+  '-m --p 2342 --config config.json'
 ];
 
 exports.options = {
