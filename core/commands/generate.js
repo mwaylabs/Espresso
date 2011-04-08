@@ -36,7 +36,13 @@ exports.options = {
     'description': 'Create a new i18n file',
     'hasargument': true
   },
-  
+
+  directory: {
+    'description': 'Specify a custom project directory',
+    'default': '$PWD',
+    'hasargument': true
+  },
+
   target: {
     'description': 'Create a new "targets.json" sample file',
     'hasargument': true

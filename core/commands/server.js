@@ -25,6 +25,12 @@ exports.options = {
     'hasargument': true
   },
 
+  directory: {
+    'description': 'Specify a custom project directory',
+    'default': '$PWD',
+    'hasargument': true
+  },
+
   port: {
     'description': 'Specify a custom port',
     'default': 8000,

@@ -14,6 +14,7 @@ exports.options = {
 
   directory: {
     'description': 'Specify a custom project directory',
+    'default': '$PWD',
     'hasargument': true
   }
 

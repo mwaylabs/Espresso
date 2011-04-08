@@ -22,6 +22,7 @@ exports.options = {
 
   directory: {
     'description': 'Specify a custom projects directory',
+    'default': '$PWD',
     'hasargument': true
   },
 
@@ -33,5 +34,6 @@ exports.options = {
 };
 
 exports.run = function run(params) {
-  console.dir(params);
+  var Generator  = require(__dirname + '/../../generator/project_generator');
+  Generator.generate(params);
 };
