@@ -11,8 +11,6 @@
 // TODO: Add switch for JSLint
 // TODO: Add switch for minifier
 
-var App = require('../app').App;
-
 exports.description = 'Command to build a project';
 
 exports.examples = [
@@ -30,6 +28,7 @@ exports.options = {
 };
 
 exports.run = function run(params) {
+  var App = require('../app').App;
   var app = new App(params);
   app.loadTheApplication();
   app.loadTheMProject();
