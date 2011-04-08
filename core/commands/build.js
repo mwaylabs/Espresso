@@ -1,8 +1,17 @@
 /*!
  * command module for building a project
- * @autor pfleidi
+ *
+ * Copyright(c) 2011 M-Way Solutions GmbH. All rights reserved.
+ * MIT and GPL Licensed
+ *
+ * @author pfleidi
  */
 
+
+// TODO: Add switch for JSLint
+// TODO: Add switch for minifier
+
+var App = require('../app').App;
 
 exports.description = 'Command to build a project';
 
@@ -21,5 +30,11 @@ exports.options = {
 };
 
 exports.run = function run(params) {
-  console.dir(params);
+  var app = new App(params);
+  app.loadTheApplication();
+  app.loadTheMProject();
+
+  app.build(function (options) {
+      app.saveLocal(options);
+    });
 };
