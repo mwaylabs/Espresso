@@ -15,14 +15,15 @@ var Util = require('util');
 var Path = require('path');
 var Style = require('../lib/color');
 var Sequencer = require('../lib/step');
-var Mu = require('../lib/Mu');
 var File = require('../core/file').File;
+var Renderer = require('../lib/renderer');
 
 // TODO: Implement transaction mechanism to roll back on error
 
 var generate = exports.generate = function generate(options) {
   var espressoPath = __dirname + '/..';
   var templatePath = __dirname + '/templates';   
+  var templateRenderer = Renderer.createRenderer(templatePath);
   var tools = ['config.json']; // array with names of build tools, used in the a new project.
   var outPut = [];
   var path;
@@ -108,31 +109,17 @@ var generate = exports.generate = function generate(options) {
    */
   var generateBuildTools = function generateBuildTools(callback) {
     var templateFile = tools.shift();
-    // setting the template sources
-    Mu.templateRoot = templatePath;
-
+    var outputPath = path + projectName + '/' + templateFile;
     var ctx = {
       espresso: espressoPath,
       appName: projectName
     };
 
-    Mu.render(templateFile, ctx, {}, function (err, output) {
-        var buffer = '';
-        if (err) {
-          throw err;
-        }
-        output.on('data', function (c) {
-            buffer += c;
-          });
-        output.on('end', function () {
-            Fs.writeFile(path + projectName + '/' + templateFile, buffer, function (err) {
-                if (err) {
-                  throw err;
-                }
-                Util.puts(templateFile + ' generated!');
-                callback(null);
-              });
-          });
+    templateRenderer.render({
+        templateFile: templateFile,
+        ctx: ctx,
+        outputPath: outputPath,
+        callback: callback
       });
   };
 
@@ -141,10 +128,9 @@ var generate = exports.generate = function generate(options) {
    * @param callback, calling the next helper.
    */
   var generateMainJS = function generateMainJS(callback) {
-    /*setting the template sources*/
-    Mu.templateRoot = templatePath;
-
     var templateFile = 'main.js';
+    var outputPath = path + projectName + '/app/main.js';
+
     if (isHelloWorldProject) {
       templateFile = 'hello_world_main.js';
     }
@@ -154,24 +140,11 @@ var generate = exports.generate = function generate(options) {
       e_Version: ''
     };
 
-    Mu.render(templateFile, ctx, {}, function (err, output) {
-        if (err) {
-          throw err;
-        }
-
-        var buffer = '';
-        output.on('data', function (c) {
-            buffer += c;
-          });
-        output.on('end', function () {
-            Fs.writeFile(path + projectName + '/app/main.js', buffer, function (err) {
-                if (err) {
-                  throw err;
-                }
-                callback(null);
-                Util.puts('main.js generated!');
-              });
-          });
+    templateRenderer.render({
+        templateFile: templateFile,
+        ctx: ctx,
+        outputPath: outputPath,
+        callback: callback
       });
   };
 
@@ -277,7 +250,6 @@ var generate = exports.generate = function generate(options) {
       if (err) {
         throw err;
       }
-      console.log('_______HERE_______');
       browseProjectFiles(this);
     },
 
@@ -296,4 +268,3 @@ var generate = exports.generate = function generate(options) {
     }
   );
 };
-
