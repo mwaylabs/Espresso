@@ -40,5 +40,8 @@ exports.options = {
 };
 
 exports.run = function run(params) {
-  console.dir(params);
+  var Server = require('../server').Server;
+  var server = new Server(params);
+
+  server.run();
 };
