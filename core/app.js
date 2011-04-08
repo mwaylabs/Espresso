@@ -13,6 +13,7 @@ var TaskManager = require('./task_manager').TaskManager;
 var Framework = require('./framework').Framework;
 var Report = require('./report').Report;
 var Resource = require('./resource').Resource;
+var Utils = require('../lib/espresso_utils');
 
 /**
  * @class
@@ -40,7 +41,7 @@ var Resource = require('./resource').Resource;
 // TODO: Refactoring
 
 var App = exports.App = function (options, server) {
-  var appPath;
+  var applicationDirectory;
 
   /* Properties */
 
@@ -53,7 +54,7 @@ var App = exports.App = function (options, server) {
   this.buildVersion      = Date.now();  // timestamp of the build.
 
   this.clear             = '';
-  this.execPath          = '';  //  the a actually folder name, in which the application is located.
+  this.applicationDirectory          = '';  //  the a actually folder name, in which the application is located.
   this.name              = 'defaultName';
   this.theme             = 'default';
   this.outputFolder      = 'build'; // name of the output folder, default is 'build'.
@@ -88,13 +89,12 @@ var App = exports.App = function (options, server) {
   this.reporter = new Report();
 
   if (options.directory === "$PWD") {
-    appPath = process.cwd() + '/';
+    this.applicationDirectory = process.cwd() + '/';
   } else {
-    appPath = options.directory;
+    this.applicationDirectory = options.directory;
   }
 
-  this.execPath = appPath;
-  this.loadJSONConfig(appPath);
+  this.loadJSONConfig();
 };
 
 
@@ -120,26 +120,12 @@ App.prototype.addOptions = function (build_options){
  * Loads the config file, passed in JSON syntax.
  * The 'config.json', should be in the root folder of the project to build.
  */
-App.prototype.loadJSONConfig = function (directory) {
-  try {
-    var config = JSON.parse(this._e_.fs.readFileSync(directory + '/config.json', 'utf8'));
-    this.addOptions(config);
-    if (config.proxies) {
-      this.server.proxies = config.proxies; //adding proxies, if present.
-    }
-    if (config.m_serverPort) {
-      this.server.port = config.m_serverPort; //adding specific port, if present.
-    }
-    if (config.m_serverHostname) {
-      this.server.hostname = config.m_serverHostname; //adding specific hostname, if present.
-    }
-    if (config.cacheFallbacks) {
-      this.manifest.fallback = config.cacheFallbacks; //adding specific fallbacks for cache.manifest
-    }
-  } catch(ex) {
-    console.log(this.style.red('ERROR:') + this.style.cyan(' - while reading "config.json", error message: ' + ex.message));
-    // exit the process, reason: error in config.json
-    process.exit(1);
+App.prototype.loadJSONConfig = function () {
+  var config = Utils.readConfig(this.applicationDirectory);
+  this.addOptions(config);
+
+  if (config.cacheFallbacks) {
+    this.manifest.fallback = config.cacheFallbacks; //adding specific fallbacks for cache.manifest
   }
 };
 
@@ -169,9 +155,9 @@ App.prototype.loadTheApplication = function () {
 
   _theApplication = ['app'].map(function (module) {
       var _frameworkOptions  = {};
-      _frameworkOptions.path = that.execPath + '/' + module;
+      _frameworkOptions.path = that.applicationDirectory + '/' + module;
       _frameworkOptions.name = that.name+'_App';
-      _frameworkOptions.frDelimiter = that.execPath+'/';
+      _frameworkOptions.frDelimiter = that.applicationDirectory+'/';
       _frameworkOptions.excludedFolders = ['resources'].concat(that.excludedFolders);
       _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
       _frameworkOptions.app = that;
@@ -183,9 +169,9 @@ App.prototype.loadTheApplication = function () {
 
   _theApplicationResources = ['app/resources'].map(function (module) {
       var _frameworkOptions  = {};
-      _frameworkOptions.path = that.execPath + '/' + module;
+      _frameworkOptions.path = that.applicationDirectory + '/' + module;
       _frameworkOptions.name = that.name+'_AppResources';
-      _frameworkOptions.frDelimiter = that.execPath+'/';
+      _frameworkOptions.frDelimiter = that.applicationDirectory+'/';
       _frameworkOptions.excludedFolders = that.excludedFolders;
       _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
       _frameworkOptions.app = that;
@@ -199,9 +185,9 @@ App.prototype.loadTheApplication = function () {
 
     _i18n = ['app/resources/i18n'].map(function (module) {
         var _frameworkOptions  = {};
-        _frameworkOptions.path = that.execPath + '/' + module;
+        _frameworkOptions.path = that.applicationDirectory + '/' + module;
         _frameworkOptions.name = 'i18n';
-        _frameworkOptions.frDelimiter = that.execPath+'/';
+        _frameworkOptions.frDelimiter = that.applicationDirectory+'/';
         _frameworkOptions.excludedFolders = that.excludedFolders;
         _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
         _frameworkOptions.app = that;
@@ -221,9 +207,9 @@ App.prototype.loadTheApplication = function () {
  */
 App.prototype.loadTheMProject = function () {
   var that = this, _theMProject, _theMProjectResources, _jQueryPlugins,_jquery,
-  _path_to_the_m_project = (this.touchPath(that.execPath+'/frameworks/The-M-Project'))
-  ? that.execPath+'/frameworks/The-M-Project'
-  : that.execPath+'/frameworks/Mproject';
+  _path_to_the_m_project = (this.touchPath(that.applicationDirectory+'/frameworks/The-M-Project'))
+  ? that.applicationDirectory+'/frameworks/The-M-Project'
+  : that.applicationDirectory+'/frameworks/Mproject';
 
   /*
    * Getting all The-M-Project core files
@@ -282,7 +268,7 @@ App.prototype.loadTheMProject = function () {
       return new Framework(_frameworkOptions);
     });
 
-  if (this.touchPath(that.execPath+'/frameworks/The-M-Project/modules/jquery_mobile_plugins')){
+  if (this.touchPath(that.applicationDirectory+'/frameworks/The-M-Project/modules/jquery_mobile_plugins')){
     this.addFrameworks(_jQueryPlugins);
   }
 
@@ -398,7 +384,7 @@ App.prototype.buildIndexHTML = function (callback,_frameworkNamesForIndexHtml,_H
     _indexHtml = _indexHtml.join('\n');
 
     var _frameworkOptions  = {};
-    _frameworkOptions.path = this.execPath;
+    _frameworkOptions.path = this.applicationDirectory;
     _frameworkOptions.name = 'IndexHtml';
     _frameworkOptions.app = this;
     _frameworkOptions.virtual = true;
@@ -478,7 +464,7 @@ App.prototype.buildIndexHTML = function (callback,_frameworkNamesForIndexHtml,_H
 
 
     var _frameworkOptions  = {};
-    _frameworkOptions.path = this.execPath;
+    _frameworkOptions.path = this.applicationDirectory;
     _frameworkOptions.name = 'chacheManifest';
     _frameworkOptions.app = this;
     _frameworkOptions.virtual = true;
@@ -510,7 +496,7 @@ App.prototype.buildIndexHTML = function (callback,_frameworkNamesForIndexHtml,_H
    */
     App.prototype.makeOutputFolder = function (callback){
       var self = this;
-      var _outputPath = this.execPath+'/'+this.outputFolder;
+      var _outputPath = this.applicationDirectory+'/'+this.outputFolder;
       self._outP = [];
       self._outP.push(_outputPath);
       self._outP.push('/'+this.buildVersion);
@@ -547,7 +533,7 @@ App.prototype.buildIndexHTML = function (callback,_frameworkNamesForIndexHtml,_H
 
     App.prototype.readTargetConfig = function (tar){
       var that = this,
-      _targetsJSON = this._e_.path.join(this.execPath, 'targets.json');
+      _targetsJSON = this._e_.path.join(this.applicationDirectory, 'targets.json');
 
       try{
         var targets = JSON.parse(this._e_.fs.readFileSync(_targetsJSON, 'utf8'));
@@ -596,7 +582,7 @@ App.prototype.buildIndexHTML = function (callback,_frameworkNamesForIndexHtml,_H
       var that = this;
       var  _usedFrameworks = usedFrameworks.map(function (module) {
           var _frameworkOptions  = {};
-          _frameworkOptions.path = that.execPath+'/frameworks/' + module;
+          _frameworkOptions.path = that.applicationDirectory+'/frameworks/' + module;
           _frameworkOptions.name = module;
           _frameworkOptions.library = true;
           _frameworkOptions.app = that;

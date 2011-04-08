@@ -1,6 +1,6 @@
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: ©2010 M-Way Solutions GmbH. All rights reserved.
+// Copyright: 2010 M-Way Solutions GmbH. All rights reserved.
 // Creator:   alexander
 // Date:      29.10.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -10,7 +10,7 @@
 
 var Http = require('http');
 var Url = require('url');
-var E = require('./e').E;
+var Utils = require('../lib/espresso_utils');
 var Proxy = require('./proxy').Proxy;
 var App = require('./app').App;
 var wwwdude = require('../lib/wwwdude');
@@ -29,8 +29,6 @@ var wwwdude = require('../lib/wwwdude');
  *
  * @param properties, the properties
  *
- * @extends E
- *
  * @constructor
  */
 var Server = exports.Server = function (options) {
@@ -39,22 +37,30 @@ var Server = exports.Server = function (options) {
   this.port = options.port;
 
   if (options.directory === "$PWD") {
-   this.projectDirName = process.cwd() + '/';
+    this.applicationDirectory = process.cwd() + '/';
   } else {
-   this.projectDirName = options.directory + '/';
+    this.applicationDirectory = options.directory + '/';
   }
 
   this.manifestMode = options.manifest;
   this.proxies = [];
   this.hostedApps = [];   /* = the applications managed by this server */
   this.files = [];  /* = the files, that should be served by  this server */
+  this.appName = '';
+  this.loadJSONConfig();
 };
 
+Server.prototype.loadJSONConfig = function () {
+  var config = Utils.readConfig(this.applicationDirectory);
+  this.appName = config.name;
 
-/*
- * Getting all basic Espresso functions from the root prototype: M
- */
-Server.prototype = new E();
+  if (config.proxies) {
+    this.proxies = config.proxies; //adding proxies, if present.
+  }
+  if (config.m_serverHostname) {
+    this.hostname = config.m_serverHostname; //adding specific hostname, if present.
+  }
+};
 
 /*
  * Run development server
@@ -76,8 +82,7 @@ Server.prototype.run = function () {
  * @param appOptions, the option/properties for the new App object.
  */
 Server.prototype.getNewApp = function (applicationDirectory) {
-  var  _app  = new App(applicationDirectory, this);
-  // var _app = new App(applicationDirectory,this);
+  var  _app  = new App({ directory: this.applicationDirectory }, this);
   this.hostedApps.push(_app); /* saving the app in local array */
   return _app;
 };
@@ -127,23 +132,14 @@ Server.prototype.proxyThat = function (request, response) {
       var _pr = _path.split('/')[0];
       var _proxy;
 
-      function _respondNetError(err) {
-        response.writeHead(500);
-        response.end(err.toString());
-      }
-
-      function _respondRequestSuccess(data, resp) {
+      function _respondSuccess(data, resp) {
         response.writeHead(200, resp.headers);
         response.end(data);
       }
 
-      function _respondRequestError(err, resp) {
-        response.writeHead(500);
-        response.end(err);
-      }
-
-      function _respond404(err) {
-        response.writeHead(404);
+      function _respondErr(err, statusCode) {
+        console.log(err);
+        response.writeHead(statusCode);
         response.end(err);
       }
 
@@ -159,7 +155,7 @@ Server.prototype.proxyThat = function (request, response) {
         var url = _proxy.baseUrl + _inquiredData;
         var method = request.method.toLowerCase();
 
-        that._e_.sys.puts("proxy request to " + url);
+        Utils.log('proxy request to ' + url);
         var proxyClient  = wwwdude.createClient({ gzip: false });
         var proxyRequest;
 
@@ -177,24 +173,23 @@ Server.prototype.proxyThat = function (request, response) {
         }
 
         proxyRequest.on('error', function (err) {
-            _respondNetError(err);
+            _respondErr(err, 500);
           })
         .on('http-error', function (err, resp) {
-            _respondRequestError(err, resp);
+            _respondErr(err, 500);
           })
         .on('redirect', function (data, resp) {
             console.log('Redirecting to: ' + resp.headers['location']);
           })
         .on('success', function (data, resp) {
-            _respondRequestSuccess(data, resp);
+            _respondtSuccess(data, resp);
           })
         .on('complete', function (data, resp) {
             console.log('Finished request to: ' + url);
           });
       } else {
         var proxyError = 'No proxy found for: ' + _pr;
-        _respond404(proxyError);
-        console.log(proxyError);
+        _respondErr(proxyError, 500);
       }
 
     });
@@ -206,67 +201,39 @@ Server.prototype.proxyThat = function (request, response) {
  * @param proxies, the proxies that should be used.
  */
 Server.prototype.addProxies = function (proxies) {
-  var that = this;
+  this.proxies = proxies;
 
-  if (proxies && Array.isArray(proxies)) {
-    proxies.forEach(function (proxy) {
-        if (!(proxy instanceof Proxy)) {
-          that.proxies.push(new Proxy(proxy));
-        }
-      });
-  }
-  that.proxies.forEach(function (p) {
-      that._e_.sys.puts(p.host + ' => ' + p.proxyAlias);
+  this.proxies.forEach(function (p) {
+      Utils.log(p.host + ' => ' + p.proxyAlias);
     });
-};
-
-
-/**
- * @description
- * Mapping of the user agent strings, to resource targets.
- * @param osFamily {string}, the os system of the device.
- * @return {object} - the targetQuery object.
- */
-Server.prototype.resolveUAMapping = function (osFamily) {
-  //console.log(osFamily);
-
-  switch (osFamily) {
-  case ("iOS"):
-    return {"vendor" : "apple"};
-  case ("Linux"):
-    return {"vendor" : "android"};
-  default:
-    return {};
-
-  }
 };
 
 Server.prototype.close = function () {
   this.appServer.close();
 };
 
-
 /**
  * @description
  * Run the server, and wait for requests.
  * @param appName, name of the application.
  */
-Server.prototype.runDevServer = function (appName) {
+Server.prototype.runDevServer = function () {
   var that = this;
   var data = '';
   var port = this.port;
+  var appName = this.appName;
 
   this.appServer = Http.createServer(function (request, response) {
       var _file;
       var _requestedURL = Url.parse(request.url);
 
       if ((_requestedURL.pathname === '/' + appName) || (_requestedURL.pathname === '/' + appName + '/')) {
-        response.writeHead(301, Location: '/' + appName + '/' + 'index.html');
+        response.writeHead(301, { Location: '/' + appName + '/' + 'index.html' });
         response.end();
       } else if ((_requestedURL.pathname === '/' + appName + '/' + 'index.html')  ) {
         that.files = {};
         that.hostedApps = [];
-        var app = that.getNewApp(that.projectDirName);
+        var app = that.getNewApp(that.applicationDirectory);
         app.offlineManifest = false;
 
         app.loadTheApplication();
@@ -303,17 +270,16 @@ Server.prototype.runDevServer = function (appName) {
  * Run the server, and waiting for requests.
  * @param appName, name of the application.
  */
-Server.prototype.runManifestServer = function (appName) {
+Server.prototype.runManifestServer = function () {
   var that = this;
   var port = this.port;
+  var appName = this.appName;
   var _file, _requestedURL;
-
-  appName = appName || this.app.name;
 
   function startServer() {
     this.appServer = Http.createServer(function (request, response) {
         _requestedURL = Url.parse(request.url);
-        Util.puts('requesting : ' + _requestedURL.pathname);
+        Utils.log('Requesting : ' + _requestedURL.pathname);
 
         if (_requestedURL.pathname === '/' + appName) { // requested app
           response.writeHead(301, { Location: '/' + appName + '/' + 'index.html' });
@@ -335,7 +301,7 @@ Server.prototype.runManifestServer = function (appName) {
       });
   }
 
-  var app = that.getNewApp(that.projectDirName);
+  var app = that.getNewApp(that.applicationDirectory);
 
   app.loadTheApplication();
   app.loadTheMProject();
