@@ -33,28 +33,21 @@ var wwwdude = require('../lib/wwwdude');
  *
  * @constructor
  */
-var Server = exports.Server = function (dirname) {
-
+var Server = exports.Server = function (options) {
   /*Properties*/
   this.hostname = '127.0.0.1'; //default address
-  this.port = 8000; //default port
+  this.port = options.port;
 
-  this.projectDirName = dirname;
-
-  this._DEVMODE_ = 1;
-  this._MANIFESTMODE_ = 0;
-
-  this.runMode = this._DEVMODE_;
-
-  this.proxies = [];
-  this.hostedApps = [];   /* = the applications managed by this server */
-  //this.files = {};  /* = the files, that should be served by  this server */
-  this.files = [];  /* = the files, that should be served by  this server */
-
-  if (this.argv.$0 !== 'node ./m-build.js') {
-    this.addProperties(this.argv);
+  if (options.directory === "$PWD") {
+   this.projectDirName = process.cwd() + '/';
+  } else {
+   this.projectDirName = options.directory + '/';
   }
 
+  this.manifestMode = options.manifest;
+  this.proxies = [];
+  this.hostedApps = [];   /* = the applications managed by this server */
+  this.files = [];  /* = the files, that should be served by  this server */
 };
 
 
@@ -63,73 +56,15 @@ var Server = exports.Server = function (dirname) {
  */
 Server.prototype = new E();
 
-/**
- * @description
- * Make sure, that the arguments are valid and add the properties.
- * @param {Object} args, the command line arguments
+/*
+ * Run development server
  */
-Server.prototype.addProperties = function (args) {
-  var that = this;
-
-  switch (true) {
-  case (args.help || args.h):
-    that.printHelp();
-    break;
-  case (args.version || args.v):
-    that.printVersionNumber();
-    process.exit(1);
-    break;
-  case ((args.manifest || args.m)):
-    that.runMode  = that._MANIFESTMODE_;
-    break;
-  default:
-    that.runMode  = that._DEVMODE_;
-    break;
+Server.prototype.run = function () {
+  if (this.manifestMode) {
+    this.runManifestServer();
+  } else {
+    this.runDevServer();
   }
-};
-
-
-Server.prototype.run = function (appname) {
-  var args = this.argv;
-
-  if (args.port || args.p) {
-    this.commandLinePort = args.port || args.p;
-  }
-
-  switch (this.runMode) {
-  case this._DEVMODE_:
-    this.runDevServer(appname);
-    break;
-  case this._MANIFESTMODE_:
-    this.runManifestServer(appname);
-    break;
-  default:
-    this.runDevServer(appname);
-    break;
-  }
-};
-
-/**
- * @description
- * Print the usage description of m-server.js
- */
-Server.prototype.printHelp = function () {
-  console.log(this.style.green("=== m-server.js === "));
-  console.log(this.style.green("Espresso v" + this.__version__));
-  console.log(this.style.green("command line tool to compile and run the application for testing business in a webbrowser"));
-  console.log(this.style.green("\n"));
-  console.log(this.style.green("--- commands ---"));
-  console.log(this.style.green("-m, --manifest                    start the server in manifest mode. Enable generation of cache.menifest."));
-  console.log(this.style.green("-p, --port [port]                 specify a custom port."));
-  console.log(this.style.green("-v, --version                     print Espresso version number."));
-  console.log(this.style.green("-h, --help                        print this help."));
-  console.log(this.style.green("\n"));
-  console.log(this.style.green("--- example usage---"));
-  console.log(this.style.green("./m-server.js                     start the server. (Default)"));
-  console.log(this.style.green("./m-server.js --port 6060         start the server on port '6060'."));
-  console.log(this.style.green("./m-server.js -m -p 1234          start the server in manifest mode on port '1234'."));
-  console.log(this.style.green("\n"));
-  process.exit(1);
 };
 
 /**
@@ -319,17 +254,14 @@ Server.prototype.close = function () {
 Server.prototype.runDevServer = function (appName) {
   var that = this;
   var data = '';
-  var port = this.commandLinePort || that.port;
-  var appName = appName || '';
+  var port = this.port;
 
   this.appServer = Http.createServer(function (request, response) {
       var _file;
       var _requestedURL = Url.parse(request.url);
 
       if ((_requestedURL.pathname === '/' + appName) || (_requestedURL.pathname === '/' + appName + '/')) {
-        var _headers = {};
-        _headers.Location = '/' + appName + '/' + 'index.html';
-        response.writeHead(301, _headers);
+        response.writeHead(301, Location: '/' + appName + '/' + 'index.html');
         response.end();
       } else if ((_requestedURL.pathname === '/' + appName + '/' + 'index.html')  ) {
         that.files = {};
@@ -372,18 +304,18 @@ Server.prototype.runDevServer = function (appName) {
  * @param appName, name of the application.
  */
 Server.prototype.runManifestServer = function (appName) {
-  var that = this,
-  _file, _requestedURL,
-  port = that.commandLinePort || that.port;
+  var that = this;
+  var port = this.port;
+  var _file, _requestedURL;
 
   appName = appName || this.app.name;
 
   function startServer() {
     this.appServer = Http.createServer(function (request, response) {
         _requestedURL = Url.parse(request.url);
-        that._e_.sys.puts('requesting : ' + _requestedURL.pathname);
+        Util.puts('requesting : ' + _requestedURL.pathname);
 
-        if ((_requestedURL.pathname === '/' + appName)) { // requested app
+        if (_requestedURL.pathname === '/' + appName) { // requested app
           response.writeHead(301, { Location: '/' + appName + '/' + 'index.html' });
           response.end();
         } else {
