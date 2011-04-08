@@ -124,7 +124,6 @@ Server.prototype.proxyThat = function (request, response) {
 
   request.on('data', function (chunk) {
       body += chunk;
-      console.log('chunk  = ' + chunk);
     });
 
   request.on('end', function () {
@@ -138,7 +137,7 @@ Server.prototype.proxyThat = function (request, response) {
       }
 
       function _respondErr(err, statusCode) {
-        console.log(err);
+        Utils.logErr(err);
         response.writeHead(statusCode);
         response.end(err);
       }
@@ -160,11 +159,11 @@ Server.prototype.proxyThat = function (request, response) {
         var proxyRequest;
 
         // clean headers
-        delete request.headers['accept-encoding'];
-        delete request.headers['connection'];
+        delete request.headers.host;
+        delete request.headers.connection;
         delete request.headers['content-length'];
+        delete request.headers['accept-encoding'];
         delete request.headers['if-none-match'];
-        delete request.headers['host'];
 
         if (method === 'post' || method === 'put') {
           proxyRequest = proxyClient[method](url, body, request.headers);
@@ -179,13 +178,13 @@ Server.prototype.proxyThat = function (request, response) {
             _respondErr(err, 500);
           })
         .on('redirect', function (data, resp) {
-            console.log('Redirecting to: ' + resp.headers['location']);
+            Utils.log('Redirecting to: ' + resp.headers.location);
           })
         .on('success', function (data, resp) {
-            _respondtSuccess(data, resp);
+            _respondSuccess(data, resp);
           })
         .on('complete', function (data, resp) {
-            console.log('Finished request to: ' + url);
+            Utils.log('Finished request to: ' + url);
           });
       } else {
         var proxyError = 'No proxy found for: ' + _pr;
@@ -230,7 +229,7 @@ Server.prototype.runDevServer = function () {
       if ((_requestedURL.pathname === '/' + appName) || (_requestedURL.pathname === '/' + appName + '/')) {
         response.writeHead(301, { Location: '/' + appName + '/' + 'index.html' });
         response.end();
-      } else if ((_requestedURL.pathname === '/' + appName + '/' + 'index.html')  ) {
+      } else if ((_requestedURL.pathname === '/' + appName + '/' + 'index.html')) {
         that.files = {};
         that.hostedApps = [];
         var app = that.getNewApp(that.applicationDirectory);
@@ -247,7 +246,7 @@ Server.prototype.runDevServer = function () {
           });
 
       } else {
-        console.log(_requestedURL.pathname);
+        Utils.log(_requestedURL.pathname);
         _file = that.files[_requestedURL.pathname];
         if (!_file) {
           that.proxyThat(request, response);
@@ -260,7 +259,7 @@ Server.prototype.runDevServer = function () {
     });
 
   this.appServer.listen(port, function () {
-      console.log('Server running at http://' + that.hostname + ':' + port + '/' + appName);
+      Utils.log('Server running at http://' + that.hostname + ':' + port + '/' + appName);
     });
 };
 
@@ -296,8 +295,8 @@ Server.prototype.runManifestServer = function () {
 
       });
 
-    this.appServer.listen(port, function() {
-        console.log('Server running at http://' + that.hostname + ':' + port + '/' + appName);
+    this.appServer.listen(port, function () {
+        Utils.log('Server running at http://' + that.hostname + ':' + port + '/' + appName);
       });
   }
 
@@ -311,5 +310,4 @@ Server.prototype.runManifestServer = function () {
           startServer();
         });
     });
-
 };
