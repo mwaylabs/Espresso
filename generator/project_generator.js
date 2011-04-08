@@ -207,12 +207,11 @@ var generate = exports.generate = function generate(options) {
 
     if (currentFile) {
       var fileTarget = currentFile.path.split('frameworks/')[1];
+      fileTarget = fileTarget.split(currentFile.getBaseName() + currentFile.getFileExtension())[0];
       var streamPath = path + projectName + '/frameworks/' + fileTarget + 
         currentFile.getBaseName() + currentFile.getFileExtension();
-      var writeStream = Fs.createWriteStream(streamPath);
 
-      // FIXME: Do we need this?
-      fileTarget = fileTarget.split(currentFile.getBaseName() + currentFile.getFileExtension())[0];
+      var writeStream = Fs.createWriteStream(streamPath);
 
       Util.pump(Fs.createReadStream(currentFile.path), writeStream, function (err) {
           if (err) {
