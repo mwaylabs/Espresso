@@ -309,7 +309,7 @@ Framework.prototype.build = function (callback) {
  */
 Framework.prototype.save = function (callback) {
   var self = this,
-  _outputPath = this.app.execPath + '/' + this.app.outputFolder + '/' + self.app.buildVersion;
+  _outputPath = this.app.applicationDirectory + '/' + this.app.outputFolder + '/' + self.app.buildVersion;
 
   /*
    * Helper, to save files of a framework.
