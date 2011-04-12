@@ -1,29 +1,25 @@
 /*!
  * command module for building a project
- * @autor pfleidi
+ *
+ * Copyright(c) 2011 M-Way Solutions GmbH. All rights reserved.
+ * MIT and GPL Licensed
+ *
+ * @author pfleidi
  */
-
 
 exports.description = 'Command to generate new or additional files for a project';
 
 exports.examples = [
-  '--directory myProject'
+  '--directory myProject',
+  '--view=myNewView',
+  '-v myOtherView -m myOtherModel -c myOtherController'
 ];
 
 exports.options = {
 
-  page: {
-    'description': 'Create a new page',
-    'hasargument': true
-  },
-
-  controller: {
-    'description': 'Create a new controller',
-    'hasargument': true
-  },
-
-  page: {
-    'description': 'Create a new page',
+  directory: {
+    'description': 'Specify a custom project directory',
+    'default': '$PWD',
     'hasargument': true
   },
 
@@ -32,24 +28,29 @@ exports.options = {
     'hasargument': true
   },
 
-  i18n: {
-    'description': 'Create a new i18n file',
+  controller: {
+    'description': 'Create a new controller',
     'hasargument': true
   },
 
-  directory: {
-    'description': 'Specify a custom project directory',
-    'default': '$PWD',
+  view: {
+    'description': 'Create a new view',
     'hasargument': true
+  },
+
+  i18n: {
+    'description': 'Create a new i18n files',
+    'hasargument': false
   },
 
   target: {
     'description': 'Create a new "targets.json" sample file',
-    'hasargument': true
+    'hasargument': false
   }
 };
 
 exports.run = function run(params) {
-  console.dir(params);
+  var Generator  = require(__dirname + '/../../generator/file_generator');
+  Generator.generate(params);
 };
 
