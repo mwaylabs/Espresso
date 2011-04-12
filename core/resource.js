@@ -1,6 +1,6 @@
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: ©2010 M-Way Solutions GmbH. All rights reserved.
+// Copyright: 2010 M-Way Solutions GmbH. All rights reserved.
 // Creator:   alexander
 // Date:      22.12.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -8,12 +8,9 @@
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
 // ==========================================================================
 
-/*jslint white: false, onevar: false, undef: true, nomen: false, eqeqeq: false, plusplus: false, bitwise: true, regexp: true, newcap: false immed: false, strict: false */
-
-
+/* jslint white: true, onevar: false, undef: true, nomen: false, eqeqeq: false, plusplus: false, bitwise: true, regexp: true, newcap: false immed: false, strict: false */
 
 var E = require('./e').E;
-var Resource;
 var Framework = require('./framework').Framework;
 var File = require('./file').File;
 
@@ -27,7 +24,7 @@ var File = require('./file').File;
  *
  * @constructor
  */
-Resource = exports.Resource = function (properties) {
+var Resource = exports.Resource = function (properties) {
 
   /* Properties */
   this.__resourceBase__    = '/base';
