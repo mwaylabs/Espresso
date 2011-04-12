@@ -33,9 +33,8 @@ var generate = exports.generate = function generate(options) {
    * @return {undefined}
    * @api private
    */
-  function genericGenerate(type, name) {
-    var directory =  options.directory + '/app/' + type + 's/';
-    var templateFile = type + '.js';
+  function genericGenerate(type, templateFile, name) {
+    var directory = options.directory + '/app/' + type + '/';
     var outputPath = directory + name + '.js';
     var callback = function callback(err) {
       if (err) {
@@ -102,7 +101,7 @@ var generate = exports.generate = function generate(options) {
    * @api private
    */
   dispatcher.generateModel = function generateModel(modelName) {
-    genericGenerate('model', modelName);
+    genericGenerate('models', 'model.js', modelName);
   };
 
   /**
@@ -113,7 +112,7 @@ var generate = exports.generate = function generate(options) {
    * @api private
    */
   dispatcher.generateView = function generateView(viewName) {
-    genericGenerate('view', viewName);
+    genericGenerate('views', 'view.js', viewName);
   };
 
   /**
@@ -124,7 +123,7 @@ var generate = exports.generate = function generate(options) {
    * @api private
    */
   dispatcher.generateController = function generateController(controllerName) {
-    genericGenerate('controller', controllerName);
+    genericGenerate('controllers', 'controller.js', controllerName);
   };
 
   /**
@@ -135,7 +134,7 @@ var generate = exports.generate = function generate(options) {
    * @api private
    */
   dispatcher.generateValidator = function generateValidator(validatorName) {
-    genericGenerate('controller', validatorName);
+    genericGenerate('validators', 'validator.js', validatorName);
   };
 
   /**
@@ -146,8 +145,8 @@ var generate = exports.generate = function generate(options) {
    * @api private
    */
   dispatcher.generateI18n = function generateI18n() {
-    genericGenerate('resources/i18n/i18n_de_de');
-    genericGenerate('resources/i18n/i18n_en_us');
+    genericGenerate('resources/i18n', 'i18n_de_de.js', 'i18n_de_de');
+    genericGenerate('resources/i18n', 'i18n_en_us.js', 'i18n_en_us');
   };
 
   (function dispatchOperations() {
