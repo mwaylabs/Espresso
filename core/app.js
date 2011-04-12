@@ -1,8 +1,7 @@
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: ©2010 M-Way Solutions GmbH. All rights reserved.
+// Copyright: 2011 M-Way Solutions GmbH. All rights reserved.
 // Creator:   alexander
-// Date:      29.10.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
 //            http://github.com/mwaylabs/The-M-Project/blob/master/GPL-LICENSE
@@ -46,9 +45,9 @@ var App = exports.App = function (options, server) {
   /* Properties */
 
   /* Build configuration */
-  this.displayName;
-  this.targetQuery;
-  this.libraries;
+  this.displayName = '';
+  this.targetQuery = '';
+  this.libraries = [];
 
   this.server            = server || {};
   this.buildVersion      = Date.now();  // timestamp of the build.
@@ -73,7 +72,7 @@ var App = exports.App = function (options, server) {
   this.excludedFromCaching = [];
   this.frameworks          = [];
 
-  this.HEAD_IndexHtml = [],
+  this.HEAD_IndexHtml = [];
   this.BODY_IndexHtml = [];
 
   this.target    = {};
@@ -81,18 +80,13 @@ var App = exports.App = function (options, server) {
   this.coreNamesForIndexHtml      = [];
 
   this.manifest  = {
-    "cache"   :[],
-    "network" :[],
-    "fallback":[]
+    "cache" : [],
+    "network" : [],
+    "fallback" : []
   };
 
   this.reporter = new Report();
-
-  if (options.directory === "$PWD") {
-    this.applicationDirectory = process.cwd() + '/';
-  } else {
-    this.applicationDirectory = options.directory;
-  }
+  this.applicationDirectory = options.directory;
 
   this.loadJSONConfig();
 };
@@ -108,7 +102,7 @@ App.prototype = new E();
  * Sets the build options for the app (project) to be build.
  * @param build_options the options to customize the build process
  */
-App.prototype.addOptions = function (build_options){
+App.prototype.addOptions = function (build_options) {
   var that = this;
   Object.keys(build_options).forEach(function (key) {
       that[key] = build_options[key];
@@ -181,7 +175,7 @@ App.prototype.loadTheApplication = function () {
 
   this.addFrameworks(_theApplicationResources);
 
-  if(this.supportedLanguages.length >= 1){
+  if (this.supportedLanguages.length >= 1) {
 
     _i18n = ['app/resources/i18n'].map(function (module) {
         var _frameworkOptions  = {};
@@ -268,7 +262,7 @@ App.prototype.loadTheMProject = function () {
       return new Framework(_frameworkOptions);
     });
 
-  if (this.touchPath(that.applicationDirectory+'/frameworks/The-M-Project/modules/jquery_mobile_plugins')){
+  if (this.touchPath(that.applicationDirectory+'/frameworks/The-M-Project/modules/jquery_mobile_plugins')) {
     this.addFrameworks(_jQueryPlugins);
   }
 
@@ -300,7 +294,7 @@ App.prototype.buildIndexHTML = function (callback,_frameworkNamesForIndexHtml,_H
     '<!DOCTYPE html>'
   );
 
-  if(!this.offlineManifest){
+  if (!this.offlineManifest) {
     _indexHtml.push(
       '<html>'
     );
@@ -314,8 +308,8 @@ App.prototype.buildIndexHTML = function (callback,_frameworkNamesForIndexHtml,_H
     '<head>'
   );
 
-  if(_HEAD_IndexHtml.length >= 1){
-    _HEAD_IndexHtml.forEach(function (head){
+  if (_HEAD_IndexHtml.length >= 1) {
+    _HEAD_IndexHtml.forEach(function (head) {
         _indexHtml.push(head);
       });
 
@@ -333,7 +327,7 @@ App.prototype.buildIndexHTML = function (callback,_frameworkNamesForIndexHtml,_H
   );
 
   // Adding jQuery, jQuery Mobile, jQuery Mobile CSS and underscore.
-  this.coreNamesForIndexHtml.forEach(function (entry){
+  this.coreNamesForIndexHtml.forEach(function (entry) {
       _indexHtml.push(entry);
     });
 
@@ -343,19 +337,19 @@ App.prototype.buildIndexHTML = function (callback,_frameworkNamesForIndexHtml,_H
       '<script type="text/javascript" src="ui.js"></script>\n'
   );
 
-  _frameworkNamesForIndexHtml.forEach(function (fr){
+  _frameworkNamesForIndexHtml.forEach(function (fr) {
       _indexHtml.push('<script type="text/javascript" src="' + fr + '"></script>'+'\n');
     });
 
-  if(this.supportedLanguages.length >= 1){
-    this.supportedLanguages.forEach(function (lang){
+  if (this.supportedLanguages.length >= 1) {
+    this.supportedLanguages.forEach(function (lang) {
         _indexHtml.push(
           '<script src="'+lang+'.js"></script>'
         );
       });
   }
 
-  if((this.environment) && (this.environment === "PhoneGap" )){
+  if ((this.environment) && (this.environment === "PhoneGap" )) {
     _indexHtml.push('<script type="text/javascript" charset="utf-8" src="phonegap.js"></script>'+
         '<script language="JavaScript">var PhoneGap = true;</script>');
     }else{
@@ -417,11 +411,11 @@ App.prototype.buildIndexHTML = function (callback,_frameworkNamesForIndexHtml,_H
    * Build a HTML5 valid cache.manifest file.
    * @param callback
    */
-  App.prototype.buildManifest = function (callback){
+  App.prototype.buildManifest = function (callback) {
     var self = this, _cacheManifest = [];
 
 
-    if(!self.offlineManifest){
+    if (!self.offlineManifest) {
       callback();
     }
 
@@ -433,7 +427,7 @@ App.prototype.buildIndexHTML = function (callback,_frameworkNamesForIndexHtml,_H
       '# Explicitly cached entries',
       'CACHE:'
     );
-    this.manifest.cache.forEach(function (expliFile){
+    this.manifest.cache.forEach(function (expliFile) {
         _cacheManifest.push(expliFile);
       });
 
@@ -444,21 +438,21 @@ App.prototype.buildIndexHTML = function (callback,_frameworkNamesForIndexHtml,_H
       '# Resources that require the device/user to be online.',
       'NETWORK:'
     );
-    this.manifest.network.forEach(function (networkFile){ // Files, exclude from explicitly section by user.
+    this.manifest.network.forEach(function (networkFile) { // Files, exclude from explicitly section by user.
         _cacheManifest.push(networkFile);
       });
-    this.server.proxies.forEach(function (proxy){   // Proxy entries.
+
+    this.proxies.forEach(function (proxy) {   // Proxy entries.
         _cacheManifest.push(proxy.proxyAlias);
       });
     _cacheManifest.push('*'); // enable wildcard.
 
     /* adding entries for the FALLBACK section*/
     _cacheManifest.push(
-      '\n',
-      '# Fallback resources ',
+      '\n# Fallback resources ',
       'FALLBACK:'
     );
-    this.manifest.fallback.forEach(function (fallbackFile){
+    this.manifest.fallback.forEach(function (fallbackFile) {
         _cacheManifest.push(fallbackFile);
       });
 
@@ -494,7 +488,7 @@ App.prototype.buildIndexHTML = function (callback,_frameworkNamesForIndexHtml,_H
    * Function to generate the projects output folders.
    * @param {function}, the function that should be called after the output folders are made.
    */
-    App.prototype.makeOutputFolder = function (callback){
+    App.prototype.makeOutputFolder = function (callback) {
       var self = this;
       var _outputPath = this.applicationDirectory+'/'+this.outputFolder;
       self._outP = [];
@@ -510,15 +504,15 @@ App.prototype.buildIndexHTML = function (callback,_frameworkNamesForIndexHtml,_H
         that._folderCounter = 4; /*make 4 folders*/
 
         that.callbackIfDone = function () {
-          if (that._folderCounter === 0){
+          if (that._folderCounter === 0) {
             callback()
           }
         };
 
         that.makeOutputDir = function (path) {
-          if(that._folderCounter >=1){
-            self._e_.fs.mkdir(path, 0777 ,function (err){
-                if(err && err.errno !== 17){throw err;}
+          if (that._folderCounter >=1) {
+            self._e_.fs.mkdir(path, 0777 ,function (err) {
+                if (err && err.errno !== 17) {throw err;}
                 that._folderCounter--;
                 that.makeOutputDir(path+ self._outP.shift());
               });
@@ -531,21 +525,21 @@ App.prototype.buildIndexHTML = function (callback,_frameworkNamesForIndexHtml,_H
 
 
 
-    App.prototype.readTargetConfig = function (tar){
+    App.prototype.readTargetConfig = function (tar) {
       var that = this,
       _targetsJSON = this._e_.path.join(this.applicationDirectory, 'targets.json');
 
       try{
         var targets = JSON.parse(this._e_.fs.readFileSync(_targetsJSON, 'utf8'));
 
-        if(targets){
-          if(targets[tar.group]){
+        if (targets) {
+          if (targets[tar.group]) {
             var _group = targets[tar.group];
             that.target.group = tar.group;
-            if(_group[tar.subGroup]) {
+            if (_group[tar.subGroup]) {
               var _subGroup = _group[tar.subGroup];
 
-              if(_subGroup.dedicatedResources){
+              if (_subGroup.dedicatedResources) {
                 that.target.dedicatedResources = _subGroup.dedicatedResources;
               }else{
                 that.reporter.warnings.push(this.style.cyan('No dedicatedResources defined, for "')
@@ -553,7 +547,7 @@ App.prototype.buildIndexHTML = function (callback,_frameworkNamesForIndexHtml,_H
                   + this.style.cyan('" using "base" and "'+ tar.group +'" only.'));
               }
 
-              if(_subGroup.htmlHeader){
+              if (_subGroup.htmlHeader) {
                 that.HEAD_IndexHtml = []; // reset, to override the settings that may be made in config.json
                 that.HEAD_IndexHtml = _subGroup.htmlHeader;
               }
@@ -568,8 +562,8 @@ App.prototype.buildIndexHTML = function (callback,_frameworkNamesForIndexHtml,_H
               + this.style.cyan('specified, using "base" only.'));
           }
         }
-      }catch(ex){
-        if(ex.errno !== 2){ // File not found
+      }catch(ex) {
+        if (ex.errno !== 2) { // File not found
           console.log(this.style.red('ERROR:')+this.style.cyan(' - while reading "targets.json", error message: '+ex.message));
           process.exit(1);
         }
@@ -578,7 +572,7 @@ App.prototype.buildIndexHTML = function (callback,_frameworkNamesForIndexHtml,_H
     };
 
 
-    App.prototype.addUsedFrameworks = function (usedFrameworks){
+    App.prototype.addUsedFrameworks = function (usedFrameworks) {
       var that = this;
       var  _usedFrameworks = usedFrameworks.map(function (module) {
           var _frameworkOptions  = {};
@@ -601,22 +595,22 @@ App.prototype.buildIndexHTML = function (callback,_frameworkNamesForIndexHtml,_H
      * The function tat builds the application.
      * @param callback that should be called after the build.
      */
-    App.prototype.build = function (callback){
+    App.prototype.build = function (callback) {
       var self = this,
       _frameworks = [];
 
 
-      if(self.htmlHeader){
+      if (self.htmlHeader) {
         self.HEAD_IndexHtml = self.htmlHeader;
       }
 
-      if(self.targetQuery){
+      if (self.targetQuery) {
         this.readTargetConfig(self.targetQuery);
       }
 
 
-      if(self.libraries){
-        self.libraries.forEach(function (fr){
+      if (self.libraries) {
+        self.libraries.forEach(function (fr) {
             _frameworks.push(fr.name);
           });
 
@@ -630,7 +624,7 @@ App.prototype.buildIndexHTML = function (callback,_frameworkNamesForIndexHtml,_H
 
     /* callback checker, called if all frameworks are built. */
     that.callbackIfDone = function () {
-      if (callback && that._frameworkCounter <= 0){
+      if (callback && that._frameworkCounter <= 0) {
         // console.log('build callback called !');
         callback(null,self.frameworks);
       }
@@ -660,27 +654,27 @@ App.prototype.buildIndexHTML = function (callback,_frameworkNamesForIndexHtml,_H
  *  4) Call callback, which leads to the next step of the build OR server process.
  *
  */
-    // new _AppBuilder(self, function (){self.buildIndexHTML(function(){self.buildManifest(callback)},self.librariesNamesForIndexHtml,_HEAD_IndexHtml)}).build();
+    // new _AppBuilder(self, function () {self.buildIndexHTML(function () {self.buildManifest(callback)},self.librariesNamesForIndexHtml,_HEAD_IndexHtml)}).build();
 
     self.sequencer(
-      function (){
+      function () {
         console.log(self.style.green('Building application: "')+self.style.magenta(this.name)+self.style.green('"'));
         new _AppBuilder(self, this).build();
       },
-      function (err,frameworks){
-        if(err){throw err;}
+      function (err,frameworks) {
+        if (err) {throw err;}
         self.prepareHTMLGeneration(this);
       },
-      function (err,frameworks){
-        if(err){throw err;}
+      function (err,frameworks) {
+        if (err) {throw err;}
         self.buildIndexHTML(this,self.librariesNamesForIndexHtml,self.HEAD_IndexHtml);
       },
-      function (err,frameworks){
-        if(err){throw err;}
+      function (err,frameworks) {
+        if (err) {throw err;}
         self.buildManifest(this);
       },
-      function (err,frameworks){
-        if(err){throw err;}
+      function (err,frameworks) {
+        if (err) {throw err;}
         callback();
       }
     );
@@ -688,22 +682,22 @@ App.prototype.buildIndexHTML = function (callback,_frameworkNamesForIndexHtml,_H
   };
 
 
-  App.prototype.build = function (callback){
+  App.prototype.build = function (callback) {
     var self = this,
     _frameworks = [];
 
 
-    if(self.htmlHeader){
+    if (self.htmlHeader) {
       self.HEAD_IndexHtml = self.htmlHeader;
     }
 
-    if(self.targetQuery){
+    if (self.targetQuery) {
       this.readTargetConfig(self.targetQuery);
     }
 
 
-    if(self.libraries){
-      self.libraries.forEach(function (fr){
+    if (self.libraries) {
+      self.libraries.forEach(function (fr) {
           _frameworks.push(fr.name);
         });
 
@@ -717,7 +711,7 @@ App.prototype.buildIndexHTML = function (callback,_frameworkNamesForIndexHtml,_H
 
     /* callback checker, called if all frameworks are built. */
     that.callbackIfDone = function () {
-      if (callback && that._frameworkCounter <= 0){
+      if (callback && that._frameworkCounter <= 0) {
         // console.log('build callback called !');
         callback(null,self.frameworks);
       }
@@ -747,27 +741,27 @@ App.prototype.buildIndexHTML = function (callback,_frameworkNamesForIndexHtml,_H
  *  4) Call callback, which leads to the next step of the build OR server process.
  *
  */
-    // new _AppBuilder(self, function (){self.buildIndexHTML(function(){self.buildManifest(callback)},self.librariesNamesForIndexHtml,_HEAD_IndexHtml)}).build();
+    // new _AppBuilder(self, function () {self.buildIndexHTML(function () {self.buildManifest(callback)},self.librariesNamesForIndexHtml,_HEAD_IndexHtml)}).build();
 
     self.sequencer(
-      function (){
+      function () {
         console.log(self.style.green('Building application: "')+self.style.magenta(this.name)+self.style.green('"'));
         new _AppBuilder(self, this).build();
       },
-      function (err,frameworks){
-        if(err){throw err;}
+      function (err,frameworks) {
+        if (err) {throw err;}
         self.prepareHTMLGeneration(this);
       },
-      function (err,frameworks){
-        if(err){throw err;}
+      function (err,frameworks) {
+        if (err) {throw err;}
         self.buildIndexHTML(this,self.librariesNamesForIndexHtml,self.HEAD_IndexHtml);
       },
-      function (err,frameworks){
-        if(err){throw err;}
+      function (err,frameworks) {
+        if (err) {throw err;}
         self.buildManifest(this);
       },
-      function (err,frameworks){
-        if(err){throw err;}
+      function (err,frameworks) {
+        if (err) {throw err;}
         self.reporter.printReport();
         callback();
       }
@@ -780,7 +774,7 @@ App.prototype.buildIndexHTML = function (callback,_frameworkNamesForIndexHtml,_H
    * Sort all resolved entries for index.html.
    * @param callback
    */
-    App.prototype.prepareHTMLGeneration = function (callback){
+    App.prototype.prepareHTMLGeneration = function (callback) {
       var self = this;
 
 
@@ -801,42 +795,42 @@ App.prototype.buildIndexHTML = function (callback,_frameworkNamesForIndexHtml,_H
      * outputFolder property.
      * @param callback that should be called after the build.
      */
-    App.prototype.saveLocal = function (callback){
+    App.prototype.saveLocal = function (callback) {
       var self = this;
 
       var _AppSaver = function (app, callback) {
         var that = this;
 
-        /* amount of used frameworks, for this application. */
-    that._frameworkCounter = app.frameworks.length;
+        // amount of used frameworks, for this application.
+        that._frameworkCounter = app.frameworks.length;
 
-    /* callback checker, called if all frameworks are build. */
-    that.callbackIfDone = function () {
-      if (callback && that._frameworkCounter <= 0){
-        callback();
-      }
-    };
+        // callback checker, called if all frameworks are build. 
+        that.callbackIfDone = function () {
+          if (callback && that._frameworkCounter <= 0) {
+            callback();
+          }
+        };
 
-    that.save = function () {
-      app.frameworks.forEach(function (framework) {
-          framework.save(function (fr) {
-              /* count  = -1 if a framework has been saved. */
-    that._frameworkCounter -= 1;
-    that.callbackIfDone();
-  });
-      });
-  };
-};
+        that.save = function () {
+          app.frameworks.forEach(function (framework) {
+              framework.save(function (fr) {
+                  // count  = -1 if a framework has been saved.
+                  that._frameworkCounter -= 1;
+                  that.callbackIfDone();
+                });
+            });
+        };
+      };
 
-/*
- *  build batch:
- *  1) make output folder structure first.
- *  2) Call AppSaver to write the application data, into the
- *     just generated file structure.
- *  3) Call callback, which prompts the massage: 'Saved application to filesystem!'.
- */
-    this.makeOutputFolder(function (){
-        new _AppSaver(self, function (){
+      /*
+       *  build batch:
+       *  1) make output folder structure first.
+       *  2) Call AppSaver to write the application data, into the
+       *     just generated file structure.
+       *  3) Call callback, which prompts the massage: 'Saved application to filesystem!'.
+       */
+    this.makeOutputFolder(function () {
+        new _AppSaver(self, function () {
             console.log('\n');
             console.log(self.style.green('saving application to filesystem!'));
             console.log("\n");
@@ -860,7 +854,7 @@ App.prototype.buildIndexHTML = function (callback,_frameworkNamesForIndexHtml,_H
 
         // callback checker, called if all frameworks are build. */
         that.callbackIfDone = function () {
-          if (callback && that._frameworkCounter <= 0){
+          if (callback && that._frameworkCounter <= 0) {
             callback();
           }
         };
