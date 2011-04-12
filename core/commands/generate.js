@@ -57,6 +57,11 @@ exports.options = {
 
 exports.run = function run(params) {
   var Generator  = require(__dirname + '/../../generator/file_generator');
+  if (!(params.model || params.controller
+      || params.view || params.validator
+      || params.i18n || params.target)) {
+      throw new Error('No generation was specified!');
+    }
   Generator.generate(params);
 };
 
