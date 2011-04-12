@@ -38,6 +38,12 @@ exports.options = {
     'hasargument': true
   },
 
+  validator: {
+    'description': 'Create a new validator',
+    'shortoption': 'x',
+    'hasargument': true
+  },
+
   i18n: {
     'description': 'Create a new i18n files',
     'hasargument': false
