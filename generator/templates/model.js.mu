@@ -3,11 +3,11 @@
 // Generated with: Espresso {{e_Version}}
 //
 // Project: {{appName}}
-// Model: {{modelName}}
+// Model: {{name}}
 // ==========================================================================
 
-{{appName}}.{{modelName}} = M.Model.create({
-    __name__: '{{modelName}}', // do not delete this property!
+{{appName}}.{{name}} = M.Model.create({
+    __name__: '{{name}}', // do not delete this property!
 
  // Sample model properties:
 

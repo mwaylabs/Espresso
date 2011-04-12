@@ -6,7 +6,7 @@
 // Controller: {{controllerName}}
 // ==========================================================================
 
-{{appName}}.{{controllerName}} = M.Controller.extend({
+{{appName}}.{{name}} = M.Controller.extend({
 
     // sample controller property.
 	   myControllerProperty: '',

@@ -3,10 +3,10 @@
 // Generated with: Espresso {{e_Version}}
 //
 // Project: {{appName}}
-// Page: {{pageName}}
+// View: {{name}}
 // ==========================================================================
 
-{{appName}}.{{pageName}} = M.PageView.design({
+{{appName}}.{{name}} = M.PageView.design({
 
 	  /*
 	   * uncomment the following lines, to use the onLoad function
@@ -36,7 +36,7 @@
 
             label: M.LabelView.design({
 
-                value: '{{pageName}}'
+                value: '{{name}}'
 
             })
 

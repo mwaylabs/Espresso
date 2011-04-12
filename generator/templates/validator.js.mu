@@ -3,23 +3,22 @@
 // Generated with: Espresso {{e_Version}}
 //
 // Project: {{appName}}
-// Validator: {{validatorName}}
+// Validator: {{name}}
 // ==========================================================================
 
-M.{{validatorName}} = M.Validator.extend({
+M.{{name}} = M.Validator.extend({
 
     /**
      * The type of this object.
      *
      * @type String
      */
-    type: 'M.{{validatorName}}',
+    type: 'M.{{name}}',
 
     validate: function(obj) {
         if (validation_condition) {
 
           // case not valid
-          
            this.validationErrors.push({
                 msg: ' is not a valid',
                 modelId: obj.modelId,
@@ -30,14 +29,10 @@ M.{{validatorName}} = M.Validator.extend({
                 onError: obj.onError
            });
             return NO;
-        }else{
-
+        } else {
            // case valid
-
              return YES;
 
         }
-
     }
-
 });
