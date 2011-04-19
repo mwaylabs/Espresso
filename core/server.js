@@ -36,11 +36,7 @@ var Server = exports.Server = function (options) {
   this.hostname = '127.0.0.1'; //default address
   this.port = options.port;
 
-  if (options.directory === "$PWD") {
-    this.applicationDirectory = process.cwd() + '/';
-  } else {
-    this.applicationDirectory = options.directory + '/';
-  }
+  this.applicationDirectory = options.directory;
 
   this.manifestMode = options.manifest;
   this.proxies = [];
@@ -154,7 +150,7 @@ Server.prototype.proxyThat = function (request, response) {
         var url = _proxy.baseUrl + _inquiredData;
         var method = request.method.toLowerCase();
 
-        Utils.log('proxy request to ' + url);
+        Utils.log('Proxy request to ' + url);
         var proxyClient  = wwwdude.createClient({ gzip: false });
         var proxyRequest;
 
@@ -284,11 +280,13 @@ Server.prototype.runManifestServer = function () {
           response.writeHead(301, { Location: '/' + appName + '/' + 'index.html' });
           response.end();
         } else {
-          _file = that.files[(_requestedURL.pathname === '/' + appName) ? '/index.html' : _requestedURL.pathname];
-          if (!_file) { // -> proxy request
-            that.proxyThat(request, response);
-          } else {
+          _file = that.files[
+            (_requestedURL.pathname === '/' + appName) ? '/index.html' : _requestedURL.pathname
+          ];
+          if (_file) { // -> proxy request
             that.deliverThat(response, _file);
+          } else {
+            that.proxyThat(request, response);
           }
 
         }

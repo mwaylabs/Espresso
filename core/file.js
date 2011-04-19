@@ -9,9 +9,7 @@
 // ==========================================================================
 
 
-var E = require('./e').E,
-    File;
-
+var E = require('./e').E;
 
 /**
  * @class
@@ -27,7 +25,7 @@ var E = require('./e').E,
  *
  * @extends M
  */
-File = exports.File = function(properties) {
+var File = exports.File = function (properties) {
  
    /* Properties */
   this.virtual               = false;
@@ -52,7 +50,7 @@ File = exports.File = function(properties) {
 
 
   /* Adding the properties */
-  if(properties){
+  if (properties) {
      this.addProperties(properties);
   }
 };
@@ -93,8 +91,11 @@ File.prototype.isVirtual = function(){
  * @return {string}, the name of the file.
  */
 File.prototype.getName = function(){
-  var _filename =  this.name.split(this.frDelimiter);
-  return _filename[1];
+  var _filename =  this.name.split(this.frDelimiter)[1];
+  if (!_filename) {
+    throw new Error('Unsplittable filename: ' + this.name + '. Delimiter: ' + this.frDelimiter);
+  }
+  return _filename;
 };
 
 /**
@@ -219,6 +220,6 @@ File.prototype.equalBaseName = function (otherFile){
  * @return {string} a readable presentations of this file object.
  */
 File.prototype.toString = function() {
-    return 'Basename: '+this.name + '\n'
-          +'Filepath: '+this.path + '\n';
+    return 'Basename: ' + this.name + '\n'
+          + 'Filepath: ' + this.path + '\n';
 };
