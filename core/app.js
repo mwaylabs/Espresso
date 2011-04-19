@@ -150,12 +150,19 @@ App.prototype.loadTheApplication = function () {
   _theApplication = ['app'].map(function (module) {
       var _frameworkOptions  = {};
       _frameworkOptions.path = that.applicationDirectory + '/' + module;
-      _frameworkOptions.name = that.name+'_App';
+      _frameworkOptions.name = that.name + '_App';
       _frameworkOptions.frDelimiter = that.applicationDirectory+'/';
       _frameworkOptions.excludedFolders = ['resources'].concat(that.excludedFolders);
       _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
       _frameworkOptions.app = that;
-      _frameworkOptions.taskChain = new TaskManager(["preSort","dependency","merge","minify","contentType","manifest"]).getTaskChain();
+      _frameworkOptions.taskChain = new TaskManager([
+          "preSort",
+          "dependency",
+          "merge",
+          "minify",
+          "contentType",
+          "manifest"]
+      ).getTaskChain();
       return new Framework(_frameworkOptions);
     });
 
@@ -164,12 +171,15 @@ App.prototype.loadTheApplication = function () {
   _theApplicationResources = ['app/resources'].map(function (module) {
       var _frameworkOptions  = {};
       _frameworkOptions.path = that.applicationDirectory + '/' + module;
-      _frameworkOptions.name = that.name+'_AppResources';
+      _frameworkOptions.name = that.name + '_AppResources';
       _frameworkOptions.frDelimiter = that.applicationDirectory+'/';
       _frameworkOptions.excludedFolders = that.excludedFolders;
       _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
       _frameworkOptions.app = that;
-      _frameworkOptions.taskChain = new TaskManager(["contentType","manifest"]).getTaskChain();
+      _frameworkOptions.taskChain = new TaskManager([
+          "contentType",
+          "manifest"
+        ]).getTaskChain();
       return new Resource(_frameworkOptions);
     });
 
@@ -298,7 +308,7 @@ App.prototype.buildIndexHTML = function (callback,_frameworkNamesForIndexHtml,_H
     _indexHtml.push(
       '<html>'
     );
-  }else{
+  } else {
     _indexHtml.push(
       '<html manifest="cache.manifest">'
     );
@@ -633,32 +643,32 @@ App.prototype.buildIndexHTML = function (callback,_frameworkNamesForIndexHtml,_H
     that.build = function () {
       console.log(self.style.green("Building components:"));
       app.frameworks.forEach(function (framework) {
-          framework.build(function (fr) {
-              /* count  = -1 if a framework had been built. */
-    that._frameworkCounter -= 1;
-    console.log(self.style.magenta(fr.name)+self.style.green(': ')+self.style.cyan('done'));
-    //console.log(require('util').inspect(fr.files_with_Dependencies, true, 1));
-    /* check if callback can be called, the condition ist that all frameworks has been build. */
-    that.callbackIfDone();
-  });
-      });
-  };
-};
 
-/*
- *  Build stack:
- *  1) Build the Application
- *   11) Build each framework
- *  2) Build the index.html
- *  3) Build the cache manifest, after all frameworks had been built.
- *  4) Call callback, which leads to the next step of the build OR server process.
- *
- */
+          framework.build(function (fr) {
+              // count  = -1 if a framework had been built. 
+              that._frameworkCounter -= 1;
+              console.log(self.style.magenta(fr.name)+self.style.green(': ')+self.style.cyan('done'));
+              // check if callback can be called, the condition ist that all frameworks has been build
+              that.callbackIfDone();
+            });
+        });
+    };
+  };
+
+  /*
+   *  Build stack:
+   *  1) Build the Application
+   *   11) Build each framework
+   *  2) Build the index.html
+   *  3) Build the cache manifest, after all frameworks had been built.
+   *  4) Call callback, which leads to the next step of the build OR server process.
+   *
+   */
     // new _AppBuilder(self, function () {self.buildIndexHTML(function () {self.buildManifest(callback)},self.librariesNamesForIndexHtml,_HEAD_IndexHtml)}).build();
 
     self.sequencer(
       function () {
-        console.log(self.style.green('Building application: "')+self.style.magenta(this.name)+self.style.green('"'));
+        console.log(self.style.green('Building application: "')+self.style.magenta(self.name)+self.style.green('"'));
         new _AppBuilder(self, this).build();
       },
       function (err,frameworks) {
@@ -721,31 +731,29 @@ App.prototype.buildIndexHTML = function (callback,_frameworkNamesForIndexHtml,_H
       console.log(self.style.green("Building components:"));
       app.frameworks.forEach(function (framework) {
           framework.build(function (fr) {
-              /* count  = -1 if a framework had been built. */
-    that._frameworkCounter -= 1;
-    console.log(self.style.magenta(fr.name)+self.style.green(': ')+self.style.cyan('done'));
-    //console.log(require('util').inspect(fr.files_with_Dependencies, true, 1));
-    /* check if callback can be called, the condition ist that all frameworks has been build. */
-    that.callbackIfDone();
-  });
-      });
+              // count  = -1 if a framework had been built
+              that._frameworkCounter -= 1;
+              console.log(self.style.magenta(fr.name)+self.style.green(': ')+self.style.cyan('done'));
+              // check if callback can be called, the condition ist that all frameworks has been build
+              that.callbackIfDone();
+            });
+        });
+    };
   };
-};
 
-/*
- *  Build stack:
- *  1) Build the Application
- *   11) Build each framework
- *  2) Build the index.html
- *  3) Build the cache manifest, after all frameworks had been built.
- *  4) Call callback, which leads to the next step of the build OR server process.
- *
- */
-    // new _AppBuilder(self, function () {self.buildIndexHTML(function () {self.buildManifest(callback)},self.librariesNamesForIndexHtml,_HEAD_IndexHtml)}).build();
+  /*
+   *  Build stack:
+   *  1) Build the Application
+   *   11) Build each framework
+   *  2) Build the index.html
+   *  3) Build the cache manifest, after all frameworks had been built.
+   *  4) Call callback, which leads to the next step of the build OR server process.
+   *
+   */
 
     self.sequencer(
       function () {
-        console.log(self.style.green('Building application: "')+self.style.magenta(this.name)+self.style.green('"'));
+        console.log(self.style.green('Building application: "')+self.style.magenta(self.name)+self.style.green('"'));
         new _AppBuilder(self, this).build();
       },
       function (err,frameworks) {

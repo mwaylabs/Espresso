@@ -9,7 +9,6 @@
 // ==========================================================================
 
 var E = require('./e').E;
-var Framework;
 var File = require('./file').File;
 
 /**
@@ -27,7 +26,7 @@ var File = require('./file').File;
  *
  * @constructor
  */
-Framework = exports.Framework = function (properties) {
+var Framework = exports.Framework = function (properties) {
 
   /* Properties */
 
@@ -288,7 +287,7 @@ Framework.prototype.build = function (callback) {
         if (err) {
           throw err;
         }
-        //  console.dir(this);
+        // console.dir(this);
         that.readFiles(this);
       },
 
@@ -392,7 +391,7 @@ Framework.prototype.prepareForServer = function (server, callback) {
       if (!server.files) {
         server.files = {};
       }
-      server.files['/'+appName+'/' + file.requestPath] = file;
+      server.files['/' + appName + '/' + file.requestPath] = file;
     });
   callback();
 };
