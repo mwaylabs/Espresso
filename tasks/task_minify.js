@@ -1,6 +1,6 @@
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: ©2010 M-Way Solutions GmbH. All rights reserved.
+// Copyright: 2010 M-Way Solutions GmbH. All rights reserved.
 // Creator:   alexander
 // Date:      18.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -9,11 +9,11 @@
 // ==========================================================================
 
 
-var Task_Minify,
-    Task = require('./task').Task;
+var Task = require('./task').Task;
+var spawn = require('child_process').spawn;
+var Utils = require('../lib/espresso_utils');
 
-
-Task_Minify = exports.Task_Minify = function() {
+var Task_Minify = exports.Task_Minify = function () {
   /* Properties */
   this.name = 'minifiy';
 };
@@ -25,38 +25,40 @@ Task_Minify = exports.Task_Minify = function() {
 Task_Minify.prototype = new Task();
 
 /**
- * minifiy files. 
+ * minifiy files.
  */
-Task_Minify.prototype.duty = function(framework,callback){
-var that = this, _data = '',
-    _cp = require('child_process').spawn;
+Task_Minify.prototype.duty = function (framework, callback) {
+  var that = this, _data = '';
 
-    if(framework.app.minify){
+  if (framework.app.minify) {
 
-      minify = _cp('java', ['-jar', that._e_.path.join(__dirname, '..', 'bin', 'compiler.jar'),
-                        '--compilation_level', 'SIMPLE_OPTIMIZATIONS',
-                        '--warning_level','QUIET']);
+    var minify = spawn('java', [
+        '-jar',
+        that._e_.path.join(__dirname, '..', 'bin', 'compiler.jar'),
+        '--compilation_level', 'SIMPLE_OPTIMIZATIONS',
+        '--warning_level', 'QUIET'
+      ]);
 
-      minify.stdout.addListener('data', function(miniData) {
-       _data += miniData;
+    minify.stdout.addListener('data', function (miniData) {
+        _data += miniData;
       });
 
-      minify.stderr.addListener('data', function(data) {
-        console.log(data);
+    minify.stderr.addListener('data', function (data) {
+        Utils.log(data);
       });
 
-      minify.addListener('exit', function(code) {
+    minify.addListener('exit', function (code) {
         if (code !== 0) {
-          console.log(this.style.red('ERROR:')+this.style.cyan(' - while executing Task Minify: error code is: '+code));  
+          Utils.logErr(' - while executing Task Minify: error code is: ' + code);
         } else {
-            framework.files[0].content = _data;
-            callback(framework);
+          framework.files[0].content = _data;
+          callback(framework);
         }
       });
 
-      minify.stdin.write(framework.files[0].content);
-      minify.stdin.end();
-   }else{
-        callback(framework); 
-    }
+    minify.stdin.write(framework.files[0].content);
+    minify.stdin.end();
+  } else {
+    callback(framework);
+  }
 };
