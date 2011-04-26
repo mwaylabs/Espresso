@@ -1,0 +1,27 @@
+{ "name" : "espresso",
+  "description" : "Development tools for The-M-Project",
+  "version" : "0.4.0",
+  "author" : "Sven Pfleiderer <sven@roothausen.de>",
+  "repository" : { 
+    "type" : "git",
+    "url" : "http://github.com/mwaylabs/Espresso.git"
+  },
+  "bugs" : { 
+    "web" : "http://github.com/mwaylabs/Espresso/issues" 
+  }, 
+  "licenses" : [{ 
+      "type" : "MIT",
+      "url" : "https://github.com/mwaylabs/Espresso/raw/master/MIT-LICENSE"
+    }, { 
+      "type" : "GPL",
+      "url" : "https://github.com/mwaylabs/Espresso/raw/master/GPL-LICENSE"
+    }],
+  "dependencies": {
+    "mu": "= 0.5.1",
+    "step": "= 0.0.4",
+    "wwwdude": "= 0.0.7",
+    "sass": "= 0.5.0"
+  },
+  "engines" : { "node": ">= 0.4.0" },
+  "bin": { "espresso": "./bin/espresso.js" }
+}

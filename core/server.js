@@ -13,7 +13,7 @@ var Url = require('url');
 var Utils = require('../lib/espresso_utils');
 var Proxy = require('./proxy').Proxy;
 var App = require('./app').App;
-var wwwdude = require('../lib/wwwdude');
+var wwwdude = require('../node_modules/wwwdude');
 
 /**
  * @class

@@ -11,7 +11,7 @@
 /*
  * dependencies
  */
-var Sequencer = require('../lib/step');
+var Sequencer = require('../node_modules/step');
 var File = require('../core/file').File;
 var Renderer = require('../lib/renderer');
 var Utils = require('../lib/espresso_utils');

@@ -59,15 +59,7 @@ E.prototype.style = require('../lib/color');
  *  );
  *
  */
-E.prototype.sequencer =  require('../lib/step');
-
-
-/**
- * @property
- * Using the 'optimist' framework, for parsing the arguments.
- * https://github.com/substack/node-optimist
- */
-E.prototype.argv = require('../lib/optimist').argv;
+E.prototype.sequencer =  require('../node_modules/step');
 
 /**
  * @function

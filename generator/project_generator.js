@@ -13,8 +13,8 @@
 var Fs = require('fs');
 var Util = require('util');
 var Path = require('path');
+var Sequencer = require('../node_modules/step');
 var Style = require('../lib/color');
-var Sequencer = require('../lib/step');
 var File = require('../core/file').File;
 var Renderer = require('../lib/renderer');
 
