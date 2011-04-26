@@ -11,11 +11,11 @@
 /*
  * dependencies
  */
-var Sequencer = require('../node_modules/step');
+var Fs = require('fs');
+var Sequencer = require('step');
 var File = require('../core/file').File;
 var Renderer = require('../lib/renderer');
 var Utils = require('../lib/espresso_utils');
-var Fs = require('fs');
 
 var generate = exports.generate = function generate(options) {
   var espressoPath = __dirname + '/..';

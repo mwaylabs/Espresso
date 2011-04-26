@@ -6,25 +6,56 @@ This is the development branch of Espresso, and heavily under construction!
 Espresso README
 ===============
 
-Espresso: The-M-Projects build tools using node.js.
+Espresso: The-M-Projects build tools using node.js
 
-Usage
-=====
+
+Installation
+============
+
+Prerequesites
+-------------
+
+To install espresso you need [http://nodejs.org/](Node.js) >= 0.4 and either git or npm.
+
+Install via NPM
+----------------
+
+You can install espresso with the help of [http://npmjs.org/](npm):
+
+    npm install espresso
+
+Install via git
+---------------
+
+If you don't want to use NPM, you can check out the project with git, init the submodules and create an alias.
 
 1. Install node.js. see description here: http://nodejs.org/#download
 2. Checkout Espresso:
 
     `git clone https://github.com/mwaylabs/Espresso.git`
 
-3. Initialize submodules: git
+3. Initialize submodules:
 
-    `submodule update --init`
+    `git submodule update --init`
 
-4. Browse to the espresso folder and run: node m-init.js -projectHelloWorld:myFirstApp on the shell. A new MProject was generated. Type in:
+4. Create an alias:
 
-    `cd .. ; cd Apps/myFirstApp ; node m-server.js`
+    `alias espresso='/path/to/Espresso/bin/espresso.js'
 
-5. copy & paste the url into your browser
+Usage
+=====
+
+1. Create a new HelloWorld project:
+    
+    `espresso -project HelloWorld --example`
+
+2. Build it:
+    
+    `cd HelloWorld && espresso build`
+
+3. Run the development server:
+
+    `espresso server`
 
 
 Installing node.js on Windows
@@ -32,8 +63,6 @@ Installing node.js on Windows
 
 Read the instructions here:
 https://github.com/ry/node/wiki/Building-node.js-on-Cygwin-%28Windows%29
-
-- Tested with node 0.2.5 on Windows 7
 
 Licensing
 =========

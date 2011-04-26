@@ -10,10 +10,10 @@
 
 var Http = require('http');
 var Url = require('url');
+var wwwdude = require('wwwdude');
 var Utils = require('../lib/espresso_utils');
 var Proxy = require('./proxy').Proxy;
 var App = require('./app').App;
-var wwwdude = require('../node_modules/wwwdude');
 
 /**
  * @class

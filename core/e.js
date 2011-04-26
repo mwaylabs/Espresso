@@ -59,7 +59,7 @@ E.prototype.style = require('../lib/color');
  *  );
  *
  */
-E.prototype.sequencer =  require('../node_modules/step');
+E.prototype.sequencer = require('step');
 
 /**
  * @function
