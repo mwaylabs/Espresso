@@ -30,6 +30,8 @@ M.INPUT_PASSWORD = 'password';
 M.INPUT_NUMBER = 'number';
 
 /**
+<<<<<<< HEAD
+=======
  * A constant value for input type: tel
  *
  * @type String
@@ -51,6 +53,7 @@ M.INPUT_URL = 'url';
 M.INPUT_EMAIL = 'email';
 
 /**
+>>>>>>> detox
  * @class
  *
  * M.TextFieldView is the prototype of any text field input view. It can be rendered as both
