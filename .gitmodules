@@ -1,18 +1,12 @@
-[submodule "lib/wwwdude"]
-	path = lib/wwwdude
-	url = https://github.com/pfleidi/node-wwwdude.git
-[submodule "lib/connect"]
-	path = lib/connect
-	url = https://github.com/senchalabs/connect.git
-[submodule "lib/step"]
-	path = lib/step
-	url = https://github.com/creationix/step.git
-[submodule "lib/optimist"]
-	path = lib/optimist
-	url = https://github.com/substack/node-optimist.git
-[submodule "lib/mu"]
-	path = lib/mu
-	url = https://github.com/raycmorgan/Mu.git
-[submodule "lib/sass"]
-	path = lib/sass
+[submodule "node_modules/sass"]
+	path = node_modules/sass
 	url = https://github.com/visionmedia/sass.js.git
+[submodule "node_modules/Mu"]
+	path = node_modules/Mu
+	url = https://github.com/raycmorgan/Mu.git
+[submodule "node_modules/step"]
+	path = node_modules/step
+	url = https://github.com/creationix/step.git
+[submodule "node_modules/wwwdude"]
+	path = node_modules/wwwdude
+	url = https://github.com/pfleidi/node-wwwdude.git
