@@ -59,6 +59,11 @@ Usage
 
     `espresso server`
 
+4. Generate new files
+
+    `espresso generate -c testcontroller -v testview -m testmodel`
+
+This command will generate a new model, a new view and a new controller.
 
 Installing node.js on Windows
 =============================
