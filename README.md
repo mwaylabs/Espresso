@@ -22,7 +22,9 @@ Install via NPM
 
 You can install espresso with the help of [http://npmjs.org/](npm):
 
-    npm install espresso
+    npm install espresso -g
+
+The "-g" option is needed for npm >= 1.0.
 
 Install via git
 ---------------
