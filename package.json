@@ -1,7 +1,7 @@
 { "name" : "espresso",
   "description" : "Development tools for The-M-Project",
   "version" : "0.4.0",
-  "author" : "Sven Pfleiderer <sven@roothausen.de>",
+  "author" : "M-WAY Solutions GmbH <s.pfleiderer@mwaysolutions.com>",
   "repository" : { 
     "type" : "git",
     "url" : "http://github.com/mwaylabs/Espresso.git"
