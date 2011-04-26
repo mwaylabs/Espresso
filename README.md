@@ -15,12 +15,12 @@ Installation
 Prerequesites
 -------------
 
-To install espresso you need [http://nodejs.org/](Node.js) >= 0.4 and either git or npm.
+To install espresso you need [Node.js](http://nodejs.org/) >= 0.4 and either git or npm.
 
 Install via NPM
 ----------------
 
-You can install espresso with the help of [http://npmjs.org/](npm):
+You can install espresso with the help of [NPM](http://npmjs.org/):
 
     npm install espresso -g
 
@@ -31,7 +31,7 @@ Install via git
 
 If you don't want to use NPM, you can check out the project with git, init the submodules and create an alias.
 
-1. Install node.js. see description here: http://nodejs.org/#download
+1. Install node.js. see description [here](http://nodejs.org/#download)
 2. Checkout Espresso:
 
     `git clone https://github.com/mwaylabs/Espresso.git`
@@ -63,8 +63,7 @@ Usage
 Installing node.js on Windows
 =============================
 
-Read the instructions here:
-https://github.com/ry/node/wiki/Building-node.js-on-Cygwin-%28Windows%29
+Read the instructions [here](https://github.com/ry/node/wiki/Building-node.js-on-Cygwin-%28Windows%29)
 
 Licensing
 =========
