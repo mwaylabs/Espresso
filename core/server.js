@@ -168,10 +168,10 @@ Server.prototype.proxyThat = function (request, response) {
         }
 
         proxyRequest.on('error', function (err) {
-            _respondErr(err, 500);
+            _respondErr(err.toString(), 500);
           })
         .on('http-error', function (err, resp) {
-            _respondErr(err, 500);
+            _respondErr(err.toString(), 500);
           })
         .on('redirect', function (data, resp) {
             Utils.log('Redirecting to: ' + resp.headers.location);
