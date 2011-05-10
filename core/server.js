@@ -148,7 +148,7 @@ Server.prototype.proxyThat = function (request, response) {
       if (_proxy) { // if proxy entry was found.
         var _inquiredData = request.url.replace(new RegExp('^/' + _pr), '');
         var url = _proxy.baseUrl + _inquiredData;
-        var method = request.method.toLowerCase();
+        var method = request.method.replace('DELETE', 'del').toLowerCase();
 
         Utils.log('Proxy request to ' + url);
         var proxyClient  = wwwdude.createClient({ gzip: false });
