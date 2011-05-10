@@ -161,11 +161,10 @@ Server.prototype.proxyThat = function (request, response) {
         delete request.headers['accept-encoding'];
         delete request.headers['if-none-match'];
 
-        if (method === 'post' || method === 'put') {
-          proxyRequest = proxyClient[method](url, body, request.headers);
-        } else {
-          proxyRequest = proxyClient[method](url, request.headers);
-        }
+        proxyRequest = proxyClient[method](url, {
+            payload: body,
+            headers: request.headers
+          });
 
         proxyRequest.on('error', function (err) {
             _respondErr(err.toString(), 500);
