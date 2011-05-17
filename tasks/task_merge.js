@@ -47,13 +47,12 @@ Task_Merge.prototype.duty = function duty(framework, callback) {
   framework.files.forEach(function (file) {
       if (file.isJavaScript()) {
         //console.log('Merging: ' + file);
-        that.mergedFile += file.content;
+        that.mergedFile += '\n' + file.content;
       } else if (file.isStylesheet() && framework.is_a_plugin) {
-        that.mergedCSSFile += file.content;
+        that.mergedCSSFile += '\n' + file.content;
         //that.notJSfiles.push(file);
       }
     });
-
 
   that.files.push(new File({
         frDelimiter: framework.frDelimiter,
