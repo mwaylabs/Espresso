@@ -1,6 +1,6 @@
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: ©2010 M-Way Solutions GmbH. All rights reserved.
+// Copyright: ï¿½2010 M-Way Solutions GmbH. All rights reserved.
 // Creator:   alexander
 // Date:      04.11.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -157,7 +157,7 @@ Framework.prototype.readManifest = function readManifest(manifest, path, callbac
             } else {
               console.log("\n");
               console.log(that.style.red('ERROR:')+that.style.green(' File "')+that.style.cyan(path.split(that.frDelimiter)[1] + '/' + file)
-                + that.style.green('" was referencd in "') + that.style.cyan(path.split(that.frDelimiter)[1] + '/'+'manifest.json')
+                + that.style.green('" was referenced in "') + that.style.cyan(path.split(that.frDelimiter)[1] + '/'+'manifest.json')
                 + that.style.green('" but not found in directory. '));
               console.log("\n");
               process.exit(1); /* exit the process, reason: file not found*/
@@ -381,7 +381,7 @@ Framework.prototype.save = function (callback) {
 
 /**
  * @description
- * Attaching the files of a framework to, the server.
+ * Attaching the files of a framework to the server.
  * @param server, the server to prepare the files for.
  * @param callback, the function, that is executed after the prepareForServer() is done.
  */

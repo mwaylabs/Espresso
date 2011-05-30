@@ -17,13 +17,13 @@ var Utils = require('../lib/espresso_utils');
 /**
  * @class
  *
- * Definition of App class. App is Espresso«s core component.
+ * Definition of App class. App is Espressoï¿½s core component.
  * App holds all information about the "The-M-Project" application that is build via Espresso.
  * Containing properties of the application and to control the build itself.
  * App takes care of the build process by hooking in the needed resources (Frameworks and Files)
  * and calling build on each resource(s).
  * For doing all this cool stuff, App needs some data/information to work with.
- * Those thinks are implemented in extra components.
+ * Those things are implemented in extra components.
  * App can contain multiple references to Framework (e.g. The-M-Project core files or the application itself).
  * By loading new Frameworks, App is adding a defined task chain to each Framework.
  * The task chain is prepared by the TaskManager.
@@ -227,7 +227,7 @@ App.prototype.loadTheMProject = function () {
       _frameworkOptions.frDelimiter = 'modules/';
       _frameworkOptions.excludedFolders = that.excludedFolders;
       _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
-      /* Definition of standard build chain for The-M-Project«s core files*/
+      /* Definition of standard build chain for The-M-Project's core files*/
       _frameworkOptions.taskChain = new TaskManager(["dependency","merge","minify","contentType","manifest"]).getTaskChain();
       return new Framework(_frameworkOptions);
     });
@@ -238,7 +238,7 @@ App.prototype.loadTheMProject = function () {
    * Getting the The-M-Project resources and third party frameworks,
    * like: jquery.js or underscore.js
    */
-  _theMProjectResources = ['jquery','underscore','themes','bootstrapping'].map(function (module) {
+  _theMProjectResources = ['jquery','underscore','themes', 'tmp_themes', 'bootstrapping'].map(function (module) {
       var _frameworkOptions  = {};
       _frameworkOptions.path = _path_to_the_m_project+'/modules/' + module;
       _frameworkOptions.name = module;
@@ -325,7 +325,7 @@ App.prototype.buildIndexHTML = function (callback,_frameworkNamesForIndexHtml,_H
 
   }else{ // Fallback header information.
     _indexHtml.push(
-      '<meta name="apple-mobile-web-app-capable" content="yes">'+
+        '<meta name="apple-mobile-web-app-capable" content="yes">'+
         '<meta name="apple-mobile-web-app-status-bar-style" content="default">'+
         '<link rel="apple-touch-icon" href="/theme/images/apple-touch-icon.png"/>'
     );
@@ -393,7 +393,7 @@ App.prototype.buildIndexHTML = function (callback,_frameworkNamesForIndexHtml,_H
     _frameworkOptions.app = this;
     _frameworkOptions.virtual = true;
     _frameworkOptions.frDelimiter = '/';
-    //     Definition of standard build chain for The-M-Project«s core files
+    //     Definition of standard build chain for The-M-Project's core files
     _frameworkOptions.taskChain = new TaskManager(["contentType","manifest"]).getTaskChain();
     var fr = new Framework(_frameworkOptions);
 
@@ -783,18 +783,21 @@ App.prototype.buildIndexHTML = function (callback,_frameworkNamesForIndexHtml,_H
    * @param callback
    */
     App.prototype.prepareHTMLGeneration = function (callback) {
-      var self = this;
+        var self = this;
 
 
-      self.coreNamesForIndexHtml.push(self.coreNamesOBj['jquery']);
-      self.coreNamesForIndexHtml.push(self.coreNamesOBj['bootstrapping']);
-      self.coreNamesForIndexHtml.push(self.coreNamesOBj['jquery_mobile']);
-      self.coreNamesForIndexHtml.push(self.coreNamesOBj['jquery_mobile_plugins']);
-      self.coreNamesForIndexHtml.push(self.coreNamesOBj['jquery_mobile_plugins-theme']);
-      self.coreNamesForIndexHtml.push(self.coreNamesOBj['underscore']);
-      self.coreNamesForIndexHtml.push(self.coreNamesOBj['themes']);
+        self.coreNamesForIndexHtml.push(self.coreNamesOBj['jquery']);
+        self.coreNamesForIndexHtml.push(self.coreNamesOBj['bootstrapping']);
+        self.coreNamesForIndexHtml.push(self.coreNamesOBj['jquery_mobile']);
+        self.coreNamesForIndexHtml.push(self.coreNamesOBj['jquery_mobile_plugins']);
+        self.coreNamesForIndexHtml.push(self.coreNamesOBj['jquery_mobile_plugins-theme']);
+        self.coreNamesForIndexHtml.push(self.coreNamesOBj['underscore']);
+        self.coreNamesForIndexHtml.push(self.coreNamesOBj['themes']);
+        /* own directory for tmp_themes => must be refactored that this can be included in themes/ */
+        self.coreNamesForIndexHtml.push(self.coreNamesOBj['tmp_themes']);
 
-      callback(null,self.frameworks);
+        
+        callback(null,self.frameworks);
     };
 
     /**
@@ -858,7 +861,7 @@ App.prototype.buildIndexHTML = function (callback,_frameworkNamesForIndexHtml,_H
         var that = this;
 
         // amount of used frameworks, for this application.
-        that._frameworkCounter = app.frameworks.length;
+        that._frameworkCounter = app.frameworks.length; 
 
         // callback checker, called if all frameworks are build. */
         that.callbackIfDone = function () {

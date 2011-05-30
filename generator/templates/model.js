@@ -9,7 +9,7 @@
 {{appName}}.{{name}} = M.Model.create({
     __name__: '{{name}}', // do not delete this property!
 
- // Sample model properties:
+    // Sample model properties:
 
     firstName: M.Model.attr('String',{
         isRequired:YES

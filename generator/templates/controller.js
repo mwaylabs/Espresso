@@ -8,23 +8,18 @@
 
 {{appName}}.{{name}} = M.Controller.extend({
 
-    // sample controller property.
-	   myControllerProperty: '',
+    /* sample controller property */
+    myControllerProperty: '',
 
     /*
      * Sample function
      * To handle the first load of a page.
      */
     init: function(isFirstLoad) {
-
         if(isFirstLoad) {
-
-            // do something here, when page is loaded the first time.
-
+            /* do something here, when page is loaded the first time. */
         }
-
-        // do something, for any other load.
-
+        /* do something, for any other load. */
     }
 
     /*
@@ -32,9 +27,8 @@
      * Function is triggered by setting target & action in a view.
     ,switchToExamplePage: function() {
 
-        //this.switchToPage(M.ViewManager.getPage('examplePage'));
+        this.switchToPage(M.ViewManager.getPage('examplePage'));
 
-    }
-    */
+    }*/
 
 });
