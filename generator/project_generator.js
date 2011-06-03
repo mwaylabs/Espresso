@@ -62,6 +62,7 @@ var generate = exports.generate = function generate(options) {
   outPut.push(path + projectName + '/frameworks/The-M-Project/modules/themes');
   outPut.push(path + projectName + '/frameworks/The-M-Project/modules/themes/jquery_mobile');
   outPut.push(path + projectName + '/frameworks/The-M-Project/modules/themes/jquery_mobile/images');
+  outPut.push(path + projectName + '/frameworks/The-M-Project/modules/tmp_themes');
   outPut.push(path + projectName + '/frameworks/The-M-Project/modules/underscore');
 
   /**
