@@ -722,6 +722,8 @@ App.prototype.buildIndexHTML = function (callback,_frameworkNamesForIndexHtml,_H
     var self = this,
     _frameworks = [];
 
+    // set or reset the global state
+    Framework.prototype.globalState = {};
 
     if (self.htmlHeader) {
       self.HEAD_IndexHtml = self.htmlHeader;
