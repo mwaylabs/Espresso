@@ -1,3 +1,15 @@
+** Version 0.5 - Date 03.06.2011 **
+
+  * New command line interface
+  * Support for the Node Package Manager (npm)
+  * Support of git submodules
+  * New Proxy config format
+  * Upgrade to most recent versions of used libraries
+  * Update The-M-Project to version 0.4
+  * Some refactoring
+  * Some bugfixes
+  * Removal of unused code
+
 ** Version 0.0.9 - Date 22.02.2011 **
 
   * Added new feature: when starting m-server and running the application in a browser, the application
