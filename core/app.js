@@ -60,9 +60,10 @@ var App = exports.App = function (options, server) {
   this.environment       = 'Web';
 
   /* Build switches */
-  this.jslintCheck       = false;
-  this.minify            = false;  // uses minfiy task ?! default is false
-  this.offlineManifest   = true;   // build with offline manifest ?! default is true
+  this.jslintCheck         = false;
+  this.deadCodeElimination = false;
+  this.minify              = false;  // uses minfiy task ?! default is false
+  this.offlineManifest     = true;   // build with offline manifest ?! default is true
 
   this.taskChain           = [];
   this.proxies             = [];
@@ -155,7 +156,17 @@ App.prototype.loadTheApplication = function () {
       _frameworkOptions.excludedFolders = ['resources'].concat(that.excludedFolders);
       _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
       _frameworkOptions.app = that;
-      _frameworkOptions.taskChain = new TaskManager([
+      if (!that.deadCodeElimination) {
+        _frameworkOptions.taskChain = new TaskManager([
+          "preSort",
+          "dependency",
+          "merge",
+          "minify",
+          "contentType",
+          "manifest"
+        ]).getTaskChain();
+      } else {
+        _frameworkOptions.taskChain = new TaskManager([
           "collectMDefsAndRefs",
           "preSort",
           "dependency",
@@ -163,7 +174,8 @@ App.prototype.loadTheApplication = function () {
           "minify",
           "contentType",
           "manifest"
-      ]).getTaskChain();
+        ]).getTaskChain();
+      };
       return new Framework(_frameworkOptions);
     });
 
@@ -229,10 +241,20 @@ App.prototype.loadTheMProject = function () {
       _frameworkOptions.excludedFolders = that.excludedFolders;
       _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
       /* Definition of standard build chain for The-M-Project's core files*/
-      _frameworkOptions.taskChain = new TaskManager([
+      if (!that.deadCodeElimination) {
+        _frameworkOptions.taskChain = new TaskManager([
+          "dependency",
+          "merge",
+          "minify",
+          "contentType",
+          "manifest"
+        ]).getTaskChain();
+      } else {
+        _frameworkOptions.taskChain = new TaskManager([
           "collectMDefsAndRefs",
           "cacheFiles"
-      ]).getTaskChain();
+        ]).getTaskChain();
+      };
       return new Framework(_frameworkOptions);
     });
 
