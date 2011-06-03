@@ -156,13 +156,14 @@ App.prototype.loadTheApplication = function () {
       _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
       _frameworkOptions.app = that;
       _frameworkOptions.taskChain = new TaskManager([
+          "collectMDefsAndRefs",
           "preSort",
           "dependency",
-          "merge",
+          "mergeApp",
           "minify",
           "contentType",
-          "manifest"]
-      ).getTaskChain();
+          "manifest"
+      ]).getTaskChain();
       return new Framework(_frameworkOptions);
     });
 
@@ -228,7 +229,10 @@ App.prototype.loadTheMProject = function () {
       _frameworkOptions.excludedFolders = that.excludedFolders;
       _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
       /* Definition of standard build chain for The-M-Project's core files*/
-      _frameworkOptions.taskChain = new TaskManager(["dependency","merge","minify","contentType","manifest"]).getTaskChain();
+      _frameworkOptions.taskChain = new TaskManager([
+          "collectMDefsAndRefs",
+          "cacheFiles"
+      ]).getTaskChain();
       return new Framework(_frameworkOptions);
     });
 

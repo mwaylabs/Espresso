@@ -61,6 +61,10 @@ var Framework = exports.Framework = function (properties) {
 Framework.prototype = new E();
 
 /**
+ */
+Framework.prototype.globalState = {};
+
+/**
  * Sets the Properties for Framework
  * @param properties, the properties for the framework
  */
