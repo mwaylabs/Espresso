@@ -58,6 +58,15 @@ setTimeout(function () {
       _root_files[_defs[ref_key]] = true;
     });
   });
+  if (typeof framework.app.deadCodeElimination !== 'boolean') {
+    // By contract framework.app.deadCodeElimination is either a boolean or
+    // an array of (fully qualified) object names (e.g. M.Application).
+    // If it is not a boolean, then iterate over all the names, and collect
+    // add their defining files to the root files.
+    framework.app.deadCodeElimination.forEach(function (key) {
+      _root_files[_defs[key]] = true;
+    });
+  };
   _root_files = Object.keys(_root_files);
 
   //console.log('DEPENDENCY GRAPH');
