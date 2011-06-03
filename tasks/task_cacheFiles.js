@@ -12,7 +12,7 @@ var Task = require('./task').Task;
 /**
  * @class
  * Move files from framework to the global state.
- * This is used by task_mergeApp.js to generate the final app.
+ * This is used by Task_MergeApp to generate the final app.
  *
  * @extends Task
  */

@@ -12,7 +12,7 @@ var Task = require('./task').Task;
 /**
  * @class
  * Add definitions and references of M-Project objects to the global state.
- * This is used in task_merge.js to compute the dependency graph.
+ * This is used by Task_MergeApp to compute the dependency graph.
  *
  * @extends Task
  */
@@ -40,18 +40,12 @@ Task_collectMDefsAndRefs.prototype.duty = function(framework, cb) {
 
   this.sequencer(
     function () {
-      //console.log('framework.files', framework.files.map(function (file) { return file.path; }));
-      //return framework;
       framework.files.forEach(function(file) {
           if (file.isJavaScript()) {
             var _re, _match;
             var _path = file.path;
             var _deps = [];
             var _content = stripComments(file.content.toString());
-
-            /*RegExp = all string match: m_require('someFile.js');
-             * ^[/\*]+\s*m_require
-             * */
 
             // collect object references
             _re = /(\bM\.(\w+)\b)\s*[^=]/g
@@ -77,8 +71,6 @@ Task_collectMDefsAndRefs.prototype.duty = function(framework, cb) {
                     + '\n' + _path + ' failed!'
                 );
               };
-              // TODO duplicate check?
-              //_defs[_name][_path] = true;
             };
           };
       });
