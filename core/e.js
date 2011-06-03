@@ -66,7 +66,7 @@ E.prototype.sequencer = require('step');
  * Prints the current version number of Espresso.
  */
 E.prototype.printVersionNumber = function () {
-  console.log('Espresso, version: ' + this.__version__);
+  console.log('Espresso ' + this.__version__);
 };
 
 /**
