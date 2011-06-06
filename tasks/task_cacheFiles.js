@@ -23,11 +23,11 @@ var Task_CacheFiles = exports.Task = function () {
 Task_CacheFiles.prototype = new Task();
 
 Task_CacheFiles.prototype.duty = function duty(framework, callback) {
-  if (!framework.globalState.files) {
-    framework.globalState.files = {};
+  if (!framework.app.globalState.files) {
+    framework.app.globalState.files = {};
   };
   framework.files.forEach(function (file) {
-    framework.globalState.files[file.path] = file;
+    framework.app.globalState.files[file.path] = file;
   });
   framework.files = [];
   callback(framework);

@@ -27,16 +27,16 @@ Task_collectMDefsAndRefs.prototype.duty = function(framework, cb) {
 
   // definitions map file paths to object names, that are defined in the
   // respective file.
-  if (!framework.globalState.definitions) {
-    framework.globalState.definitions = {};
+  if (!framework.app.globalState.definitions) {
+    framework.app.globalState.definitions = {};
   };
-  var _defs = framework.globalState.definitions;
+  var _defs = framework.app.globalState.definitions;
 
   // references map object names to file paths, that are 
-  if (!framework.globalState.references) {
-    framework.globalState.references = {};
+  if (!framework.app.globalState.references) {
+    framework.app.globalState.references = {};
   };
-  var _refs = framework.globalState.references;
+  var _refs = framework.app.globalState.references;
 
   this.sequencer(
     function () {

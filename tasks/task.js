@@ -44,17 +44,31 @@ Task.prototype = new E();
  * @param callback {function} the function, that should be called after the all tasks finished there job.
  * The framework in callback may be modified by the duty() function.
  */
-Task.prototype.run = function(framework,callback){
-var that = this;
+Task.prototype.run = function(framework, callback){
+  var that = this;
 
-  that.duty(framework,function(fr){
-    if (that.next === undefined){
-      callback(fr);
-    }else{
-      that.next.run(fr,callback);
-    }
-  });
-    
+  if (that.isReadyToRun(framework)) {
+    that.duty(framework, function(fr) {
+      if (that.next === undefined) {
+        // mark framework as built whe the task chain is finished
+        if (!framework.app.globalState.builtFrameworks) {
+          framework.app.globalState.builtFrameworks = {};
+        };
+        framework.app.globalState.builtFrameworks[framework.name] = true;
+
+        callback(fr);
+      } else {
+        that.next.run(fr, callback);
+      };
+    });
+  } else {
+    // Suspend task chain, as there are unsatisfied conditions, i.e. other
+    // tasks have run to completion first.  We'll re-check this task's
+    // condition next loop around the event loop.
+    process.nextTick(function () {
+      that.run(framework, callback);
+    });
+  };
 };
 
 
@@ -70,4 +84,20 @@ Task.prototype.duty = function(framework,callback){
   this._e_.sys.puts("No duty() function implemented for: '" +this.name + "' !");
   this._e_.sys.puts("Override the duty() function in your task by writing:\n yourTask.prototype.duty = function(framework,callback){ ... }");
   callback();  
+};
+
+/**
+ * @description
+ * This function returns whether a task is ready to be run.  If it returns
+ * false, then there are unmet conditions, that has to be satisfied first.
+ *
+ * Tasks that run conditionally should override this function.
+ *
+ * By default tasks can be run unconditionally.
+ *
+ * @param framework {object}, the framework, this task is working with.
+ * @returns {boolean} true if the task can be run, false otherwise.
+ */
+Task.prototype.isReadyToRun = function (framework) {
+  return true;
 };
