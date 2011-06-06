@@ -72,6 +72,7 @@ var App = exports.App = function (options, server) {
   this.excludedFiles       = [];
   this.excludedFromCaching = [];
   this.frameworks          = [];
+  this.coreFrameworks      = [];
   this.globalState         = {};
 
   this.HEAD_IndexHtml = [];
@@ -241,6 +242,7 @@ App.prototype.loadTheMProject = function () {
       _frameworkOptions.frDelimiter = 'modules/';
       _frameworkOptions.excludedFolders = that.excludedFolders;
       _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
+      that.coreFrameworks.push(module);
       /* Definition of standard build chain for The-M-Project's core files*/
       if (!that.deadCodeElimination) {
         _frameworkOptions.taskChain = new TaskManager([
@@ -689,13 +691,12 @@ App.prototype.buildIndexHTML = function (callback,_frameworkNamesForIndexHtml,_H
 
       /*
        *  Build stack:
-       *  1) Build the Application
+       *  1) Build the application
        *   11) Build each framework
        *  2) Build the index.html
        *  3) Build the cache manifest, after all frameworks had been built.
        *  4) Call callback, which leads to the next step of the build OR server
        *     process.
-       *
        */
       self.sequencer(
           function () {
@@ -726,11 +727,11 @@ App.prototype.buildIndexHTML = function (callback,_frameworkNamesForIndexHtml,_H
       );
     };
 
-  /**
-   * @description
-   * Sort all resolved entries for index.html.
-   * @param callback
-   */
+    /**
+     * @description
+     * Sort all resolved entries for index.html.
+     * @param callback
+     */
     App.prototype.prepareHTMLGeneration = function (callback) {
         var self = this;
 
