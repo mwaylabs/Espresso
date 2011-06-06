@@ -31,9 +31,9 @@ Task_MergeApp.prototype.duty = function duty(framework, callback) {
 setTimeout(function () {
 
   // get global state
-  var _defs = framework.globalState.definitions;
-  var _refs = framework.globalState.references;
-  var _files = framework.globalState.files;
+  var _defs = framework.app.globalState.definitions;
+  var _refs = framework.app.globalState.references;
+  var _files = framework.app.globalState.files;
 
   // construct file dependency graph
   var _deps = {};

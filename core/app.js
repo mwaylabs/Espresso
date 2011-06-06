@@ -72,6 +72,7 @@ var App = exports.App = function (options, server) {
   this.excludedFiles       = [];
   this.excludedFromCaching = [];
   this.frameworks          = [];
+  this.globalState         = {};
 
   this.HEAD_IndexHtml = [];
   this.BODY_IndexHtml = [];
@@ -635,8 +636,8 @@ App.prototype.buildIndexHTML = function (callback,_frameworkNamesForIndexHtml,_H
       var self = this,
           _frameworks = [];
 
-      // set or reset the global state
-      Framework.prototype.globalState = {};
+      // reset the global state
+      self.globalState = {};
 
       if (self.htmlHeader) {
         self.HEAD_IndexHtml = self.htmlHeader;
