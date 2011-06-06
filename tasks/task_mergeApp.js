@@ -25,11 +25,6 @@ var Task_MergeApp = exports.Task = function () {
 Task_MergeApp.prototype = new Task();
 
 Task_MergeApp.prototype.duty = function duty(framework, callback) {
-
-  // TODO this enterprise sleep (setTimeout(..., 1000)) is required, because
-  // Espresso has no inter-task dependencies, yet
-setTimeout(function () {
-
   // get global state
   var _defs = framework.app.globalState.definitions;
   var _refs = framework.app.globalState.references;
@@ -90,5 +85,25 @@ setTimeout(function () {
 
   // delegate
   Task_Merge.prototype.duty.call(this, framework, callback);
-}, 1000);
+};
+
+/**
+ * @description
+ * The application can be merged when all core files are built.
+ */
+Task_MergeApp.prototype.isReadyToRun = function (framework) {
+  var _ready = false;
+
+  // get global state
+  var _builtFrameworks = framework.app.globalState.builtFrameworks;
+
+  if (_builtFrameworks) {
+    _ready = true;
+    framework.app.coreFrameworks.forEach(function (dep) {
+      if (!_builtFrameworks[dep]) {
+        _ready = false;
+      };
+    });
+  };
+  return _ready;
 };
