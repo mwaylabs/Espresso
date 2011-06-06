@@ -45,7 +45,7 @@ Task_collectMDefsAndRefs.prototype.duty = function(framework, cb) {
             var _re, _match;
             var _path = file.path;
             var _deps = [];
-            var _content = stripComments(file.content.toString());
+            var _content = stripCommentsAndStrings(file.content.toString());
 
             // collect object references
             _re = /(\bM\.(\w+)\b)\s*[^=]/g
@@ -83,17 +83,11 @@ Task_collectMDefsAndRefs.prototype.duty = function(framework, cb) {
 };
 
 // TODO does this warrant a new lib/-file?
-/**
- * Strip comments.
- *
- * Note that we're also stripping comments from strings, but as that doesn't
- * affect this task we're igoring it.
- *
- * @param{String}
- */
-function stripComments (x) {
+function stripCommentsAndStrings (x) {
   return (x
       .replace(/\/\/.*(?:[\r\n]|$)/gm, '')
       .replace(/\/\*(?:[^*]|\*[^\/])*\*\//gm, '')
+      .replace(/'(?:[^']|\\')*'/gm, '')
+      .replace(/"(?:[^"]|\\")*"/gm, '')
   );
 };
