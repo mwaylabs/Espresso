@@ -9,7 +9,7 @@
 
 var Task = require('./task').Task;
 var Task_Merge = require('./task_merge').Task_Merge;
-var reach = require('../lib/graph').reach;
+var Graph = require('../lib/graph');
 
 /**
  * @class
@@ -78,8 +78,21 @@ Task_MergeApp.prototype.duty = function duty(framework, callback) {
   //console.log('FRAMEWORK FILES');
   //console.log(framework.files.map(function (f) { return f.path }));
 
+  // compute set of all reachable files
+  var _reachable = {};
+  Graph.reach(_deps, _root_files).forEach(function (path) {
+    _reachable[path] = _deps[path];
+  });
+
+  // cache framework files
+  framework.files.forEach(function (file) {
+    _reachable[file.path] = _deps[file.path];
+    _files[file.path] = file;
+  });
+  framework.files = [];
+
   // push all cached and reachable files to this framework
-  reach(_deps, _root_files).forEach(function (path) {
+  Graph.tsort(Graph.withoutReflexion(_reachable)).forEach(function (path) {
     framework.files.push(_files[path]);
   });
 
