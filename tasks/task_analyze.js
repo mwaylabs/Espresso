@@ -27,7 +27,7 @@ Task_Analyze.prototype.duty = function duty(framework, callback) {
     if (file.analysis) {
       // TODO proper warning
       console.log('file already analyzed:', file.path);
-    } else {
+    } else if (file.isJavaScript()) {
       file.analysis = {
         definitions: { immediate: [], runtime: [] },
         references: { immediate: [], runtime: [] }
@@ -82,11 +82,13 @@ Task_Analyze.prototype.duty = function duty(framework, callback) {
     framework.app.globalState.definitions = {};
   };
   framework.files.forEach(function (file) {
-    file.analysis.definitions.runtime.forEach(function (x) {
-      //console.log(file.path, 'defines', x);
-      // TODO if x already in definitions then bail out(?)
-      framework.app.globalState.definitions[x] = file.path;
-    });
+    if (file.isJavaScript()) {
+      file.analysis.definitions.runtime.forEach(function (x) {
+        //console.log(file.path, 'defines', x);
+        // TODO if x already in definitions then bail out(?)
+        framework.app.globalState.definitions[x] = file.path;
+      });
+    };
   });
 
   // references map object names to file paths, that are 
@@ -94,11 +96,13 @@ Task_Analyze.prototype.duty = function duty(framework, callback) {
     framework.app.globalState.references = {};
   };
   framework.files.forEach(function (file) {
-    var refs = framework.app.globalState.references[file.path] = [];
-    file.analysis.references.runtime.forEach(function (x) {
-      //console.log(file.path, 'references', x);
-      refs.push(x);
-    });
+    if (file.isJavaScript()) {
+      var refs = framework.app.globalState.references[file.path] = [];
+      file.analysis.references.runtime.forEach(function (x) {
+        //console.log(file.path, 'references', x);
+        refs.push(x);
+      });
+    };
   });
 
   callback(framework);
