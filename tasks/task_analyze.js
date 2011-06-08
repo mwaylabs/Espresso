@@ -138,7 +138,9 @@ function collect_definitions_and_references(T) {
   // Mark all "undotted" references, i.e. This is undotted.
   walk(T,
       function (T) {
-        return 'value' in T && !('arity' in T) && /^\w+$/.test(T.value);
+        return (Object.keys(T).length === 1
+            && 'value' in T
+            && /^\w+$/.test(T.value));
       },
       function (T) {
         var ref = [T.value];
