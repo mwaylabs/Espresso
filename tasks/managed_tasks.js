@@ -34,4 +34,5 @@ ManagedTasks.Tasks['markCore']    =  require('./task_markCoreFiles').Task_MarkCo
 ManagedTasks.Tasks['collectMDefsAndRefs'] = require('./task_collectMDefsAndRefs').Task;
 ManagedTasks.Tasks['mergeApp'] = require('./task_mergeApp').Task;
 ManagedTasks.Tasks['cacheFiles'] = require('./task_cacheFiles').Task;
+ManagedTasks.Tasks['analyze'] = require('./task_analyze').Task;
 

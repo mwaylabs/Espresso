@@ -169,6 +169,7 @@ App.prototype.loadTheApplication = function () {
         ]).getTaskChain();
       } else {
         _frameworkOptions.taskChain = new TaskManager([
+          "analyze",
           "collectMDefsAndRefs",
           "preSort",
           "dependency",
