@@ -31,7 +31,6 @@ ManagedTasks.Tasks['minify']      =  require('./task_minify').Task_Minify;
 ManagedTasks.Tasks['sass']        =  require('./task_sass').Task_SASS;
 ManagedTasks.Tasks['markLibrary'] =  require('./task_markLibrary').Task_MarkLibrary;
 ManagedTasks.Tasks['markCore']    =  require('./task_markCoreFiles').Task_MarkCoreFiles;
-ManagedTasks.Tasks['collectMDefsAndRefs'] = require('./task_collectMDefsAndRefs').Task;
 ManagedTasks.Tasks['mergeApp'] = require('./task_mergeApp').Task;
 ManagedTasks.Tasks['cacheFiles'] = require('./task_cacheFiles').Task;
 ManagedTasks.Tasks['analyze'] = require('./task_analyze').Task;

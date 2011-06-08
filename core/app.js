@@ -170,7 +170,6 @@ App.prototype.loadTheApplication = function () {
       } else {
         _frameworkOptions.taskChain = new TaskManager([
           "analyze",
-          "collectMDefsAndRefs",
           "preSort",
           "dependency",
           "mergeApp",
@@ -255,7 +254,7 @@ App.prototype.loadTheMProject = function () {
         ]).getTaskChain();
       } else {
         _frameworkOptions.taskChain = new TaskManager([
-          "collectMDefsAndRefs",
+          "analyze",
           "cacheFiles"
         ]).getTaskChain();
       };

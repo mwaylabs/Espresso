@@ -35,7 +35,7 @@ Task_Analyze.prototype.duty = function duty(framework, callback) {
 
       var result = JSLINT(file.content.toString());
 
-      console.log('JSLINT result:', result);
+      //console.log('[3' + (result ? 2 : 1) + 'mJSLINT', file.path + '[m');
 
       var T = deep_copy(JSLINT.tree);
 
@@ -66,14 +66,39 @@ Task_Analyze.prototype.duty = function duty(framework, callback) {
       })();
 
       // dump
-      console.log('[35;1m^L[m');
-      console.log(file.path, '=')
-      console.log(require('sys').inspect({
-        tree: T,
-        analysis: file.analysis,
-        path: file.path
-      }, false, 100));
+      //console.log('[35;1m^L[m');
+      //console.log(file.path, '=')
+      //console.log(require('sys').inspect({
+      //  tree: T,
+      //  analysis: file.analysis,
+      //  path: file.path
+      //}, false, 100));
     };
+  });
+
+  // definitions map file paths to object names, that are defined in the
+  // respective file.
+  if (!framework.app.globalState.definitions) {
+    framework.app.globalState.definitions = {};
+  };
+  framework.files.forEach(function (file) {
+    file.analysis.definitions.runtime.forEach(function (x) {
+      //console.log(file.path, 'defines', x);
+      // TODO if x already in definitions then bail out(?)
+      framework.app.globalState.definitions[x] = file.path;
+    });
+  });
+
+  // references map object names to file paths, that are 
+  if (!framework.app.globalState.references) {
+    framework.app.globalState.references = {};
+  };
+  framework.files.forEach(function (file) {
+    var refs = framework.app.globalState.references[file.path] = [];
+    file.analysis.references.runtime.forEach(function (x) {
+      //console.log(file.path, 'references', x);
+      refs.push(x);
+    });
   });
 
   callback(framework);
@@ -127,7 +152,7 @@ function collect_definitions_and_references(T) {
 
   // Mark all "dotted" references, i.e. This.here is dotted.
   walk(T,
-      function (T) { return T.value === '.' },
+      is_dotted,
       function (T) {
         var ref = dot(T);
         prune(T);
@@ -221,7 +246,7 @@ function walk(T, p, f) {
  * @returns {object[]}
  */
 function dot(T) {
-  if (T.value === '.') {
+  if (is_dotted(T)) {
     var y = [];
     dot(T.first ).forEach(function (x) { y.push(x) });
     dot(T.second).forEach(function (x) { y.push(x) });
@@ -229,4 +254,11 @@ function dot(T) {
   } else {
     return [T.value];
   };
+};
+
+/**
+ * Predicate that check whether a tree is a "dotted" reference.
+ */
+function is_dotted(T) {
+  return T.value === '.' && T.arity === 'infix';
 };
