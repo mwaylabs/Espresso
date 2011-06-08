@@ -30,18 +30,34 @@ Task_MergeApp.prototype.duty = function duty(framework, callback) {
   var _refs = framework.app.globalState.references;
   var _files = framework.app.globalState.files;
 
-  // construct file dependency graph
-  var _deps = {};
+  // reduce references
+  Object.keys(_refs).forEach(function (path) {
+    var new_refs = {};
 
-  Object.keys(_refs).forEach(function (ref_key) {
-    _deps[ref_key] = {};
-    _refs[ref_key].forEach(function (def_key) {
-      _deps[ref_key][_defs[def_key]] = true;
+    // X.foo.bar is X.foo
+    _refs[path].forEach(function (ref) {
+      var match = /^([^.]+(?:\.[^.]+))(?:\.[^.]+)+$/.exec(ref);
+      var new_ref = match ? match[1] : ref;
+      if (!(new_ref in new_refs)) {
+        new_refs[new_ref] = true;
+      };
+    });
+
+    // Only ^(M|{framework.app.name}).* is relevant^_^
+    var re = new RegExp('^(M|' + framework.app.name + ')(?:\\.[^.]+)$');
+    _refs[path] = Object.keys(new_refs).filter(function (ref) {
+      return re.test(ref);
     });
   });
 
-  Object.keys(_deps).forEach(function (key) {
-    _deps[key] = Object.keys(_deps[key]);
+  // construct file dependency graph
+  var _deps = {};
+  Object.keys(_refs).forEach(function (path) {
+    _deps[path] = {};
+    _refs[path].forEach(function (ref) {
+      _deps[path][_defs[ref]] = true;
+    });
+    _deps[path] = Object.keys(_deps[path]);
   });
 
   // collect root files
