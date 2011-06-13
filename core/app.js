@@ -169,10 +169,9 @@ App.prototype.loadTheApplication = function () {
         ]).getTaskChain();
       } else {
         _frameworkOptions.taskChain = new TaskManager([
-          "analyze",
           "preSort",
           "dependency",
-          "mergeApp",
+          "merge",
           "minify",
           "contentType",
           "manifest"
@@ -254,8 +253,11 @@ App.prototype.loadTheMProject = function () {
         ]).getTaskChain();
       } else {
         _frameworkOptions.taskChain = new TaskManager([
-          "analyze",
-          "cacheFiles"
+          "dependency",
+          "merge",
+          "minify",
+          "contentType",
+          "manifest"
         ]).getTaskChain();
       };
       return new Framework(_frameworkOptions);
