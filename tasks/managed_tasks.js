@@ -32,3 +32,9 @@ ManagedTasks.Tasks['sass']        =  require('./task_sass').Task_SASS;
 ManagedTasks.Tasks['markLibrary'] =  require('./task_markLibrary').Task_MarkLibrary;
 ManagedTasks.Tasks['markCore']    =  require('./task_markCoreFiles').Task_MarkCoreFiles;
 
+[ 'analyze'
+, 'globalAnalyze'
+].forEach(function (task) {
+  ManagedTasks.Tasks[task] = require('./task_' + task).Task;
+});
+

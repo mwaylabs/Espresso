@@ -1,0 +1,187 @@
+/*!
+ * task_globalAnalyze.js
+ *
+ * Copyright 2011, Panacoda GmbH.  All rights reserved.
+ * This file is licensed under the MIT license.
+ *
+ * @author tv
+ */
+
+Graph = require('../lib/graph');
+
+/**
+ * @class
+ * Analyze framework files and put the results into the analysis-property.
+ *
+ * @extends Task
+ */
+Task = exports.Task = function () {
+  this.name = 'globalAnalyze';
+};
+
+Task.prototype = new (require('./task').Task)();
+
+Task.prototype.duty = function (framework, callback) {
+
+  var analysis = {};
+
+  var relevant_re =
+      new RegExp('^(?:m_require|M|' + framework.app.name + ')(?:\\.[^.]+)*$');
+  function is_relevant(x) {
+    return relevant_re.test(x);
+  };
+
+  // root_paths : path[]
+  var root_paths = framework.files
+      .filter(function (file) {
+        return file.analysis;
+      })
+      .map(function (file) {
+        return file.path
+      });
+  console.log('root_paths:', root_paths);
+  
+
+  // files : { path -> file }
+  var files = {};
+  framework.app.frameworks.forEach(function (framework) {
+    framework.files.forEach(function (file) {
+      if (file.analysis) {
+        files[file.path] = file;
+      };
+    });
+  });
+  console.log('Object.keys(files).length:', Object.keys(files).length);
+  console.log('Object.keys(files):', Object.keys(files));
+  
+
+  // definitions : { name -> path }
+  var definitions = {};
+  Object.keys(files).forEach(function (path) {
+    files[path].analysis.definitions.forEach(function (definition) {
+      // TODO check collisions?
+      definitions[definition] = path;
+    });
+  });
+  console.log('Object.keys(definitions).length:', Object.keys(definitions).length);
+  console.log('Object.keys(definitions):', Object.keys(definitions));
+  console.log('definitions:', definitions);
+  
+
+  // dependency_graph : { path -> path }
+  var dependency_graph = {};
+  Object.keys(files).forEach(function (path) {
+    dependency_graph[path] = {};
+
+    // all references
+    files[path].analysis.references.forEach(function (name) {
+      all_parts(name, true)
+          .filter(function (name) {
+            console.log(path, 'xxxx', name, definitions[name]);
+            return name.replace(/[^.]/g, '').length <= 1; // only X and X.y
+          })
+          .filter(is_relevant)
+          .filter(function (name) {
+            return name !== framework.app.name; // IDE-HACK
+          })
+          .filter(function (name) {
+            if (!(name in definitions)) {
+              console.log('[31m' + path + ': undefined reference: ' + name + '[m');
+            };
+            return name in definitions;
+          })
+          .map(function (name) {
+            return definitions[name];
+          })
+          .forEach(function (def_path) {
+            if (def_path)
+              dependency_graph[path][def_path] = true;
+          });
+    });
+
+    // for all property definitions X.y : reference X
+    files[path].analysis.definitions.forEach(function (name) {
+      all_parts(name, false)
+          .filter(function (name) {
+            return name.replace(/[^.]/g, '').length <= 1; // only X and X.y
+          })
+          .filter(is_relevant)
+          .filter(function (name) {
+            return name !== framework.app.name; // IDE-HACK
+          })
+          .filter(function (name) {
+            if (!(name in definitions)) {
+              console.log('[31m' + path + ': undefined reference: ' + name + '[m');
+            };
+            return name in definitions;
+          })
+          .map(function (name) {
+            return definitions[name];
+          })
+          .forEach(function (def_path) {
+            if (def_path)
+              dependency_graph[path][def_path] = true;
+          });
+    });
+
+    dependency_graph[path] = Object.keys(dependency_graph[path]);
+  });
+  console.log('Object.keys(dependency_graph).length:', Object.keys(dependency_graph).length);
+  console.log('dependency_graph:', dependency_graph);
+  
+
+  // reachable_paths : path[]
+  var reachable_paths = Graph.reach(dependency_graph, root_paths);
+  console.log('reachable_paths.length:', reachable_paths.length);
+  console.log('reachable_paths:', reachable_paths);
+  
+  
+  // reachable_graph : { path -> path }
+  var reachable_graph = {};
+  reachable_paths.forEach(function (path) {
+    reachable_graph[path] = dependency_graph[path];
+  });
+  reachable_graph = Graph.withoutReflexion(reachable_graph);
+  console.log('reachable_graph:', reachable_graph);
+  analysis.reachableGraph = reachable_graph;
+  
+
+  framework.app.analysis = analysis;
+  console.log('globally analyzed', framework.name);
+  callback(framework);
+};
+
+Task.prototype.isReadyToRun = function (framework) {
+
+  var frameworks_to_analyze = 0;
+  framework.app.frameworks.forEach(function (framework) {
+    for (var task = framework.taskChain; task; task = task.next) {
+      if (task.name === 'analyze') {
+        frameworks_to_analyze++;
+        break;
+      };
+    };
+  });
+
+  var analyzed_frameworks =
+      framework.app.frameworks.filter(function (framework) {
+        return framework.analysis;
+      }).length;
+
+  return analyzed_frameworks === frameworks_to_analyze;
+};
+
+
+// X.foo.bar.baz -> X, X.foo, X.foo.bar [, X.foo.bar.baz]
+all_parts = exports.all_parts = function (x, reflexive) {
+  var parents = [];
+  var match = /^([^.]+(?:\.[^.]+)*)$/.exec(x);
+  if (match) {
+    var parts = match[1].split('.');
+    for (var i = 1, n = parts.length + (reflexive ? 1 : 0); i < n; ++i) {
+      parents.push(parts.slice(0, i).join('.'));
+    };
+  };
+  return parents;
+};
+

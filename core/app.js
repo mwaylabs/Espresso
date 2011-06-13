@@ -171,6 +171,8 @@ App.prototype.loadTheApplication = function () {
         _frameworkOptions.taskChain = new TaskManager([
           "preSort",
           "dependency",
+          "analyze",
+          "globalAnalyze",
           "merge",
           "minify",
           "contentType",
@@ -254,6 +256,7 @@ App.prototype.loadTheMProject = function () {
       } else {
         _frameworkOptions.taskChain = new TaskManager([
           "dependency",
+          "analyze",
           "merge",
           "minify",
           "contentType",
