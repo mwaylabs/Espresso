@@ -34,6 +34,7 @@ ManagedTasks.Tasks['markCore']    =  require('./task_markCoreFiles').Task_MarkCo
 
 [ 'analyze'
 , 'globalAnalyze'
+, 'eliminate'
 ].forEach(function (task) {
   ManagedTasks.Tasks[task] = require('./task_' + task).Task;
 });
