@@ -25,12 +25,6 @@ Task.prototype.duty = function (framework, callback) {
 
   var analysis = {};
 
-  var relevant_re =
-      new RegExp('^(?:m_require|M|' + framework.app.name + ')(?:\\.[^.]+)*$');
-  function is_relevant(x) {
-    return relevant_re.test(x);
-  };
-
   // root_paths : path[]
   var root_paths = framework.files
       .filter(function (file) {
@@ -68,59 +62,66 @@ Task.prototype.duty = function (framework, callback) {
   console.log('definitions:', definitions);
   
 
+  // filter predicates
+  var relevant_re =
+      new RegExp('^(?:m_require|M|' + framework.app.name + ')(?:\\.[^.]+)*$');
+  function is_relevant(x) {
+    return relevant_re.test(x);
+  };
+
+  function is_top_or_second_level(name) {
+    return name.replace(/[^.]/g, '').length <= 1; // only X and X.y
+  };
+
+  function is_Mproject_IDE_hack(name) {
+    // fix for the cyclic definition: var app = app || {};
+    return name !== framework.app.name;
+  };
+
+  var warn_path = undefined;
+  function is_defined(name) {
+    if (!(name in definitions)) {
+      console.log('[31m' + warn_path + ': undefined reference: ' + name + '[m');
+    } else if (!definitions[name]) {
+      console.log('[31m' + warn_path + ': bad definition: ' + name + '[m');
+    } else {
+      return name in definitions;
+    };
+  };
+
+  function name_to_path(name) {
+    return definitions[name];
+  };
+
   // dependency_graph : { path -> path }
   var dependency_graph = {};
   Object.keys(files).forEach(function (path) {
+    warn_path = path;
     dependency_graph[path] = {};
 
     // all references
     files[path].analysis.references.forEach(function (name) {
       all_parts(name, true)
-          .filter(function (name) {
-            console.log(path, 'xxxx', name, definitions[name]);
-            return name.replace(/[^.]/g, '').length <= 1; // only X and X.y
-          })
+          .filter(is_top_or_second_level)
           .filter(is_relevant)
-          .filter(function (name) {
-            return name !== framework.app.name; // IDE-HACK
-          })
-          .filter(function (name) {
-            if (!(name in definitions)) {
-              console.log('[31m' + path + ': undefined reference: ' + name + '[m');
-            };
-            return name in definitions;
-          })
-          .map(function (name) {
-            return definitions[name];
-          })
+          .filter(is_Mproject_IDE_hack)
+          .filter(is_defined)
+          .map(name_to_path)
           .forEach(function (def_path) {
-            if (def_path)
-              dependency_graph[path][def_path] = true;
+            dependency_graph[path][def_path] = true;
           });
     });
 
     // for all property definitions X.y : reference X
     files[path].analysis.definitions.forEach(function (name) {
       all_parts(name, false)
-          .filter(function (name) {
-            return name.replace(/[^.]/g, '').length <= 1; // only X and X.y
-          })
+          .filter(is_top_or_second_level)
           .filter(is_relevant)
-          .filter(function (name) {
-            return name !== framework.app.name; // IDE-HACK
-          })
-          .filter(function (name) {
-            if (!(name in definitions)) {
-              console.log('[31m' + path + ': undefined reference: ' + name + '[m');
-            };
-            return name in definitions;
-          })
-          .map(function (name) {
-            return definitions[name];
-          })
+          .filter(is_Mproject_IDE_hack)
+          .filter(is_defined)
+          .map(name_to_path)
           .forEach(function (def_path) {
-            if (def_path)
-              dependency_graph[path][def_path] = true;
+            dependency_graph[path][def_path] = true;
           });
     });
 
@@ -148,9 +149,16 @@ Task.prototype.duty = function (framework, callback) {
 
   framework.app.analysis = analysis;
   console.log('globally analyzed', framework.name);
-  callback(framework);
+
+  return callback(framework);
 };
 
+/**
+ * This task is ready to run when the number of analyzed frameworks is equal to
+ * the number of frameworks to be analyzed.  That is, all frameworks that have
+ * the analyze task in their task chain are required to finish the analyze task
+ * before this task is ready to run.
+ */
 Task.prototype.isReadyToRun = function (framework) {
 
   var frameworks_to_analyze = 0;
@@ -173,7 +181,7 @@ Task.prototype.isReadyToRun = function (framework) {
 
 
 // X.foo.bar.baz -> X, X.foo, X.foo.bar [, X.foo.bar.baz]
-all_parts = exports.all_parts = function (x, reflexive) {
+function all_parts(x, reflexive) {
   var parents = [];
   var match = /^([^.]+(?:\.[^.]+)*)$/.exec(x);
   if (match) {
