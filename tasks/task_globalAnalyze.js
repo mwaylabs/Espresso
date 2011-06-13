@@ -25,17 +25,6 @@ Task.prototype.duty = function (framework, callback) {
 
   var analysis = {};
 
-  // root_paths : path[]
-  var root_paths = framework.files
-      .filter(function (file) {
-        return file.analysis;
-      })
-      .map(function (file) {
-        return file.path
-      });
-  console.log('root_paths:', root_paths);
-  
-
   // files : { path -> file }
   var files = {};
   framework.app.frameworks.forEach(function (framework) {
@@ -129,6 +118,17 @@ Task.prototype.duty = function (framework, callback) {
   });
   console.log('Object.keys(dependency_graph).length:', Object.keys(dependency_graph).length);
   console.log('dependency_graph:', dependency_graph);
+  
+
+  // root_paths : path[]
+  var root_paths = framework.files
+      .filter(function (file) {
+        return file.analysis;
+      })
+      .map(function (file) {
+        return file.path
+      });
+  console.log('root_paths:', root_paths);
   
 
   // reachable_paths : path[]
