@@ -61,7 +61,8 @@ var App = exports.App = function (options, server) {
 
   /* Build switches */
   this.jslintCheck         = false;
-  this.deadCodeElimination = false;
+  this.eliminate           = false;
+  this.reachable           = null;
   this.minify              = false;  // uses minfiy task ?! default is false
   this.offlineManifest     = true;   // build with offline manifest ?! default is true
   this.mode                = "debug";
@@ -160,7 +161,7 @@ App.prototype.loadTheApplication = function () {
       _frameworkOptions.excludedFolders = ['resources'].concat(that.excludedFolders);
       _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
       _frameworkOptions.app = that;
-      if (!that.deadCodeElimination) {
+      if (!that.eliminate) {
         _frameworkOptions.taskChain = new TaskManager([
           "preSort",
           "dependency",
@@ -248,7 +249,7 @@ App.prototype.loadTheMProject = function () {
       _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
       that.coreFrameworks.push(module);
       /* Definition of standard build chain for The-M-Project's core files*/
-      if (!that.deadCodeElimination) {
+      if (!that.eliminate) {
         _frameworkOptions.taskChain = new TaskManager([
           "dependency",
           "merge",

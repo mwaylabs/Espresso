@@ -28,6 +28,10 @@ Task.prototype.duty = function (framework, callback) {
   };
   var analysis = {};
 
+  // reachable : path[]
+  var reachable =
+      framework.app.reachable instanceof Array ? framework.app.reachable : [];
+
   // files : { path -> file }
   var files = {};
   framework.app.frameworks.forEach(function (framework) {
@@ -58,7 +62,7 @@ Task.prototype.duty = function (framework, callback) {
   var relevant_re =
       new RegExp('^(?:m_require|M|' + framework.app.name + ')(?:\\.[^.]+)*$');
   function is_relevant(x) {
-    return relevant_re.test(x);
+    return relevant_re.test(x) || reachable.indexOf(x) >= 0;
   };
 
   function is_top_or_second_level(name) {
@@ -130,6 +134,18 @@ Task.prototype.duty = function (framework, callback) {
       })
       .map(function (file) {
         return file.path
+      });
+  reachable
+      .filter(is_top_or_second_level)
+      .filter(is_relevant)
+      .filter(is_Mproject_IDE_hack)
+      .filter(is_defined)
+      .map(name_to_path)
+      .forEach(function (path) {
+        if (root_paths.indexOf(path) < 0) {
+          log(3, 'reachable by config:', path);
+          root_paths.push(path);
+        };
       });
   log(2, 'root_paths:', root_paths);
   

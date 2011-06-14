@@ -38,6 +38,13 @@ Task.prototype.duty = function (framework, callback) {
       var T = deep_copy(JSLINT.tree); // TODO store ast in analysis?
 
       var the_relevant_parts = ['M', 'm_require', framework.app.name];
+      if (framework.app.reachable instanceof Array) {
+        framework.app.reachable.forEach(function (name) {
+            if (the_relevant_parts.indexOf(name) < 0) {
+              the_relevant_parts.push(name);
+            };
+          });
+      };
 
       // collect <M-REF> X.y
       walk(T,
