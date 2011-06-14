@@ -64,6 +64,8 @@ var App = exports.App = function (options, server) {
   this.deadCodeElimination = false;
   this.minify              = false;  // uses minfiy task ?! default is false
   this.offlineManifest     = true;   // build with offline manifest ?! default is true
+  this.mode                = "debug";
+  this.debugLevel          = 1;
 
   this.taskChain           = [];
   this.proxies             = [];
