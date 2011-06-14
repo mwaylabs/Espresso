@@ -61,9 +61,12 @@ var App = exports.App = function (options, server) {
 
   /* Build switches */
   this.jslintCheck         = false;
-  this.deadCodeElimination = false;
+  this.eliminate           = false;
+  this.reachable           = null;
   this.minify              = false;  // uses minfiy task ?! default is false
   this.offlineManifest     = true;   // build with offline manifest ?! default is true
+  this.mode                = "debug";
+  this.debugLevel          = 1;
 
   this.taskChain           = [];
   this.proxies             = [];
@@ -158,7 +161,7 @@ App.prototype.loadTheApplication = function () {
       _frameworkOptions.excludedFolders = ['resources'].concat(that.excludedFolders);
       _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
       _frameworkOptions.app = that;
-      if (!that.deadCodeElimination) {
+      if (!that.eliminate) {
         _frameworkOptions.taskChain = new TaskManager([
           "preSort",
           "dependency",
@@ -169,10 +172,12 @@ App.prototype.loadTheApplication = function () {
         ]).getTaskChain();
       } else {
         _frameworkOptions.taskChain = new TaskManager([
-          "collectMDefsAndRefs",
           "preSort",
           "dependency",
-          "mergeApp",
+          "analyze",
+          "globalAnalyze",
+          "eliminate",
+          "merge",
           "minify",
           "contentType",
           "manifest"
@@ -244,7 +249,7 @@ App.prototype.loadTheMProject = function () {
       _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
       that.coreFrameworks.push(module);
       /* Definition of standard build chain for The-M-Project's core files*/
-      if (!that.deadCodeElimination) {
+      if (!that.eliminate) {
         _frameworkOptions.taskChain = new TaskManager([
           "dependency",
           "merge",
@@ -254,8 +259,13 @@ App.prototype.loadTheMProject = function () {
         ]).getTaskChain();
       } else {
         _frameworkOptions.taskChain = new TaskManager([
-          "collectMDefsAndRefs",
-          "cacheFiles"
+          "dependency",
+          "analyze",
+          "eliminate",
+          "merge",
+          "minify",
+          "contentType",
+          "manifest"
         ]).getTaskChain();
       };
       return new Framework(_frameworkOptions);
@@ -837,3 +847,21 @@ App.prototype.buildIndexHTML = function (callback,_frameworkNamesForIndexHtml,_H
 
       new _AppPreparer(self, callback).prepareForServer();
     };
+
+/**
+ * @description
+ * Console logger that honors the configuration options mode and
+ * debugLevel.
+ *
+ * If the mode is configured to "debug" and the debug level is less or
+ * equal to the configured one, then any number of parameters that follows
+ * the debug level parameter get printed with console.log().
+ *
+ * @param {number} debug level
+ */
+App.prototype.log = function (level) {
+  if (this.mode === "debug" && level <= this.debugLevel) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    return console.log.apply(this, args);
+  };
+};
