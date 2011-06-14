@@ -3,6 +3,7 @@
     "version": "0.0.1",
     "mode": "debug",
     "debugLevel": 1,
+    "deadCodeElimination": false,
     "minify": false,
     "proxies": [
       { "baseUrl": "http://your.server.com", "proxyAlias": "myServer" },

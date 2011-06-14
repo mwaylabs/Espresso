@@ -22,6 +22,10 @@ Task = exports.Task = function () {
 Task.prototype = new (require('./task').Task)();
 
 Task.prototype.duty = function (framework, callback) {
+  var log = function () {
+    framework.app.log.apply(framework.app, arguments);
+  };
+
   framework.files.forEach(function (file) {
     if (file.isJavaScript()) {
       file.analysis = {
@@ -79,7 +83,7 @@ Task.prototype.duty = function (framework, callback) {
   });
   
   framework.analysis = true;
-  console.log('analyzed', framework.name);
+  log(1, 'analyzed', framework.name);
 
   return callback(framework);
 };

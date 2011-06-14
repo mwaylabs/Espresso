@@ -22,7 +22,10 @@ Task = exports.Task = function () {
 Task.prototype = new (require('./task').Task)();
 
 Task.prototype.duty = function (framework, callback) {
-
+  var red = this.style.red;
+  var log = function () {
+    framework.app.log.apply(framework.app, arguments);
+  };
   var analysis = {};
 
   // files : { path -> file }
@@ -34,8 +37,8 @@ Task.prototype.duty = function (framework, callback) {
       };
     });
   });
-  console.log('Object.keys(files).length:', Object.keys(files).length);
-  console.log('Object.keys(files):', Object.keys(files));
+  log(2, 'Object.keys(files).length:', Object.keys(files).length);
+  log(2, 'Object.keys(files):', Object.keys(files));
   
 
   // definitions : { name -> path }
@@ -46,9 +49,9 @@ Task.prototype.duty = function (framework, callback) {
       definitions[definition] = path;
     });
   });
-  console.log('Object.keys(definitions).length:', Object.keys(definitions).length);
-  console.log('Object.keys(definitions):', Object.keys(definitions));
-  console.log('definitions:', definitions);
+  log(2, 'Object.keys(definitions).length:', Object.keys(definitions).length);
+  log(2, 'Object.keys(definitions):', Object.keys(definitions));
+  log(2, 'definitions:', definitions);
   
 
   // filter predicates
@@ -70,9 +73,9 @@ Task.prototype.duty = function (framework, callback) {
   var warn_path = undefined;
   function is_defined(name) {
     if (!(name in definitions)) {
-      console.log('[31m' + warn_path + ': undefined reference: ' + name + '[m');
+      log(2, red(warn_path + ': undefined reference: ' + name));
     } else if (!definitions[name]) {
-      console.log('[31m' + warn_path + ': bad definition: ' + name + '[m');
+      log(2, red(warn_path + ': bad definition: ' + name));
     } else {
       return name in definitions;
     };
@@ -116,8 +119,8 @@ Task.prototype.duty = function (framework, callback) {
 
     dependency_graph[path] = Object.keys(dependency_graph[path]);
   });
-  console.log('Object.keys(dependency_graph).length:', Object.keys(dependency_graph).length);
-  console.log('dependency_graph:', dependency_graph);
+  log(2, 'Object.keys(dependency_graph).length:', Object.keys(dependency_graph).length);
+  log(2, 'dependency_graph:', dependency_graph);
   
 
   // root_paths : path[]
@@ -128,13 +131,13 @@ Task.prototype.duty = function (framework, callback) {
       .map(function (file) {
         return file.path
       });
-  console.log('root_paths:', root_paths);
+  log(2, 'root_paths:', root_paths);
   
 
   // reachable_paths : path[]
   var reachable_paths = Graph.reach(dependency_graph, root_paths);
-  console.log('reachable_paths.length:', reachable_paths.length);
-  console.log('reachable_paths:', reachable_paths);
+  log(2, 'reachable_paths.length:', reachable_paths.length);
+  log(2, 'reachable_paths:', reachable_paths);
   
   
   // reachable_graph : { path -> path }
@@ -143,12 +146,12 @@ Task.prototype.duty = function (framework, callback) {
     reachable_graph[path] = dependency_graph[path];
   });
   reachable_graph = Graph.withoutReflexion(reachable_graph);
-  console.log('reachable_graph:', reachable_graph);
+  log(2, 'reachable_graph:', reachable_graph);
   analysis.reachableGraph = reachable_graph;
   
 
   framework.app.analysis = analysis;
-  console.log('globally analyzed', framework.name);
+  log(1, 'globally analyzed', framework.name);
 
   return callback(framework);
 };

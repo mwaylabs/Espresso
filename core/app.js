@@ -846,3 +846,21 @@ App.prototype.buildIndexHTML = function (callback,_frameworkNamesForIndexHtml,_H
 
       new _AppPreparer(self, callback).prepareForServer();
     };
+
+/**
+ * @description
+ * Console logger that honors the configuration options mode and
+ * debugLevel.
+ *
+ * If the mode is configured to "debug" and the debug level is less or
+ * equal to the configured one, then any number of parameters that follows
+ * the debug level parameter get printed with console.log().
+ *
+ * @param {number} debug level
+ */
+App.prototype.log = function (level) {
+  if (this.mode === "debug" && level <= this.debugLevel) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    return console.log.apply(this, args);
+  };
+};

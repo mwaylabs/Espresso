@@ -20,18 +20,24 @@ Task = exports.Task = function () {
 Task.prototype = new (require('./task').Task)();
 
 Task.prototype.duty = function (framework, callback) {
+  var red = this.style.red;
+  var green = this.style.green;
+  var bold = this.style.bold;
+  var log = function () {
+    framework.app.log.apply(framework.app, arguments);
+  };
   var reachableGraph = framework.app.analysis.reachableGraph;
 
   if (reachableGraph) {
-    console.log('reachableGraph:', reachableGraph);
+    log(2, 'reachableGraph:', reachableGraph);
     framework.files = framework.files.filter(function (file) {
       if (file.analysis && !(file.path in reachableGraph)) {
-        console.log('[31;1m' + file.path + '[m');
+        log(1, bold(red(file.path)));
       };
       return !file.analysis || file.path in reachableGraph;
     });
     framework.files.filter(function (file) {
-      console.log('[32;1m' + file.path + '[m');
+      log(1, bold(green(file.path)));
     });
   };
 
