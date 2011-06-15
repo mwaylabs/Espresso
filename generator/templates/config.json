@@ -1,17 +1,23 @@
 {
-  "name" : "{{appName}}",
+    "name" : "{{appName}}",
     "version": "0.0.1",
     "mode": "debug",
     "debugLevel": 1,
     "eliminate": false,
     "minify": false,
     "proxies": [
-      { "baseUrl": "http://your.server.com", "proxyAlias": "myServer" },
-      { "baseUrl": "http://your.server2.com", "proxyAlias": "myServer2" }
+        {
+            "baseUrl": "http://your.server.com",
+            "proxyAlias": "myServer"
+        },
+        {
+            "baseUrl": "http://your.server2.com",
+            "proxyAlias": "myServer2"
+        }
     ],
     "htmlHeader": [
-      "<meta name=\"apple-mobile-web-app-capable\" content=\"yes\">",
-      "<meta name=\"apple-mobile-web-app-status-bar-style\" content=\"default\">",
-      "<link rel=\"apple-touch-icon\" href=\"/theme/images/apple-touch-icon.png\"/>"
+        "<meta name=\"apple-mobile-web-app-capable\" content=\"yes\">",
+        "<meta name=\"apple-mobile-web-app-status-bar-style\" content=\"default\">",
+        "<link rel=\"apple-touch-icon\" href=\"/theme/images/apple-touch-icon.png\"/>"
     ]
 }

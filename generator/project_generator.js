@@ -1,6 +1,7 @@
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: 2011 M-Way Solutions GmbH. All rights reserved.
+// Copyright: (c) 2011 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   alexander
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
 //            http://github.com/mwaylabs/The-M-Project/blob/master/MIT-LICENSE
@@ -62,6 +63,7 @@ var generate = exports.generate = function generate(options) {
   outPut.push(path + projectName + '/frameworks/The-M-Project/modules/themes');
   outPut.push(path + projectName + '/frameworks/The-M-Project/modules/themes/jquery_mobile');
   outPut.push(path + projectName + '/frameworks/The-M-Project/modules/themes/jquery_mobile/images');
+  outPut.push(path + projectName + '/frameworks/The-M-Project/modules/tmp_themes');
   outPut.push(path + projectName + '/frameworks/The-M-Project/modules/underscore');
 
   /**

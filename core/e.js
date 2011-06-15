@@ -1,6 +1,7 @@
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: ©2010 M-Way Solutions GmbH. All rights reserved.
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
+//            (c) 2011 panacoda GmbH. All rights reserved.
 // Creator:   alexander
 // Date:      15.12.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -19,7 +20,7 @@
  * @constructor
  */
 var E = exports.E = function() {
-    this.__version__ = '0.0.9';  // Espresso version.
+    this.__version__ = '0.5';  // Espresso version.
 };
 
 /**
@@ -66,7 +67,7 @@ E.prototype.sequencer = require('step');
  * Prints the current version number of Espresso.
  */
 E.prototype.printVersionNumber = function () {
-  console.log('Espresso, version: ' + this.__version__);
+  console.log('Espresso ' + this.__version__);
 };
 
 /**

@@ -1,6 +1,6 @@
 // ==========================================================================
 // Project:   The M-Project - Mobile HTML5 Application Framework
-// Copyright: ©2010 M-Way Solutions GmbH. All rights reserved.
+// Copyright: (c) 2010 M-Way Solutions GmbH. All rights reserved.
 // Creator:   Dominik
 // Date:      29.10.2010
 // License:   Dual licensed under the MIT or GPL Version 2 licenses.
@@ -74,7 +74,7 @@ M.Observable = M.Object.extend(
      */
     notifyObservers: function(key) {
         _.each(this.bindingList, function(entry){
-            if(key === entry.observable){
+            if(key === entry.observable.split('.')[0]){
                 entry.observer.contentDidChange();
             }
         });
