@@ -19,7 +19,6 @@
   "dependencies": {
     "mu": "= 0.5.1",
     "step": "= 0.0.4",
-    "wwwdude": "= 0.1.0",
     "sass": "= 0.5.0"
   },
   "engines" : { "node": ">= 0.4.0" },
