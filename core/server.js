@@ -92,7 +92,7 @@ Server.prototype.deliverThat = function (response, file) {
   var _status = 200, // = file found.
   _headers = {};
   // TODO: maybe set the expire-date header ?!
-  _headers['Conotent-Type'] = file.contentType; // get the content type for this resource.
+  _headers['Content-Type'] = file.contentType; // get the content type for this resource.
   if (file.isImage()) {
     _headers['Content-Length'] = file.content.length;
   }
