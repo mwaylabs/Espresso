@@ -10,7 +10,6 @@
 
 var Http = require('http');
 var Url = require('url');
-var wwwdude = require('wwwdude');
 var Utils = require('../lib/espresso_utils');
 var Proxy = require('./proxy').Proxy;
 var App = require('./app').App;
@@ -114,79 +113,64 @@ Server.prototype.deliverThat = function (response, file) {
  * @param response, the response object
  */
 Server.prototype.proxyThat = function (request, response) {
-  var that = this;
-  var _requestMethod  = request.method;
-  var body = '';
 
-  request.on('data', function (chunk) {
-      body += chunk;
+  function respond_error(err) {
+    Utils.logErr(err);
+    response.writeHead(500);
+    response.end(err.message);
+  };
+
+  // create an usable proxy table
+  var proxy_table = {};
+  this.proxies.forEach(function (proxy) {
+    var alias = proxy.proxyAlias;
+    if (!/^\//.test(alias)) {
+      alias = '/' + alias;
+    };
+    var url = Url.parse(proxy.baseUrl);
+    proxy_table[alias] = {
+      host: url.hostname,
+      port: url.port
+    };
+  });
+
+  var match = /^(\/[^\/]+)(\/.*)?$/.exec(request.url);
+  var alias = match[1];
+  var path = match[2];
+  var proxy = proxy_table[alias];
+
+  if (proxy) {
+    // rewrite request
+    request.url = path;
+    request.headers.host = [proxy.host, proxy.port].join(':');
+
+    Utils.log('Proxy request: '
+        + request.method + ' http://' + request.headers.host + request.url);
+
+    var proxy_request = Http
+      .createClient(proxy.port, proxy.host)
+      .request(request.method, request.url, request.headers)
+      ;
+
+    proxy_request.on('response', function (proxy_response) {
+      proxy_response.on('data', function(chunk) {
+        response.write(chunk, 'binary');
+      });
+      proxy_response.on('end', function() {
+        response.end();
+      });
+      response.writeHead(proxy_response.statusCode, proxy_response.headers);
     });
-
-  request.on('end', function () {
-      var _path = Url.parse(request.url).pathname.slice(1);
-      var _pr = _path.split('/')[0];
-      var _proxy;
-
-      function _respondSuccess(data, resp) {
-        response.writeHead(200, resp.headers);
-        response.end(data);
-      }
-
-      function _respondErr(err, statusCode) {
-        Utils.logErr(err);
-        response.writeHead(statusCode);
-        response.end(err);
-      }
-
-      //TODO: can this done better ?!
-      that.proxies.forEach(function (p) {  // looking for proxy entries.
-          if (p.proxyAlias === _pr) {
-            _proxy = p;
-          }
-        });
-
-      if (_proxy) { // if proxy entry was found.
-        var _inquiredData = request.url.replace(new RegExp('^/' + _pr), '');
-        var url = _proxy.baseUrl + _inquiredData;
-        var method = request.method.replace('DELETE', 'del').toLowerCase();
-
-        Utils.log('Proxy request to ' + url);
-        var proxyClient  = wwwdude.createClient({ gzip: false });
-        var proxyRequest;
-
-        // clean headers
-        delete request.headers.host;
-        delete request.headers.connection;
-        delete request.headers['content-length'];
-        delete request.headers['accept-encoding'];
-        delete request.headers['if-none-match'];
-
-        proxyRequest = proxyClient[method](url, {
-            payload: body,
-            headers: request.headers
-          });
-
-        proxyRequest.on('error', function (err) {
-            _respondErr(err.toString(), 500);
-          })
-        .on('http-error', function (err, resp) {
-            _respondErr(err.toString(), 500);
-          })
-        .on('redirect', function (data, resp) {
-            Utils.log('Redirecting to: ' + resp.headers.location);
-          })
-        .on('success', function (data, resp) {
-            _respondSuccess(data, resp);
-          })
-        .on('complete', function (data, resp) {
-            Utils.log('Finished request to: ' + url);
-          });
-      } else {
-        var proxyError = 'No proxy found for: ' + _pr;
-        _respondErr(proxyError, 500);
-      }
-
+    request.on('data', function(chunk) {
+      proxy_request.write(chunk, 'binary');
     });
+    request.on('end', function() {
+      proxy_request.end();
+    });
+    request.on('error', respond_error);
+  } else {
+    respond_error(new Error('No proxy found for: ' + alias));
+  };
 };
 
 /**
