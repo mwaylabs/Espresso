@@ -1,3 +1,7 @@
+** Version 0.6pre - Date 06.06.2011 **
+
+  * Added dead-code-elimination (only deploy necessary sourcecode)
+
 ** Version 0.5 - Date 03.06.2011 **
 
   * New command line interface

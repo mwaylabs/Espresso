@@ -34,7 +34,7 @@ exports.options = {
   },
 
   view: {
-    'description': 'Create a new view',
+    'description': 'Create a new page',
     'hasargument': true
   },
 

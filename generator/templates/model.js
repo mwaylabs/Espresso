@@ -7,12 +7,14 @@
 // ==========================================================================
 
 {{appName}}.{{name}} = M.Model.create({
-    __name__: '{{name}}', // do not delete this property!
 
-    // Sample model properties:
+    /* Define the name of your model. Do not delete this property! */
+    __name__: '{{name}}',
+
+    /* Sample model properties: */
 
     firstName: M.Model.attr('String',{
-        isRequired:YES
+            isRequired:YES
     }),
 
     lastName: M.Model.attr('String', {

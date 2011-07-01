@@ -8,50 +8,32 @@
 
 {{appName}}.{{name}} = M.PageView.design({
 
-    /*
-     * uncomment the following lines, to use the onLoad function
-     * to trigger a function every time the page is rendered.
-     */
+    /* Use the 'events' property to bind events like 'pageshow' */
+    events: {
+        pageshow: {
+            target: {{appName}}.MyController,
+            action: 'init'
+        }
+    },
 
-    /*
-     onLoad: {
-     target: ServerTest.MyController,
-     action: 'init'
-     },
-     */
-
-    childViews: 'header content',
+    childViews: 'header content footer',
 
     header: M.ToolbarView.design({
-
         value: 'HEADER',
-
         anchorLocation: M.TOP
-
     }),
 
     content: M.ScrollView.design({
-
         childViews: 'label',
-
         label: M.LabelView.design({
-
             value: '{{name}}'
-
         })
+    }),
 
+    footer: M.ToolbarView.design({
+        value: 'FOOTER',
+        anchorLocation: M.BOTTOM
     })
 
-    /*
-     * uncomment this lines, to use a footer in this page.
-     * To see the footer add the footer to the child view
-     */
-
-    /*
-     ,footer: M.ToolbarView.design({
-     value: 'FOOTER',
-     anchorLocation: M.BOTTOM
-     })
-     */
 });
 

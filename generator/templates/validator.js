@@ -8,31 +8,26 @@
 
 M.{{name}} = M.Validator.extend({
 
-    /**
-     * The type of this object.
-     *
-     * @type String
-     */
+    /* The validator's name! */
     type: 'M.{{name}}',
 
     validate: function(obj) {
-        if (validation_condition) {
-
-          // case not valid
-           this.validationErrors.push({
+        if(validation_condition) {
+            /* If the validation went wrong, push an error message! */
+            this.validationErrors.push({
                 msg: ' is not a valid',
                 modelId: obj.modelId,
                 property: obj.property,
                 viewId: obj.viewId,
-                validator: 'ValidatorName',
+                validator: 'M.{{name}}',
                 onSuccess: obj.onSuccess,
                 onError: obj.onError
-           });
+            });
+            
             return NO;
         } else {
-           // case valid
-             return YES;
-
+            /* If the validation went well, return YES! */
+            return YES;
         }
     }
 });

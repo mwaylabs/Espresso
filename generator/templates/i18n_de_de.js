@@ -10,7 +10,7 @@
  * Usage in a project:
  *
  * label: M.LabelView.design({
- *   value: M.I18N.l('_welcome')
+ *     value: M.I18N.l('_welcome')
  * })
  *
  */
@@ -18,8 +18,8 @@
 
 M.I18N.de_de = {
 
-    "key": "Wert",
+    'key': 'Wert',
 
-    "_welcome": "Willkommen"
+    '_welcome': 'Willkommen'
 
 }
