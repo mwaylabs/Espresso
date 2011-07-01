@@ -1,6 +1,14 @@
-** Version 0.6pre - Date 06.06.2011 **
+** Version 0.6.0 - Date 01.07.2011 **
 
-  * Added dead-code-elimination (only deploy necessary sourcecode)
+  * Add dead code elimination to only deploy necessary The-M-Project files.
+
+  * config.json: Add boolean-typed property "eliminate" to enable or disable
+  the dead code elimination process.  Default: false
+
+  * config.json: Add string[]-typed property "reachable" to flag objects as
+  reachable even though the're not used in the application.  Default: []
+
+  * Fix a bug where the proxy mangled binary files. (Issue #12)
 
 ** Version 0.5 - Date 03.06.2011 **
 
