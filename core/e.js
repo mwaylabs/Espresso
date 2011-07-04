@@ -20,7 +20,8 @@
  * @constructor
  */
 var E = exports.E = function() {
-    this.__version__ = '0.5';  // Espresso version.
+    this.__version__ = JSON.parse(require('fs')
+        .readFileSync(__dirname + '/../package.json')).version
 };
 
 /**
