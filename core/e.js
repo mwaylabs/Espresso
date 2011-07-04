@@ -21,7 +21,7 @@
  */
 var E = exports.E = function() {
     this.__version__ = JSON.parse(require('fs')
-        .readFileSync(__dirname + '/../package.json')).version
+        .readFileSync(__dirname + '/../package.json')).version;
 };
 
 /**
