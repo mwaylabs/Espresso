@@ -49,7 +49,7 @@ Usage
 
 1. Create a new HelloWorld project:
     
-    `espresso -project HelloWorld --example`
+    `espresso init -project HelloWorld --example`
 
 2. Build it:
     
