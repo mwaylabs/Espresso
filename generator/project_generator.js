@@ -28,6 +28,9 @@ var generate = exports.generate = function generate(options) {
   var tools = ['config.json']; // array with names of build tools, used in the a new project.
   var outPut = [];
   var path;
+  var outPutFiles = [
+    { src: 'style.css', dst: 'app/resources/base/style.css' }
+  ];
 
   /* Properties */
   var projectName = options.project;
@@ -261,6 +264,31 @@ var generate = exports.generate = function generate(options) {
       copyProject(framework, this);
     },
 
+    function (err, framework) {
+      if (err) {
+        throw err;
+      }
+      var callback = this;
+      var files = outPutFiles.slice();
+      (function copyFiles () {
+        if (files.length === 0) {
+          callback();
+        } else {
+          var file = files.pop();
+          var fromPath = templatePath + '/' + file.src;
+          var toPath = path + projectName + '/' + file.dst;
+          copyFile(fromPath, toPath, function (err) {
+            if (err) {
+              /* I am sad */
+            } else {
+              Utils.log(toPath + ' generated!');
+            };
+            copyFiles();
+          });
+        };
+      })();
+    },
+
     function (err) {
       if (err) {
         throw err;
@@ -268,4 +296,13 @@ var generate = exports.generate = function generate(options) {
       Util.puts('Project successfully generated!');
     }
   );
+};
+
+// the optional callback gets an err argument
+function copyFile(oldPath, newPath, callback) {
+  var oldFile = Fs.createReadStream(oldPath);
+  var newFile = Fs.createWriteStream(newPath);
+  newFile.once('open', function () {
+    Util.pump(oldFile, newFile, callback);
+  });
 };
