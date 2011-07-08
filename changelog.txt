@@ -1,5 +1,6 @@
 ** Version 0.6.1 - Date 08.07.2001 **
 
+  * Added meta-tag to fix the application's width to the device's width.
   * Create style.css when generating a new project with espresso init.
   * Export config.json's "application" as M.Application.config, if set.
 
