@@ -1,6 +1,7 @@
 ** Version 0.6.1 - Date 08.07.2001 **
 
   * Create style.css when generating a new project with espresso init.
+  * Export config.json's "application" as M.Application.config, if set.
 
 ** Version 0.6.0 - Date 01.07.2011 **
 
