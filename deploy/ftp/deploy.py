@@ -31,7 +31,7 @@ def main():
     password = ftp_config['password']
   except KeyError as key:
     # TODO better error message
-    raise EpicFail('require configuration: ' + str(key))
+    raise Exception('require configuration: ' + str(key))
 
   # load optional configuration... or use default values
   port = int(ftp_config['port'] if 'port' in ftp_config else 21)
@@ -68,7 +68,7 @@ def delete(ftp, path):
       ftp.cwd(targetDirectory)
       print('cwd ' + ftp.pwd())
     except ftplib.error_perm:
-      raise EpicFail('cannot change to remote directory: ' + targetDirectory)
+      raise Exception('cannot change to remote directory: ' + targetDirectory)
     path = targetDirectory
 
   # try to delete a file... or a directory
@@ -115,16 +115,10 @@ def put(ftp, sourcePath, targetPath):
     except:
       pass
 
-class EpicFail(Exception):
-  def __init__(self, reason):
-    self.reason = reason
-  def __str__(self):
-    return self.reason
-
 #### launch!
 if __name__ == '__main__':
   try:
     main()
-  except EpicFail as x:
-    sys.stderr.write(str(x) + '\n')
+  except Exception as x:
+    sys.stderr.write('Error: ' + str(x) + '\n')
     sys.exit(23)
