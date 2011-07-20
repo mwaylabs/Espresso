@@ -70,7 +70,7 @@ exports.run = function (options, positional) {
       deployTargets.forEach(function (target) {
         var config = configs[target];
         var handler = handlers[target];
-        console.log('deploy ' + config.name + ' via ' + config.method + '...');
+        process.stdout.write('deploy ' + config.name + ' via ' + config.method);
         handler(buildDir, function (error) {
           if (error) {
             console.error(target + ': ' + error);

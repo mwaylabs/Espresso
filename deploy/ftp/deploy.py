@@ -19,36 +19,43 @@
    exec python2 deploy.py bar
 """
 import ftplib, sys, re, os
+from os.path import basename, dirname, isdir, join, normpath
+
+debugLevel = 0
+workingDirectory = False
+
+def cwd(ftp, path):
+  """change remote working directory if it has changed"""
+  global workingDirectory
+  if (workingDirectory != path):
+    step(ftp.cwd(path))
+    workingDirectory = ftp.pwd()
 
 def delete(ftp, path):
   """delete a remote file or directory (recursive)"""
 
-  path = os.path.normpath(path)
+  global workingDirectory
+  path = normpath(path)
 
   # if path isn't a basename then cwd and make path a basename first
-  if os.path.basename(path) != path:
-    try:
-      targetDirectory = os.path.dirname(path)
-      ftp.cwd(targetDirectory)
-      print('cwd ' + ftp.pwd())
-    except ftplib.error_perm:
-      raise Exception('cannot change to remote directory: ' + targetDirectory)
-    path = targetDirectory
+  if basename(path) != path:
+    cwd(ftp, dirname(path))
+    path = basename(path)
 
-  # try to delete a file... or a directory
+  targetPath = join(workingDirectory, path);
+
   try:
-    ftp.delete(path)
-    print('delete ' + os.path.normpath(os.path.join(ftp.pwd(), path)))
+    cwd(ftp, dirname(targetPath))
+    step(ftp.delete(basename(targetPath)))
   except ftplib.error_perm:
+    # targetPath was no deletable file. maybe it's a directory...
     try:
-      # to delete a directory kill it's children first
-      ftp.cwd(path)
+      cwd(ftp, targetPath)
       for i in ftp.nlst():
         if not re.match('^\.\.?$', i):
           delete(ftp, i)
-      ftp.cwd('..')
-      ftp.rmd(path)
-      print('rmd ' + os.path.normpath(os.path.join(ftp.pwd(), path)))
+      cwd(ftp, '..')
+      step(ftp.rmd(targetPath))
     except ftplib.error_perm:
       # let's presume the target directory or file didn't exist...
       # that's just what we wanted -> yay, nothing to do! ^_^
@@ -57,27 +64,24 @@ def delete(ftp, path):
 def put(ftp, sourcePath, targetPath):
   """upload a file or directory (recursive)"""
 
-  sourcePath = os.path.normpath(sourcePath)
-  targetPath = os.path.normpath(targetPath)
+  sourcePath = normpath(sourcePath)
+  targetPath = normpath(targetPath)
 
   # try to upload a file... or a directory
-  try:
-    source = open(sourcePath, 'rb')
-    # TODO should we ftp.cwd(dirname of targetPath) first?
-    ftp.storbinary('STOR ' + targetPath, source)
-    source.close()
-    print('put ' + targetPath)
-  except Exception as x:
-    try:
-      print('mkd ' + targetPath)
-      try:
-        ftp.mkd(targetPath)
-      except:
-        pass
-      for i in os.listdir(sourcePath):
-        put(ftp, os.path.join(sourcePath, i), os.path.join(targetPath, i))
-    except:
-      pass
+  if (isdir(sourcePath)):
+    cwd(ftp, dirname(targetPath))
+    step(ftp.mkd(basename(targetPath)))
+    for i in os.listdir(sourcePath):
+      put(ftp, join(sourcePath, i), join(targetPath, i))
+  else:
+    cwd(ftp, dirname(targetPath))
+    step(ftp.storbinary('STOR ' + basename(targetPath), open(sourcePath, 'rb')))
+
+def step(x):
+  """indicate progress"""
+  global debugLevel
+  if (debugLevel == 0):
+    sys.stderr.write('.')
 
 if __name__ == '__main__':
   try:
@@ -85,35 +89,40 @@ if __name__ == '__main__':
 
     # load mandatory configuration
     try:
-      ftp_config = os.environ
-      host = ftp_config['host']
-      username = ftp_config['username']
-      password = ftp_config['password']
+      config = os.environ
+      host = config['host']
+      username = config['username']
+      password = config['password']
     except KeyError as key:
       # TODO better error message
       raise Exception('require configuration: ' + str(key))
 
     # load optional configuration... or use default values
-    port = int(ftp_config['port'] if 'port' in ftp_config else 21)
-    timeout = int(ftp_config['timeout'] if 'timeout' in ftp_config else 15000)
-    targetPath = ftp_config['targetPath'] if 'targetPath' in ftp_config else '/'
+    port = int(config['port'] if 'port' in config else 21)
+    timeout = int(config['timeout'] if 'timeout' in config else 15000)
+    targetPath = config['targetPath'] if 'targetPath' in config else '/'
+    if 'debugLevel' in config:
+      debugLevel = int(config['debugLevel'])
 
     # TODO? print configuration
 
-    # instantiate fto client
     ftp = ftplib.FTP()
-    ftp.connect(host, port, timeout)
-    ftp.login(username, password)
+    ftp.set_debuglevel(debugLevel)
 
-    # clean target path
+    step(ftp.connect(host, port, timeout))
+    step(ftp.login(username, password))
+
     delete(ftp, targetPath)
 
-    # upload source paths
     for sourcePath in source_directory_names:
       put(ftp, sourcePath, targetPath)
 
-    ftp.quit()
+    step(ftp.quit())
+
+    if (debugLevel == 0):
+      sys.stderr.write('ok\n')
+    sys.exit(0)
 
   except Exception as x:
-    sys.stderr.write('Error: ' + str(x) + '\n')
+    sys.stderr.write('\nError: ' + str(x) + '\n')
     sys.exit(23)
