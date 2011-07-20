@@ -132,8 +132,9 @@ class EpicFail(Exception):
     return self.reason
 
 #### launch!
-try:
-  main()
-except EpicFail as x:
-  sys.stderr.write(str(x) + '\n')
-  sys.exit(23)
+if __name__ == '__main__':
+  try:
+    main()
+  except EpicFail as x:
+    sys.stderr.write(str(x) + '\n')
+    sys.exit(23)
