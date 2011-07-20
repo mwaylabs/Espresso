@@ -59,10 +59,10 @@ def main():
 def delete(ftp, path):
   """delete a remote file or directory (recursive)"""
 
-  path = normalizePath(path)
+  path = os.path.normpath(path)
 
   # if path isn't a basename then cwd and make path a basename first
-  if not isBasename(path):
+  if os.path.basename(path) != path:
     try:
       targetDirectory = os.path.dirname(path)
       ftp.cwd(targetDirectory)
@@ -74,7 +74,7 @@ def delete(ftp, path):
   # try to delete a file... or a directory
   try:
     ftp.delete(path)
-    print('delete ' + normalizePath(ftp.pwd() + '/' + path))
+    print('delete ' + os.path.normpath(os.path.join(ftp.pwd(), path)))
   except ftplib.error_perm:
     try:
       # to delete a directory kill it's children first
@@ -84,7 +84,7 @@ def delete(ftp, path):
           delete(ftp, i)
       ftp.cwd('..')
       ftp.rmd(path)
-      print('rmd ' + normalizePath(ftp.pwd() + '/' + path))
+      print('rmd ' + os.path.normpath(os.path.join(ftp.pwd(), path)))
     except ftplib.error_perm:
       # let's presume the target directory or file didn't exist...
       # that's just what we wanted -> yay, nothing to do! ^_^
@@ -93,8 +93,8 @@ def delete(ftp, path):
 def put(ftp, sourcePath, targetPath):
   """upload a file or directory (recursive)"""
 
-  sourcePath = normalizePath(sourcePath)
-  targetPath = normalizePath(targetPath)
+  sourcePath = os.path.normpath(sourcePath)
+  targetPath = os.path.normpath(targetPath)
 
   # try to upload a file... or a directory
   try:
@@ -111,18 +111,10 @@ def put(ftp, sourcePath, targetPath):
       except:
         pass
       for i in os.listdir(sourcePath):
-        put(ftp, sourcePath + '/' + i, targetPath + '/' + i)
+        put(ftp, os.path.join(sourcePath, i), os.path.join(targetPath, i))
     except:
       pass
 
-#### utility functions
-
-def normalizePath(path):
-  return re.sub('^$', '/', re.sub('/$', '', re.sub('//+', '/', path)))
-
-def isBasename(path):
-  return not re.match('/', path)
-
 class EpicFail(Exception):
   def __init__(self, reason):
     self.reason = reason
