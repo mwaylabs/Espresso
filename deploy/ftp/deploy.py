@@ -20,42 +20,6 @@
 """
 import ftplib, sys, re, os
 
-source_directory_names = sys.argv[1:]
-
-def main():
-  # load mandatory configuration
-  try:
-    ftp_config = os.environ
-    host = ftp_config['host']
-    username = ftp_config['username']
-    password = ftp_config['password']
-  except KeyError as key:
-    # TODO better error message
-    raise Exception('require configuration: ' + str(key))
-
-  # load optional configuration... or use default values
-  port = int(ftp_config['port'] if 'port' in ftp_config else 21)
-  timeout = int(ftp_config['timeout'] if 'timeout' in ftp_config else 15000)
-  targetPath = ftp_config['targetPath'] if 'targetPath' in ftp_config else '/'
-
-  # TODO? print configuration
-
-  # instantiate fto client
-  ftp = ftplib.FTP()
-  ftp.connect(host, port, timeout)
-  ftp.login(username, password)
-
-  # clean target path
-  delete(ftp, targetPath)
-
-  # upload source paths
-  for sourcePath in source_directory_names:
-    put(ftp, sourcePath, targetPath)
-
-  ftp.quit()
-
-#### high level FTP operations
-
 def delete(ftp, path):
   """delete a remote file or directory (recursive)"""
 
@@ -115,10 +79,41 @@ def put(ftp, sourcePath, targetPath):
     except:
       pass
 
-#### launch!
 if __name__ == '__main__':
   try:
-    main()
+    source_directory_names = sys.argv[1:]
+
+    # load mandatory configuration
+    try:
+      ftp_config = os.environ
+      host = ftp_config['host']
+      username = ftp_config['username']
+      password = ftp_config['password']
+    except KeyError as key:
+      # TODO better error message
+      raise Exception('require configuration: ' + str(key))
+
+    # load optional configuration... or use default values
+    port = int(ftp_config['port'] if 'port' in ftp_config else 21)
+    timeout = int(ftp_config['timeout'] if 'timeout' in ftp_config else 15000)
+    targetPath = ftp_config['targetPath'] if 'targetPath' in ftp_config else '/'
+
+    # TODO? print configuration
+
+    # instantiate fto client
+    ftp = ftplib.FTP()
+    ftp.connect(host, port, timeout)
+    ftp.login(username, password)
+
+    # clean target path
+    delete(ftp, targetPath)
+
+    # upload source paths
+    for sourcePath in source_directory_names:
+      put(ftp, sourcePath, targetPath)
+
+    ftp.quit()
+
   except Exception as x:
     sys.stderr.write('Error: ' + str(x) + '\n')
     sys.exit(23)
