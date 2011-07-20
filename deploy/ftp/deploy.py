@@ -1,27 +1,23 @@
 #! /usr/bin/env python2
-#
-# deploy/ftp/deploy.py
-#
-# Espresso FTP deployment module.
-#
-# Copyright(c) 2011 Panacoda GmbH. All rights reserved.
-# This file is licensed under the MIT license.
-#
-# Example usage:
-#   #! /bin/sh
-#   host=ftp.panacoda.com # required
-#   port=10021            # optional; default is 21
-#   username=foo          # required
-#   password=bar          # required
-#   targetPath=/foo       # optional; default is '/'
-#   timeout=10000         # optional; default is 15000
-#
-#   export host port username password targetPath timeout
-#
-#   # deploy $PWD/bar as ftp://foo@bar:ftp.panacoda.com:10021/foo
-#   exec python2 deploy.py bar
-#
+"""Espresso FTP deployment module.
 
+ Copyright(c) 2011 Panacoda GmbH. All rights reserved.
+ This file is licensed under the MIT license.
+
+ Example usage:
+   #! /bin/sh
+   host=ftp.panacoda.com # required
+   port=10021            # optional; default is 21
+   username=foo          # required
+   password=bar          # required
+   targetPath=/foo       # optional; default is '/'
+   timeout=10000         # optional; default is 15000
+
+   export host port username password targetPath timeout
+
+   # deploy $PWD/bar as ftp://foo@bar:ftp.panacoda.com:10021/foo
+   exec python2 deploy.py bar
+"""
 import ftplib, sys, re, os
 
 source_directory_names = sys.argv[1:]
@@ -60,8 +56,9 @@ def main():
 
 #### high level FTP operations
 
-## delete a remote file or directory (recursive)
 def delete(ftp, path):
+  """delete a remote file or directory (recursive)"""
+
   path = normalizePath(path)
 
   # if path isn't a basename then cwd and make path a basename first
@@ -93,8 +90,9 @@ def delete(ftp, path):
       # that's just what we wanted -> yay, nothing to do! ^_^
       pass
 
-## upload a file or directory (recursive)
 def put(ftp, sourcePath, targetPath):
+  """upload a file or directory (recursive)"""
+
   sourcePath = normalizePath(sourcePath)
   targetPath = normalizePath(targetPath)
 
