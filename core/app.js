@@ -371,7 +371,7 @@ App.prototype.buildIndexHTML = function (callback, _frameworkNamesForIndexHtml, 
         { rel: 'apple-touch-icon', href: '/theme/images/apple-touch-icon.png' }
       ]
     };
-    Object.keys(fallback_header_information).forEach(function (tag) {
+    Object.keys(fallback_header_information).forEach(function (tagName) {
       fallback_header_information[tagName].forEach(function (attrs) {
         _HEAD_IndexHtml.push(tagName, attrs);
       });
@@ -854,6 +854,9 @@ App.prototype.saveLocal = function (callback) {
       console.log('\n');
       console.log(self.style.green('saving application to filesystem!'));
       console.log("\n");
+      if (typeof callback === 'function') {
+        callback();
+      };
     }).save();
   });
 };
