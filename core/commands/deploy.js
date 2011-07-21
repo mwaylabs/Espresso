@@ -35,19 +35,31 @@ exports.run = function (options, positional) {
       var buildDir = [
         app.applicationDirectory, app.outputFolder, app.buildVersion
       ].join('/');
-      // TODO validateBuildDir(buildDir)
 
       var deployTargets = positional;
-      // TODO validateDeployTargets(deployTargets)
 
       var configs = {};
       deployTargets.forEach(function (target) {
-        var config = JSON.parse(JSON.stringify(app.deploy[target]));
-        // TODO validateDeployConfig(config);
-        var method = config.method;
-        config = config[method];
+        var config = app.deploy;
+
+        // TODO we could synthesize arbitrary precise error descriptions here
+        if (!(config instanceof Object) ||
+            !(config[target] instanceof Object) ||
+            !(config[target][config[target].method] instanceof Object) ||
+            false) throw new Error(
+          'Your <config.json>["deploy"]['
+          + JSON.stringify(target)
+          + ']'
+          + (config[target] instanceof Object
+            ? '[' + JSON.stringify(config[target].method) + ']'
+            : '')
+          + ' is made of stupid!'
+        );
+
+        var method = config[target].method;
+        config = JSON.parse(JSON.stringify(config[target][method]));
         config.method = method;
-        config.name = target;
+        config.target = target;
         configs[target] = config;
       });
 
@@ -55,9 +67,9 @@ exports.run = function (options, positional) {
       deployTargets.forEach(function (target) {
         var method = configs[target].method;
         var module = modules[target] = require('../../deploy/' + method);
-        // TODO? validateDeployModule(module);
       });
 
+      // instantiate deployment methods
       var handlers = {};
       deployTargets.forEach(function (target) {
         handlers[target] = modules[target](target, configs[target]);
@@ -70,7 +82,9 @@ exports.run = function (options, positional) {
       deployTargets.forEach(function (target) {
         var config = configs[target];
         var handler = handlers[target];
-        process.stdout.write('deploy ' + config.name + ' via ' + config.method);
+        process.stdout.write(
+          'deploy ' + config.target + ' via ' + config.method
+        );
         handler(buildDir, function (error) {
           if (error) {
             console.error(target + ': ' + error);
