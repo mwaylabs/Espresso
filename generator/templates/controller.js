@@ -3,7 +3,7 @@
 // Generated with: Espresso {{e_Version}}
 //
 // Project: {{appName}}
-// Controller: {{controllerName}}
+// Controller: {{name}}
 // ==========================================================================
 
 {{appName}}.{{name}} = M.Controller.extend({

@@ -396,6 +396,7 @@ App.prototype.buildIndexHTML = function (callback, _frameworkNamesForIndexHtml, 
              , 'minimum-scale=1.0'
              , 'maximum-scale=1.0'
              , 'user-scalable=no'
+             , 'width=device-width'
              ].join(',')
   }));
   _indexHtml.push(HTML('title', {}, _displayName));
