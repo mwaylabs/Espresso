@@ -23,6 +23,7 @@
         "<link rel=\"apple-touch-icon\" href=\"theme/images/Icon@2x.png\" />"
     ],
     "application": {
-        "version": "0.0.1"
+        "version": "0.0.1",
+        "inProductionMode": "false"
     }
 }
