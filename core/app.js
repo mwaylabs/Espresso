@@ -855,6 +855,9 @@ App.prototype.saveLocal = function (callback) {
       console.log('\n');
       console.log(self.style.green('saving application to filesystem!'));
       console.log("\n");
+      if (typeof callback === 'function') {
+        callback();
+      };
     }).save();
   });
 };
