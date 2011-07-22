@@ -36,6 +36,17 @@ exports.run = function (options, positional) {
         app.applicationDirectory, app.outputFolder, app.buildVersion
       ].join('/');
 
+      if (positional.length === 0 && 'defaultDeployTarget' in app) {
+          if (typeof app.defaultDeployTarget === 'string') {
+            positional = [ app.defaultDeployTarget ];
+            var useDefaultDeployTarget = true;
+          } else throw new Error(
+            'Your <config.json>["defaultDeployTarget"] '
+            + JSON.stringify(app.defaultDeployTarget)
+            + ' is made of stupid!'
+          );
+      };
+
       var deployTargets = positional;
 
       var configs = {};
@@ -83,7 +94,11 @@ exports.run = function (options, positional) {
         var config = configs[target];
         var handler = handlers[target];
         process.stdout.write(
-          'deploy ' + config.target + ' via ' + config.method
+          'deploy '
+          + config.target
+          + (useDefaultDeployTarget ? ' (default)' : '')
+          + ' via '
+          + config.method
         );
         handler(buildDir, function (error) {
           if (error) {
