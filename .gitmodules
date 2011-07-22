@@ -10,3 +10,6 @@
 [submodule "node_modules/Mu"]
 	path = node_modules/Mu
 	url = https://github.com/pfleidi/Mu.git
+[submodule "frameworks/The-M-Project"]
+	path = frameworks/The-M-Project
+	url = https://github.com/mwaylabs/The-M-Project.git
