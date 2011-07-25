@@ -446,10 +446,24 @@ App.prototype.buildIndexHTML = function (callback, _frameworkNamesForIndexHtml, 
   });
 
   _frameworkNamesForIndexHtml.forEach(function (name) {
-    _indexHtml.push(HTML('script', {
-      type: 'application/javascript',
-      src: name
-    }, ''));
+    var match = /^(.*\/)?([^\/]+(\.[^.\/]+))$/.exec(name);
+    if (match) {
+      var basename = match[2];
+      var extension = match[3];
+      switch (extension) {
+        case '.js':
+          return _indexHtml.push(HTML('script', {
+            type: 'application/javascript',
+            src: basename
+          }, ''));
+        case '.css':
+          return _indexHtml.push(HTML('link', {
+            type: 'text/css',
+            href: 'theme/' + basename,
+            rel: 'stylesheet'
+          }));
+      };
+    };
   });
 
   if (this.supportedLanguages.length > 0) {
