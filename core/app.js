@@ -401,6 +401,27 @@ App.prototype.buildIndexHTML = function (callback, _frameworkNamesForIndexHtml, 
   }));
   _indexHtml.push(HTML('title', {}, _displayName));
 
+  function push_js_and_css_to_index_HTML(name) {
+    var match = /^(.*\/)?([^\/]+(\.[^.\/]+))$/.exec(name);
+    if (match) {
+      var basename = match[2];
+      var extension = match[3];
+      switch (extension) {
+        case '.js':
+          return _indexHtml.push(HTML('script', {
+            type: 'application/javascript',
+            src: basename
+          }, ''));
+        case '.css':
+          return _indexHtml.push(HTML('link', {
+            type: 'text/css',
+            href: 'theme/' + basename,
+            rel: 'stylesheet'
+          }));
+      };
+    };
+  };
+
   // Add frameworks in correct order.
   [ 'jquery'
   , 'bootstrapping'
@@ -413,60 +434,26 @@ App.prototype.buildIndexHTML = function (callback, _frameworkNamesForIndexHtml, 
   ].forEach(function (name) {
     if (name in that.coreFrameworks) {
       that.coreFrameworks[name].files.forEach(function (file) {
-        switch (true) {
-          case (file.isJavaScript()):
-            return _indexHtml.push(HTML('script', {
-              type: 'application/javascript',
-              src: file.getBaseName() + file.getFileExtension()
-            }, ''));
-          case (file.isStylesheet()):
-            return _indexHtml.push(HTML('link', {
-              type: 'text/css',
-              href: 'theme/' + file.getBaseName() + file.getFileExtension(),
-              rel: 'stylesheet'
-            }));
-        };
+        push_js_and_css_to_index_HTML(file.name);
       });
     };
   });
     
-  ['theme/style.css'].forEach(function (path) {
-    _indexHtml.push(HTML('link', {
-      type: 'text/css',
-      href: path,
-      rel: 'stylesheet'
-    }));
-  });
+  ['theme/style.css'].forEach(push_js_and_css_to_index_HTML);
 
-  ['core.js', 'ui.js'].forEach(function (path) {
-    _indexHtml.push(HTML('script', {
-      type: 'application/javascript',
-      src: path
-    }, ''));
-  });
+  ['core.js', 'ui.js'].forEach(push_js_and_css_to_index_HTML);
 
-  _frameworkNamesForIndexHtml.forEach(function (name) {
-    _indexHtml.push(HTML('script', {
-      type: 'application/javascript',
-      src: name
-    }, ''));
-  });
+  _frameworkNamesForIndexHtml.forEach(push_js_and_css_to_index_HTML);
 
   if (this.supportedLanguages.length > 0) {
     this.supportedLanguages.forEach(function (lang) {
-      _indexHtml.push(HTML('script', {
-        type: 'application/javascript',
-        src: lang + '.js'
-      }, ''));
+      push_js_and_css_to_index_HTML(lang + '.js');
     });
   };
 
   var PhoneGap = this.environment === 'PhoneGap';
   if (PhoneGap) {
-    _indexHtml.push(HTML('script', {
-      type: 'application/javascript',
-      src: 'phonegap.js'
-    }, ''));
+    push_js_and_css_to_index_HTML('phonegap.js');
   };
   _indexHtml.push(HTML('script', {
     type: 'application/javascript'
@@ -481,10 +468,7 @@ App.prototype.buildIndexHTML = function (callback, _frameworkNamesForIndexHtml, 
       : '')
   ));
 
-  _indexHtml.push(HTML('script', {
-    type: 'application/javascript',
-    src: this.name + '_App.js'
-  }, ''));
+  push_js_and_css_to_index_HTML(this.name + '_App.js');
 
   _indexHtml.push(HTML('body'));
 
