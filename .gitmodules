@@ -12,4 +12,4 @@
 	url = https://github.com/mwaylabs/The-M-Project.git
 [submodule "node_modules/mu"]
 	path = node_modules/mu
-	url = https://github.com/pfleidi/Mu.git
+	url = https://github.com/raycmorgan/Mu
