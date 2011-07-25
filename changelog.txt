@@ -1,3 +1,7 @@
+** Version 0.7.1 - Date 25.07.2011 **
+
+  * Fixed the project generator (espresso init).
+
 ** Version 0.7.0 - Date 22.07.2011 **
 
   * Add espresso deploy command and deployment methods for "ftp" and "ssh".
