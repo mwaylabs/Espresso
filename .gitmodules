@@ -7,9 +7,9 @@
 [submodule "node_modules/wwwdude"]
 	path = node_modules/wwwdude
 	url = https://github.com/4z3/node-wwwdude.git
-[submodule "node_modules/Mu"]
-	path = node_modules/Mu
-	url = https://github.com/pfleidi/Mu.git
 [submodule "frameworks/The-M-Project"]
 	path = frameworks/The-M-Project
 	url = https://github.com/mwaylabs/The-M-Project.git
+[submodule "node_modules/mu"]
+	path = node_modules/mu
+	url = https://github.com/pfleidi/Mu.git

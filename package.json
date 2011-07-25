@@ -17,7 +17,7 @@
       "url" : "https://github.com/mwaylabs/Espresso/raw/master/GPL-LICENSE"
     }],
   "dependencies": {
-    "mu": "= 0.5.1",
+    "mu": "= 0.5.0",
     "step": "= 0.0.4",
     "sass": "= 0.5.0"
   },
