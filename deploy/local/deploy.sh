@@ -20,6 +20,7 @@ sourcePath="${1-$sourcePath}"
 if test "${debugLevel-0}" -gt 0; then
   rm_flags=-v
   cp_flags=-v
+  mkdir_flags=-v
 fi
 
 targetPath_was_generated_by_Espresso() {
@@ -42,4 +43,5 @@ if test -e "$targetPath"; then
 fi
 
 # Create targetPath
+mkdir ${mkdir_flags-} -p "`dirname "$targetPath"`"
 cp ${cp_flags-} -a "$sourcePath" "$targetPath"
