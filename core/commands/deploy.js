@@ -61,7 +61,8 @@ exports.run = function (options, positional) {
           'Your <config.json>["deploy"]['
           + JSON.stringify(target)
           + ']'
-          + (config[target] instanceof Object
+          + (config instanceof Object &&
+             config[target] instanceof Object
             ? '[' + JSON.stringify(config[target].method) + ']'
             : '')
           + ' is made of stupid!'

@@ -225,8 +225,16 @@ var generate = exports.generate = function generate(options) {
 
       Util.pump(Fs.createReadStream(currentFile.path), writeStream, function (err) {
           if (err) {
-            throw err;
-          }
+            if (err.code === 'ENOENT') {
+              // TODO maybe we should check if dir(err.path) is a directory
+              //      we didn't create and only then skip this error.
+
+              // ignore files we cannot create due to missing directories:
+              // else we'd create them at "Output dirs" above.
+            } else {
+              throw err;
+            };
+          };
           copyProject(files);
         });
     }
