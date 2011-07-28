@@ -277,14 +277,19 @@ App.prototype.loadTheMProject = function () {
   /*
    * Getting the The-M-Project resources and third party frameworks,
    * like: jquery.js or underscore.js
+   *
+   * use filter() to make sure the files exists
    */
   _theMProjectResources = [
     'jquery',
     'underscore',
+    'd8',
     'themes',
     'tmp_themes',
     'bootstrapping'
-  ].map(function (module) {
+  ].filter(function (module){
+    return require('path').existsSync(_path_to_the_m_project + '/modules/' + module);
+  }).map(function (module) {
     var _frameworkOptions  = {};
     _frameworkOptions.path = _path_to_the_m_project + '/modules/' + module;
     _frameworkOptions.name = module;
@@ -413,6 +418,7 @@ App.prototype.buildIndexHTML = function (callback, _frameworkNamesForIndexHtml, 
   , 'jquery_mobile_plugins'
   , 'jquery_mobile_plugins-theme'
   , 'underscore'
+  , 'd8'
   , 'themes'
   , 'tmp_themes'
   ].forEach(function (name) {

@@ -73,6 +73,10 @@ var generate = exports.generate = function generate(options) {
   outPut.push(path + projectName + '/frameworks/The-M-Project/modules/themes/jquery_mobile/images');
   outPut.push(path + projectName + '/frameworks/The-M-Project/modules/tmp_themes');
   outPut.push(path + projectName + '/frameworks/The-M-Project/modules/underscore');
+  if(require('path').existsSync(path + projectName + '/frameworks/The-M-Project/modules/d8')) {
+    outPut.push(path + projectName + '/frameworks/The-M-Project/modules/d8');
+  }
+
 
   /**
    * Helper to generate the folder structure for a new project.
