@@ -1,7 +1,8 @@
-** Version 0.8pre - Date 27.07.2011 **
+** Version 0.8pre - Date 08.08.2011 **
 
   * Added 'stores' to sort chain of espresso (preSort task).
   * Added install.sh to ease up the process of creating an espresso alias.
+  * Added defaultLanguage property to config.json
 
 ** Version 0.7.1 - Date 25.07.2011 **
 
