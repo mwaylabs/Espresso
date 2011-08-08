@@ -501,6 +501,9 @@ App.prototype.buildIndexHTML = function (callback, _frameworkNamesForIndexHtml, 
     type: 'application/javascript'
   }, 'var ' + this.name + ' = ' + this.name + ' || {};'
   +  'M.Application.name = ' + JSON.stringify(this.name) + ';'
+  +  (typeof this.defaultLanguage !== 'undefined'
+      ? 'M.Application.defaultLanguage = ' + JSON.stringify(this.defaultLanguage) + ';'
+      : '')
   +  (typeof this.application !== 'undefined'
       ? 'M.Application.config = ' + JSON.stringify(this.application) + ';'
       : '')
