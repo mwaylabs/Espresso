@@ -2,7 +2,8 @@
 
   * Added 'stores' to sort chain of espresso (preSort task).
   * Added install.sh to ease up the process of creating an espresso alias.
-  * Added defaultLanguage property to config.json
+  * Added defaultLanguage property to config.json.
+  * Fixed broken version flag in cache manifest.
 
 ** Version 0.7.1 - Date 25.07.2011 **
 
