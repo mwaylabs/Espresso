@@ -569,7 +569,12 @@ App.prototype.buildManifest = function (callback) {
     _cacheManifest.push(
       'CACHE MANIFEST',
       '#Application:' + this.name
-      + ', Version:' + this.version
+      + ', Version:'
+      +  (typeof this.application !== 'undefined' && this.application !== null && typeof this.application.version !== 'undefined'
+          ? this.application.version
+          : (typeof this.version !== 'undefined'
+             ? this.version
+             : '-'))
       + ', Timestamp:' + this.buildVersion, //adding 'header' information.
       '\n',
       '# Explicitly cached entries',
