@@ -146,8 +146,8 @@ var generate = exports.generate = function generate(options) {
    * @api private
    */
   dispatcher.generateI18n = function generateI18n() {
-    genericGenerate('resources/i18n', 'i18n_de_de.js', 'i18n_de_de');
-    genericGenerate('resources/i18n', 'i18n_en_us.js', 'i18n_en_us');
+    genericGenerate('resources/i18n', 'de_de.js', 'de_de');
+    genericGenerate('resources/i18n', 'en_us.js', 'en_us');
   };
 
   (function dispatchOperations() {
