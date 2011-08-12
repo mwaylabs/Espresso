@@ -495,7 +495,7 @@ App.prototype.buildIndexHTML = function (callback, _frameworkNamesForIndexHtml, 
   };
   _indexHtml.push(HTML('script', {
     type: 'application/javascript'
-  }, 'var PhoneGap = ' + PhoneGap + ';'));
+  }, 'var isPhoneGap = ' + PhoneGap + ';'));
 
   _indexHtml.push(HTML('script', {
     type: 'application/javascript'
