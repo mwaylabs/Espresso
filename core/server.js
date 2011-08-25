@@ -43,18 +43,23 @@ var Server = exports.Server = function (options) {
   this.hostedApps = [];   /* = the applications managed by this server */
   this.files = [];  /* = the files, that should be served by  this server */
   this.appName = '';
+  this.serverPath = '';
   this.loadJSONConfig();
 };
 
 Server.prototype.loadJSONConfig = function () {
   var config = Utils.readConfig(this.applicationDirectory);
   this.appName = config.name;
+  this.serverPath = this.appName;
 
   if (config.proxies) {
     this.proxies = config.proxies; //adding proxies, if present.
   }
   if (config.m_serverHostname) {
     this.hostname = config.m_serverHostname; //adding specific hostname, if present.
+  }
+  if (config.serverPath) {
+    this.serverPath = config.serverPath; //adding specific path, if present.
   }
 };
 
@@ -216,15 +221,16 @@ Server.prototype.runDevServer = function () {
   var data = '';
   var port = this.port;
   var appName = this.appName;
+  var path = this.serverPath;
 
   this.appServer = Http.createServer(function (request, response) {
       var _file;
       var _requestedURL = Url.parse(request.url);
 
-      if ((_requestedURL.pathname === '/' + appName) || (_requestedURL.pathname === '/' + appName + '/')) {
-        response.writeHead(301, { Location: '/' + appName + '/' + 'index.html' });
+      if ((_requestedURL.pathname === '/' + path) || (_requestedURL.pathname === '/' + path + '/')) {
+        response.writeHead(301, { Location: '/' + path + '/' + 'index.html' });
         response.end();
-      } else if ((_requestedURL.pathname === '/' + appName + '/' + 'index.html')) {
+      } else if ((_requestedURL.pathname === '/' + path + '/' + 'index.html')) {
         that.files = {};
         that.hostedApps = [];
         var app = that.getNewApp(that.applicationDirectory);
@@ -235,7 +241,7 @@ Server.prototype.runDevServer = function () {
 
         app.build(function (options) {
             app.prepareForServer(function (opt) {
-                _file = that.files['/' + appName + '/index.html'];
+                _file = that.files['/' + path + '/index.html'];
                 that.deliverThat(response, _file);
               });
           });
@@ -254,7 +260,7 @@ Server.prototype.runDevServer = function () {
     });
 
   this.appServer.listen(port, function () {
-      Utils.log('Server running at http://' + that.hostname + ':' + port + '/' + appName);
+      Utils.log('Server running at http://' + that.hostname + ':' + port + '/' + path);
     });
 };
 
