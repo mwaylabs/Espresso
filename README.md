@@ -42,7 +42,7 @@ If you don't want to use NPM, you can check out the project with git, init the s
 
 4. Create an alias:
 
-    `alias espresso='/path/to/Espresso/bin/espresso.js'
+    `alias espresso='/path/to/Espresso/bin/espresso.js`
 
 Usage
 =====
