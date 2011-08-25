@@ -56,7 +56,6 @@ var App = exports.App = function (options, server) {
   this.clear             = '';
   this.applicationDirectory          = '';  //  the a actually folder name, in which the application is located.
   this.name              = 'defaultName';
-  this.serverPath        = 'defaultPath';
   this.theme             = 'default';
   this.outputFolder      = 'build'; // name of the output folder, default is 'build'.
   this.environment       = 'Web';
