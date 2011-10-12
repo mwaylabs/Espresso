@@ -513,7 +513,8 @@ App.prototype.buildIndexHTML = function (callback, _frameworkNamesForIndexHtml, 
     type: 'application/javascript',
     src: this.name + '_App.js'
   }, ''));
-
+    
+  _indexHtml.push(HTML('/head'));
   _indexHtml.push(HTML('body'));
 
   _indexHtml.push(HTML('script', {
