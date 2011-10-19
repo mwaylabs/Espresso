@@ -67,7 +67,7 @@ var generate = exports.generate = function generate(options) {
   outPut.push(path + projectName + '/frameworks/The-M-Project/modules/jquery');
   outPut.push(path + projectName + '/frameworks/The-M-Project/modules/jquery_mobile');
   outPut.push(path + projectName + '/frameworks/The-M-Project/modules/jquery_mobile_plugins');
-  outPut.push(path + projectName + '/frameworks/The-M-Project/modules/jquery_mobile_plugins/datepicker');
+  outPut.push(path + projectName + '/frameworks/The-M-Project/modules/jquery_mobile_plugins/mobiscroll');
   outPut.push(path + projectName + '/frameworks/The-M-Project/modules/themes');
   outPut.push(path + projectName + '/frameworks/The-M-Project/modules/themes/jquery_mobile');
   outPut.push(path + projectName + '/frameworks/The-M-Project/modules/themes/jquery_mobile/images');
