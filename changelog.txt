@@ -1,10 +1,11 @@
-** Version 0.8pre - Date 09.09.2011 **
+** Version 0.7.2 - Date 12.10.2011 **
 
   * Added 'stores' to sort chain of espresso (preSort task).
   * Added install.sh to ease up the process of creating an espresso alias.
   * Added defaultLanguage property to config.json.
   * Fixed broken version flag in cache manifest.
   * Added 'useTransitions' and 'enableTouchOverflow' to config.json.
+  * Close <head>-tag correctly
 
 ** Version 0.7.1 - Date 25.07.2011 **
 

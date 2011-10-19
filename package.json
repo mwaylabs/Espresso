@@ -1,6 +1,6 @@
 { "name" : "espresso",
   "description" : "Development tools for The-M-Project",
-  "version" : "0.7.1",
+  "version" : "0.7.2",
   "author" : "M-WAY Solutions GmbH <s.pfleiderer@mwaysolutions.com>",
   "repository" : { 
     "type" : "git",
