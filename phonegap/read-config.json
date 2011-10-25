@@ -1,0 +1,30 @@
+#! /usr/bin/env node
+
+filename = process.env.file || "config.json"
+target = process.env.target || "default";
+
+function export(key, value) {
+  console.log(key + "=" + JSON.stringify(value) + "; export " + key);
+};
+
+try {
+  readFileSync = require("fs").readFileSync;
+  config = JSON.parse(readFileSync(filename));
+  method = config.package[target].method;
+  export("method", method);
+  env = config.package[target][method];
+} catch (exn) {
+  console.error("Error: failed to load config.json")
+  console.error(exn.stack);
+  process.exit(23);
+};
+Object.keys(env)
+  .filter(function (key) {
+    return typeof env[key] === "string";
+  })
+  .filter(function (key) {
+    return /^[A-Za-z]+$/.test(key);
+  })
+  .forEach(function (key) {
+    export(key, env[key]);
+  });
