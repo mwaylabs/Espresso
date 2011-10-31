@@ -13,3 +13,6 @@
 [submodule "node_modules/mu"]
 	path = node_modules/mu
 	url = https://github.com/raycmorgan/Mu
+[submodule "submodules/github/callback/phonegap"]
+	path = submodules/github/callback/phonegap
+	url = https://github.com/callback/phonegap
