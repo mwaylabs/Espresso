@@ -13,6 +13,7 @@ try {
   method = config.package[target].method;
   export("method", method);
   env = config.package[target][method];
+  env.name = config.name;
 } catch (exn) {
   console.error("Error: failed to load config.json")
   console.error(exn.stack);

@@ -1,43 +1,53 @@
 #! /bin/sh
 set -xeu
 
-path="$(mktemp -u -d "$PWD/build/$method.XXXXXXXXXX")"
-trap "rm -fR '$path'" EXIT INT QUIT
+# configuration
+build_dir="${build_dir-$PWD}"
+phonegap_dir="${phonegap_dir-$HOME/phonegap-1.1.0}"
+target="${target}"
+mode="${mode-release}"
+activity="${activity-MyActivity}"
+package="${package-com.test.mypackage}"
 
+# TODO validate $target
+# TODO validate $mode
+# TODO validate $activity
+# TODO validate $package
+# TODO validate $build_dir [i.e. $build_dir/index.html]
+
+# setup self-destructive working directory
+cd "`mktemp -d`"
+trap "cd '$OLDPWD'; rm -fR '$PWD'" EXIT INT QUIT
+ln -s "$phonegap_dir/Android" phonegap
+ln -s "$build_dir" src
+
+# create android project directory
 android create project \
+    --path android-project \
     --activity "$activity" \
     --package "$package" \
-    --path "$path" \
     --target "$target"
+mkdir android-project/assets
 
-cd "$path"
+# copy application files into android project directory
+cp -R src/* android-project/assets/
+# remove potential cruft
+rm -f android-project/assets/config.json
+rm -f android-project/assets/*.apk
 
-P=phonegap-1.1.0
-T=Android
+# copy phonegap files into the android project directory
+cp phonegap/phonegap-*.js android-project/assets/phonegap.js
+cp phonegap/phonegap-*.jar android-project/libs/phonegap.jar
+cp -R phonegap/xml android-project/res/
 
-S="$HOME/$P/$T"
-
-mkdir -p libs/
-mkdir -p assets/www/
-
-cp "$S/$P.js" assets/www/
-cp "$S/$P.jar" libs/
-cp -r "$S/xml" res/
-
-src="`find src -name '*.java'`"
-mv "$src" "$src.orig"
-sed '
-  s;extends Activity;extends DroidGap;
-  s;setContentView([^)]*);super.loadUrl("file:///android_asset/www/index.html");
-  s;import android.app.Activity;import com.phonegap.*;
-' "$src.orig" > "$src"
-rm "$src.orig"
-
-##
-src=AndroidManifest.xml
-mv "$src" "$src.orig"
-sed '
-  s.*versionName.*&\
+# update android project files to use phonegap
+gsedi android-project/src/`echo $package | tr . /`/$activity.java '
+  s|extends Activity|extends DroidGap|
+  s|setContentView([^)]*)|super.loadUrl("file:///android_asset/index.html")|
+  s|import android.app.Activity|import com.phonegap.*|
+'
+gsedi android-project/AndroidManifest.xml '
+  s|.*versionName.*|&\
     <supports-screens\
             android:largeScreens="true"\
             android:normalScreens="true"\
@@ -58,22 +68,14 @@ sed '
     <uses-permission android:name="android.permission.READ_CONTACTS" />\
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />\
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />\
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-' "$src.orig" > "$src"
-rm "$src.orig"
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />|
+'
+gsedi android-project/assets/index.html '
+  s|\(.*<![Dd][Oo][Cc][Tt][Yy][Pp][Ee]  *[Hh][Tt][Mm][Ll]>\)\(.*\)|\1<script type="text/javascript" charset="utf-8" src="phonegap.js"></script>\2|
+'
 
-cd -
+# build android package
+(cd android-project && ant --noconfig "$mode")
 
-cp -r "$srcdir"/* "$path/assets/www/"
-
-src="$path/assets/www/index.html"
-mv "$src" "$src.orig"
-sed '
-  s|\(.*<![Dd][Oo][Cc][Tt][Yy][Pp][Ee]  *[Hh][Tt][Mm][Ll]>\)\(.*\)|\1<script type="text/javascript" charset="utf-8" src="'"$P.js"'"></script>\2|
-' "$src.orig" > "$src"
-rm "$src.orig"
-
-cd -
-ant "${mode-release}"
-
-mv bin/*.apk ..
+# emit android package
+cp android-project/bin/*.apk src/
