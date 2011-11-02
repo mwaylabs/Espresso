@@ -5,10 +5,14 @@ realpath() {
   python -c 'import os, sys; print os.path.realpath(sys.argv[1])' "$1"
 }
 
-dirname="$(dirname "$(realpath "$0")")"
-PATH="$dirname/bin:${PATH+:$PATH}"; export PATH
+ROOT="$(dirname "$(realpath "$0")")"
+PATH="$ROOT/bin:${PATH+:$PATH}"; export PATH
 
 script="`read-config.json`"
 
 eval "$script"
-exec "$dirname/$method/$action"
+
+PATH="$ROOT/$method:${PATH+:$PATH}"; export PATH
+
+exec "$action"
+exec "$ROOT/$method/$action"
