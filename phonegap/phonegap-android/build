@@ -43,7 +43,9 @@ cp -R phonegap/xml android-project/res/
 # update android project files to use phonegap
 gsedi android-project/src/`echo $package | tr . /`/$activity.java '
   s|extends Activity|extends DroidGap|
-  s|setContentView([^)]*)|super.loadUrl("file:///android_asset/index.html")|
+  s|setContentView([^)]*);|\
+    super.setIntegerProperty("loadUrlTimeoutValue", 60000);\
+    super.loadUrl("file:///android_asset/index.html");|
   s|import android.app.Activity|import com.phonegap.*|
 '
 gsedi android-project/AndroidManifest.xml '
