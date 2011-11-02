@@ -1,0 +1,22 @@
+#! /bin/sh
+
+build
+# TODO trap "rm -R '$build_dir'" (?)
+
+set -xeu
+
+# configuration
+build_dir="${build_dir-$PWD}"
+mode="${mode-release}"
+activity="${activity-MyActivity}"
+package="${package-com.test.mypackage}"
+
+# TODO validate $mode
+# TODO validate $activity
+# TODO validate $package
+# TODO validate $build_dir [i.e. $build_dir/index.html]
+
+# (re-)start the application in the emulator
+adb -e wait-for-device uninstall "$package" || :
+adb -e wait-for-device install "$build_dir/$activity-$mode.apk"
+adb -e wait-for-device shell am start -n "$package/.$activity"
