@@ -9,7 +9,7 @@
 
 // This is a wrapper for the Espresso PhoneGap modules below ../../phonegap/
 
-exports.description = 'Command package projects';
+exports.description = 'Command to build native applications';
 
 exports.examples = [
   '--directory myProject'
@@ -24,6 +24,13 @@ exports.options = {
 };
 
 exports.run = function (options, positional) {
+
+  var action = positional[0]; positional = positional.slice(1);
+
+  if (['build', 'run'].indexOf(action) < 0) {
+    throw new Error('Error: bad package action: ' + JSON.stringify(action));
+  };
+
   var app = new (require('../app').App)(options);
   app.loadTheApplication();
   app.loadTheMProject();
@@ -54,7 +61,7 @@ exports.run = function (options, positional) {
         };
 
         // adjust the child's environment
-        options.env.action = 'build';
+        options.env.action = action;
         options.env.target = target;
         options.env.file = join(process.cwd(), 'config.json');
         options.env.phonegap_dir =
