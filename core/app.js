@@ -58,7 +58,6 @@ var App = exports.App = function (options, server) {
   this.name              = 'defaultName';
   this.theme             = 'default';
   this.outputFolder      = 'build'; // name of the output folder, default is 'build'.
-  this.environment       = 'Web';
 
   /* Build switches */
   this.jslintCheck         = false;
@@ -485,17 +484,6 @@ App.prototype.buildIndexHTML = function (callback, _frameworkNamesForIndexHtml, 
       }, ''));
     });
   };
-
-  var PhoneGap = this.environment === 'PhoneGap';
-  if (PhoneGap) {
-    _indexHtml.push(HTML('script', {
-      type: 'application/javascript',
-      src: 'phonegap.js'
-    }, ''));
-  };
-  _indexHtml.push(HTML('script', {
-    type: 'application/javascript'
-  }, 'var isPhoneGap = ' + PhoneGap + ';'));
 
   _indexHtml.push(HTML('script', {
     type: 'application/javascript'

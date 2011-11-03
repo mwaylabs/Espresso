@@ -73,7 +73,12 @@ gsedi android-project/AndroidManifest.xml '
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />|
 '
 gsedi android-project/assets/index.html '
-  s|\(.*<![Dd][Oo][Cc][Tt][Yy][Pp][Ee]  *[Hh][Tt][Mm][Ll]>\)\(.*\)|\1<script type="text/javascript" charset="utf-8" src="phonegap.js"></script>\2|
+  s|\(</\?\)[sS][cC][rR][iI][pP][tT]|\1script|g
+  1,/<script/{
+    s|\(.*\)\(<script.*\)|\1\<script type="application/javascript" src="phonegap.js"></script>\
+<script type="application/javascript">var isPhoneGap = true;</script>\
+\2|
+  }
 '
 
 # build android package
