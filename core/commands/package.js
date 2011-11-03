@@ -57,7 +57,8 @@ exports.run = function (options, positional) {
         var args = [];
         var options = {
           cwd: buildDir,
-          env: JSON.parse(JSON.stringify(process.env))
+          env: JSON.parse(JSON.stringify(process.env)),
+          customFds: [ process.stdin, process.stdout, process.stderr ]
         };
 
         // adjust the child's environment
@@ -67,18 +68,7 @@ exports.run = function (options, positional) {
         options.env.phonegap_dir =
           join(__dirname,'..','..','submodules','github','callback','phonegap');
 
-        var child = require('child_process').spawn(command, args, options);
-
-        child.stdout.on('data', function (chunk) {
-          process.stderr.write(chunk);
-        });
-
-        child.stderr.on('data', function (chunk) {
-          process.stderr.write(chunk);
-        });
-
-        child.on('exit', function (code) {
-        });
+        require('child_process').spawn(command, args, options);
       });
     });
   });

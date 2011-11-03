@@ -5,7 +5,7 @@ set -xeu
 build_dir="${build_dir-$PWD}"
 phonegap_dir="${phonegap_dir-$HOME/phonegap-1.1.0}"
 target="${target}"
-mode="${mode-release}"
+mode="${mode-debug}"
 activity="${activity-MyActivity}"
 package="${package-com.test.mypackage}"
 
@@ -14,6 +14,14 @@ package="${package-com.test.mypackage}"
 # TODO validate $activity
 # TODO validate $package
 # TODO validate $build_dir [i.e. $build_dir/index.html]
+
+if test "$mode" = release; then
+  # require a keystore and keyalias in release mode
+  keystore="${keystore}"
+  keyalias="${keyalias}"
+  # optional: storepass, keypass
+  # TODO validate $keystore
+fi
 
 # setup self-destructive working directory
 cd "`mktemp -d`"
@@ -84,5 +92,18 @@ gsedi android-project/assets/index.html '
 # build android package
 (cd android-project && ant --noconfig "$mode")
 
+if test "$mode" = release; then
+  # sign and align android package in release mode
+  jarsigner -verbose \
+      -keystore "$keystore" \
+      ${storepass+-storepass "$storepass"} \
+      ${keypass+-keypass "$keypass"} \
+      -signedjar android-project/bin/$activity-release-unaligned.apk \
+      android-project/bin/$activity-release-unsigned.apk \
+      "$keyalias"
+  zipalign -v 4 android-project/bin/$activity-release-unaligned.apk \
+      android-project/bin/$activity-release.apk
+fi
+
 # emit android package
-cp android-project/bin/*.apk src/
+cp android-project/bin/$activity-$mode.apk "$build_dir/$activity-$mode.apk"
