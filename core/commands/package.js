@@ -58,7 +58,7 @@ exports.run = function (options, positional) {
         var options = {
           cwd: buildDir,
           env: JSON.parse(JSON.stringify(process.env)),
-          customFds: [ process.stdin, process.stdout, process.stderr ]
+          customFds: [ 0, 1, 2 ]
         };
 
         // adjust the child's environment
