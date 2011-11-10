@@ -1,13 +1,12 @@
 /*!
  * package.js
  *
- * Command module to package projects
+ * This command is a wrapper for the Espresso package component to build
+ * and run (simulate / emulate) native applications.
  *
  * Copyright(c) 2011 Panacoda GmbH. All rights reserved.
  * This file is licensed under the MIT license.
  */
-
-// This is a wrapper for the Espresso PhoneGap modules below ../../phonegap/
 
 exports.description = 'Command to build native applications';
 
@@ -53,7 +52,7 @@ exports.run = function (options, positional) {
       var join = require('path').join;
       packageTargets.forEach(function (target) {
 
-        var command = join(__dirname,'..','..','phonegap','index');
+        var command = join(__dirname,'..','..','package','index');
         var args = [];
         var options = {
           cwd: buildDir,
@@ -65,8 +64,6 @@ exports.run = function (options, positional) {
         options.env.action = action;
         options.env.target = target;
         options.env.file = join(process.cwd(), 'config.json');
-        options.env.phonegap_dir =
-          join(__dirname,'..','..','submodules','github','callback','phonegap');
 
         require('child_process').spawn(command, args, options);
       });
