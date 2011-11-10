@@ -3,7 +3,7 @@ set -xeu
 
 # configuration
 build_dir="${build_dir-$PWD}"
-phonegap_dir="${phonegap_dir-$HOME/phonegap-1.1.0}"
+phonegap_dir="${phonegap_dir-$ROOT/../submodules/github/callback/phonegap}"
 target="${target}"
 mode="${mode-debug}"
 activity="${activity-MyActivity}"
