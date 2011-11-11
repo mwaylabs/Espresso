@@ -4,12 +4,12 @@ set -xeu
 # configuration
 build_dir="${build_dir-$PWD}"
 phonegap_dir="${phonegap_dir-$ROOT/../submodules/github/callback/phonegap}"
-target="${target}"
+sdk="${sdk}"
 mode="${mode-debug}"
 activity="${activity-MyActivity}"
 package="${package-com.test.mypackage}"
 
-# TODO validate $target
+# TODO validate $sdk
 # TODO validate $mode
 # TODO validate $activity
 # TODO validate $package
@@ -34,7 +34,7 @@ android create project \
     --path android-project \
     --activity "$activity" \
     --package "$package" \
-    --target "$target"
+    --target "$sdk"
 mkdir android-project/assets
 
 # copy application files into android project directory
