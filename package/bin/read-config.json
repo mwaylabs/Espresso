@@ -10,9 +10,7 @@ function export(key, value) {
 try {
   readFileSync = require("fs").readFileSync;
   config = JSON.parse(readFileSync(filename));
-  method = config.package[target].method;
-  export("method", method);
-  env = config.package[target][method];
+  env = config.package[target];
   env.name = config.name;
 } catch (exn) {
   console.error("Error: failed to load config.json")
