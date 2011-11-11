@@ -12,7 +12,6 @@ script="`read-config.json`"
 
 eval "$script"
 
-PATH="$ROOT/$method:${PATH+:$PATH}"; export PATH
+PATH="$ROOT/$method/$os:${PATH+:$PATH}"; export PATH
 
 exec "$action"
-exec "$ROOT/$method/$action"
