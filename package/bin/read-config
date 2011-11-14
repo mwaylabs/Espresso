@@ -3,7 +3,7 @@
 filename = process.env.file || "config.json"
 target = process.env.target || "default";
 
-function export(key, value) {
+function print_export(key, value) {
   console.log(key + "=" + JSON.stringify(value) + "; export " + key);
 };
 
@@ -25,5 +25,5 @@ Object.keys(env)
     return /^[A-Za-z]+$/.test(key);
   })
   .forEach(function (key) {
-    export(key, env[key]);
+    print_export(key, env[key]);
   });

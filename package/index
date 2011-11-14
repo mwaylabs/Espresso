@@ -8,7 +8,7 @@ realpath() {
 ROOT="$(dirname "$(realpath "$0")")"; export ROOT
 PATH="$ROOT/bin:${PATH+:$PATH}"; export PATH
 
-script="`read-config.json`"
+script="`read-config`"
 
 eval "$script"
 
