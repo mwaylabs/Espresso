@@ -5,12 +5,10 @@ set -xeu
 build_dir="${build_dir-$PWD}"
 # !4 iOS: phonegap_dir="${phonegap_dir-$HOME/phonegap-1.1.0}"
 sdk="${sdk}"
-mode="${mode-debug}"
 activity="${activity-MyActivity}"
 package="${package-com.test.mypackage}"
 
-# TODO validate $sdk
-# TODO validate $mode
+validate-sdk iphonesimulator
 # TODO validate $activity
 # TODO validate $package
 # TODO validate $build_dir [i.e. $build_dir/index.html]
