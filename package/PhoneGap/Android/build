@@ -16,11 +16,13 @@ package="${package-com.test.mypackage}"
 # TODO validate $build_dir [i.e. $build_dir/index.html]
 
 if test "$mode" = release; then
-  # require a keystore and keyalias in release mode
   keystore="${keystore}"
   keyalias="${keyalias}"
   # optional: storepass, keypass
   # TODO validate $keystore
+  apk_basename="$activity.apk"
+else
+  apk_basename="$activity-$mode.apk"
 fi
 
 # setup self-destructive working directory
@@ -98,12 +100,12 @@ if test "$mode" = release; then
       -keystore "$keystore" \
       ${storepass+-storepass "$storepass"} \
       ${keypass+-keypass "$keypass"} \
-      -signedjar android-project/bin/$activity-release-unaligned.apk \
-      android-project/bin/$activity-release-unsigned.apk \
+      -signedjar android-project/bin/$activity-unaligned.apk \
+      android-project/bin/$activity-unsigned.apk \
       "$keyalias"
-  zipalign -v 4 android-project/bin/$activity-release-unaligned.apk \
-      android-project/bin/$activity-release.apk
+  zipalign -v 4 android-project/bin/$activity-unaligned.apk \
+      android-project/bin/$apk_basename
 fi
 
 # emit android package
-cp android-project/bin/$activity-$mode.apk "$build_dir/$activity-$mode.apk"
+cp android-project/bin/$apk_basename "$build_dir/$apk_basename"
