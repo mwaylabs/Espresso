@@ -1,0 +1,69 @@
+#! /bin/sh
+set -xeu
+
+# configuration
+build_dir="${build_dir-$PWD}"
+# !4 iOS: phonegap_dir="${phonegap_dir-$HOME/phonegap-1.1.0}"
+sdk="${sdk}"
+activity="${activity-MyActivity}"
+package="${package-com.test.mypackage}"
+keychain="${keychain-$HOME/Library/Keychains/login.keychain}"
+sign="${sign}"
+# embed (provisioning profile) is optional 
+archs="${archs-armv6 armv7}"
+
+# TODO validate $build_dir [i.e. $build_dir/index.html]
+# TODO validate $activity
+validate-sdk iphoneos
+# TODO validate $package
+# TODO validate $keychain
+# TODO validate $sign
+# TODO validate $embed
+# TODO validate $archs
+
+# setup self-destructive working directory
+cd "`mktemp -d "${TMPDIR-/tmp/}package-phonegap-iOS.XXXXXXXXXX"`"
+trap "cd '$OLDPWD'; rm -fR '$PWD'" EXIT INT QUIT
+# !4 iOS: ln -s "$phonegap_dir/iOS" phonegap
+ln -s "$build_dir" src
+
+# create iOS project directory
+cd $ROOT/../submodules/github/callback/callback-ios/
+./bin/create "$OLDPWD/iOS-project" "$package" "$activity"
+cd "$OLDPWD"
+rm -fR iOS-project/www
+mkdir iOS-project/www
+
+# copy application files into iOS project directory
+cp -R src/* iOS-project/www
+# remove potential cruft
+rm -f iOS-project/www/config.json
+rm -f iOS-project/www/*.ipa
+
+gsedi iOS-project/www/index.html '
+  s|\(</\?\)[sS][cC][rR][iI][pP][tT]|\1script|g
+  1,/<script/{
+    s|\(.*\)\(<script.*\)|\1\<script type="application/javascript" src="phonegap.js"></script>\
+<script type="application/javascript">var isPhoneGap = true;</script>\
+\2|
+  }
+'
+
+# build iOS package
+cd iOS-project
+gsedi phonegap/debug "s/^xcodebuild .*/exec & ARCHS=\"$archs\"/"
+gsedi phonegap/debug 's/^SDK=/# &/'
+
+# TODO do this only when building for iphoneos (i.e. not for iphonesimulator)
+if ! security show-keychain-info "$keychain" 2>/dev/null; then
+  security unlock-keychain "$keychain"
+fi
+
+SDK="$sdk" sh phonegap/debug "$PWD" "$activity"
+
+# emit iOS package
+xcrun -sdk iphoneos PackageApplication \
+    -v "build/Release-iphoneos/$activity.app" \
+    -o "$build_dir/$activity.ipa" \
+    --sign "$sign" \
+    ${embed+--embed "$embed"}
