@@ -49,9 +49,10 @@ sh phonegap/debug "$PWD" "$activity"
 # prepare launcher
 (cd $ROOT/../submodules/github/Fingertips/ios-sim
   rake install prefix="$ROOT/phonegap-ios/ios-sim")
+sim="$ROOT/phonegap-ios/ios-sim/bin/ios-sim"
+chmod 0755 "$sim"
 
 printf '\n\e[1;33mAbort debug output and return to shell with \e[35m^C\e[33m.\e[m\n\n'
 
 # run package
-("$ROOT/phonegap-ios/ios-sim/bin/ios-sim" \
-  launch "build/Release-iphonesimulator/$activity.app")
+("$sim" launch "build/Release-iphonesimulator/$activity.app")
