@@ -50,10 +50,15 @@ var generate = exports.generate = function generate(options) {
 
     Fs.mkdir(directory, 0755, function (err) {
         if (err) {
-          // errno 17: folder already exists
-          if (err.errno !== 17) {
-            throw err;
-          }
+          if (err.code === 'EEXIST') {
+            // ok: directory already exists; that's what we want!
+          } else {
+            // Note: this is the old code for <node-0.6
+            // errno 17: folder already exists
+            if (err.errno !== 17) {
+              throw err;
+            }
+          };
         }
 
         templateRenderer.render({
