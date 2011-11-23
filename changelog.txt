@@ -1,3 +1,7 @@
+** Version 0.7.3 - Date 23.11.2011 **
+
+  * Updated Espresso to work with node 0.6.x.
+
 ** Version 0.7.2 - Date 12.10.2011 **
 
   * Added 'stores' to sort chain of espresso (preSort task).
