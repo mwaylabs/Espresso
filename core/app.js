@@ -668,7 +668,14 @@ App.prototype.makeOutputFolder = function (callback) {
     that.makeOutputDir = function (path) {
       if (that._folderCounter >=1) {
         self._e_.fs.mkdir(path, 0777 ,function (err) {
-          if (err && err.errno !== 17) {throw err;}
+          if (err) {
+            if (err.code === 'EEXIST') {
+              // ok: directory already exists; that's what we want!
+            } else {
+              // this is the "old-and-underdocumented" behavior
+              if (err && err.errno !== 17) {throw err;}
+            };
+          };
           that._folderCounter--;
           that.makeOutputDir(path+ self._outP.shift());
         });
