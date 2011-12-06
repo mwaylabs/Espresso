@@ -12,7 +12,7 @@ export activity="${activity-MyActivity}"
 export package="${package-com.test.mypackage}"
 
 validate-mode
-# TODO validate $activity
+validate-activity
 # TODO validate $package
 # TODO validate $build_dir [i.e. $build_dir/index.html]
 
