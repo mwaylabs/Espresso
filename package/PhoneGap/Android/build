@@ -9,17 +9,26 @@ export mode="${mode-debug}"
 export activity="${activity-MyActivity}"
 export package="${package-com.test.mypackage}"
 
-validate-sdk
-validate-mode
-validate-activity
-validate-package
-# TODO validate $build_dir [i.e. $build_dir/index.html]
-
 if test "$mode" = release; then
   export keystore="${keystore}"
   export keyalias="${keyalias}"
   # optional: storepass, keypass
-  # TODO validate $keystore
+fi
+
+# sanity-check configuration
+validate-sdk
+validate-mode
+validate-activity
+validate-package
+validate-build_dir
+
+#if test "$mode" = release; then
+  # TODO validate-store
+  # TODO validate-keyalias
+#fi
+
+# derive configuration
+if test "$mode" = release; then
   apk_basename="$activity.apk"
 else
   apk_basename="$activity-$mode.apk"

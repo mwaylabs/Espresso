@@ -11,11 +11,13 @@ export mode="${mode-release}"
 export activity="${activity-MyActivity}"
 export package="${package-com.test.mypackage}"
 
+# sanity-check configuration
 validate-mode
 validate-activity
 validate-package
-# TODO validate $build_dir [i.e. $build_dir/index.html]
+validate-build_dir
 
+# derive configuration
 if test "$mode" = release; then
   apk_basename="$build_dir/$activity.apk"
 else
