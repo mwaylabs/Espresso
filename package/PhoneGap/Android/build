@@ -9,7 +9,7 @@ mode="${mode-debug}"
 activity="${activity-MyActivity}"
 package="${package-com.test.mypackage}"
 
-# TODO validate $sdk
+validate-sdk
 # TODO validate $mode
 # TODO validate $activity
 # TODO validate $package
