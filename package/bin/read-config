@@ -1,0 +1,39 @@
+#! /usr/bin/env node
+
+filename = process.env.file || "config.json"
+target = process.env.target || "default";
+
+function print_export(key, value) {
+  console.log(key + "=" + JSON.stringify(value) + "; export " + key);
+};
+
+try {
+  readFileSync = require("fs").readFileSync;
+  config = JSON.parse(readFileSync(filename));
+  env = config.package[target];
+  env.name = config.name;
+} catch (exn) {
+  console.error("Error: failed to load package configuration from config.json")
+  if (typeof config === "object" &&
+      typeof config.package === "object") {
+    if (Object.keys(config.package).length > 0) {
+      console.error("Bad package target: " + target);
+      console.error("Possible targets:\n  " + Object.keys(config.package).join("\n  "));
+    } else {
+      console.error("No package configuration found.");
+    }
+  } else {
+    console.error(exn.stack);
+  }
+  process.exit(23);
+};
+Object.keys(env)
+  .filter(function (key) {
+    return typeof env[key] === "string";
+  })
+  .filter(function (key) {
+    return /^[A-Za-z]+$/.test(key);
+  })
+  .forEach(function (key) {
+    print_export(key, env[key]);
+  });
