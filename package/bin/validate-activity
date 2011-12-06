@@ -1,0 +1,15 @@
+#! /bin/sh
+set -eu
+
+key='activity'
+value="$activity"
+value_pattern='[A-Z][A-Za-z0-9]*'
+pattern_hint="Please specify the $key in CamelCase."
+
+if ! echo "$value" | grep -q "^$value_pattern$"; then
+  exec >&2
+  echo "The $key ([31m$value[m) specified in config.json looks odd."
+  echo "$pattern_hint"
+  exit 23
+fi
+

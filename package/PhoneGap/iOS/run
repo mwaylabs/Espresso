@@ -1,0 +1,59 @@
+#! /bin/sh
+set -xeu
+
+# configuration
+export build_dir="${build_dir-$PWD}"
+# !4 iOS: phonegap_dir="${phonegap_dir-$HOME/phonegap-1.1.0}"
+export sdk="${sdk}"
+export activity="${activity-MyActivity}"
+export package="${package-com.test.mypackage}"
+
+# sanity-check configuration
+validate-activity
+validate-package
+validate-build_dir
+validate-sdk iphonesimulator
+
+# setup self-destructive working directory
+cd "`mktemp -d "${TMPDIR-/tmp/}package-phonegap-iOS.XXXXXXXXXX"`"
+trap "cd '$OLDPWD'; rm -fR '$PWD'" EXIT INT QUIT
+# !4 iOS: ln -s "$phonegap_dir/iOS" phonegap
+ln -s "$build_dir" src
+
+# create iOS project directory
+cd $ROOT/../submodules/github/callback/callback-ios/
+./bin/create "$OLDPWD/iOS-project" "$package" "$activity"
+cd "$OLDPWD"
+rm -fR iOS-project/www
+mkdir iOS-project/www
+
+# copy application files into iOS project directory
+cp -R src/* iOS-project/www
+# remove potential cruft
+rm -f iOS-project/www/config.json
+#TODO??? rm -f iOS-project/www/*.apk
+
+gsedi iOS-project/www/index.html '
+  s|\(</\?\)[sS][cC][rR][iI][pP][tT]|\1script|g
+  1,/<script/{
+    s|\(.*\)\(<script.*\)|\1\<script type="application/javascript" src="phonegap.js"></script>\
+<script type="application/javascript">var isPhoneGap = true;</script>\
+\2|
+  }
+'
+
+# build iOS package
+cd iOS-project
+gsedi phonegap/debug 's/^xcodebuild/exec &/'
+sh phonegap/debug "$PWD" "$activity"
+
+# prepare launcher
+(cd $ROOT/../submodules/github/Fingertips/ios-sim
+  rake install prefix="$ROOT/phonegap-ios/ios-sim")
+sim="$ROOT/phonegap-ios/ios-sim/bin/ios-sim"
+chmod 0755 "$sim"
+
+printf '\n\e[1;33mAbort debug output and return to shell with \e[35m^C\e[33m.\e[m\n\n'
+
+# run package
+("$sim" launch "build/Release-iphonesimulator/$activity.app")

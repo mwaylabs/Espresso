@@ -1,0 +1,17 @@
+#! /bin/sh
+set -eu
+
+sdks="`xcodebuild -showsdks | sed -n "/-sdk $1/s/^.*-sdk \($1.*\)$/\1/p"`"
+
+if ! echo "$sdks" | grep -q "^$sdk$"; then
+  exec >&2
+  echo 'The sdk specified in config.json is not available on this system!'
+  if test -z "$sdks"; then
+    echo 'Please install Xcode and iOS SDK.'
+  else
+    echo "Possible sdk-choices for \"package $action\" are:"
+    echo "$sdks" | sed 's/^/    /'
+  fi
+  exit 23
+fi
+
