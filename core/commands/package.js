@@ -10,6 +10,17 @@
 
 exports.description = 'Command to build native applications';
 
+exports.usage = ('Usage: espresso package <mode> [<target>]'
++ '\n'
++ '\nAvailable modes:'
++ '\n   run                         Build and run project in emulator.'
++ '\n   build                       Build native application package.'
++ '\n'
++ '\nAvailable targets:'
++ '\n   any property-key of package in your config.json; default: "default"'
++ '\n'
+);
+
 exports.examples = [
   '--directory myProject'
 ];
