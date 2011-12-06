@@ -27,13 +27,6 @@ if test "$mode" = release; then
   # TODO validate-keyalias
 fi
 
-# derive configuration
-if test "$mode" = release; then
-  apk_basename="$activity.apk"
-else
-  apk_basename="$activity-$mode.apk"
-fi
-
 # setup self-destructive working directory
 cd "`mktemp -d "${TMPDIR-/tmp/}package-phonegap-android.XXXXXXXXXX"`"
 trap "cd '$OLDPWD'; rm -fR '$PWD'" EXIT INT QUIT
@@ -103,18 +96,27 @@ gsedi android-project/assets/index.html '
 # build android package
 (cd android-project && ant --noconfig "$mode")
 
+apk_basename="$activity-$mode"
 if test "$mode" = release; then
+  # TODO? find the only apk in bin
+  if ! test -e android-project/bin/$apk_basename-unsigned.apk; then
+    apk_basename="$activity"
+    if ! test -e android-project/bin/$apk_basename-unsigned.apk; then
+      echo "No .apk-file found (this should not happen)." >&2
+      exit 23
+    fi
+  fi
   # sign and align android package in release mode
   jarsigner -verbose \
       -keystore "$keystore" \
       ${storepass+-storepass "$storepass"} \
       ${keypass+-keypass "$keypass"} \
-      -signedjar android-project/bin/$activity-unaligned.apk \
-      android-project/bin/$activity-unsigned.apk \
+      -signedjar android-project/bin/$apk_basename-unaligned.apk \
+      android-project/bin/$apk_basename-unsigned.apk \
       "$keyalias"
-  zipalign -v 4 android-project/bin/$activity-unaligned.apk \
-      android-project/bin/$apk_basename
+  zipalign -v 4 android-project/bin/$apk_basename-unaligned.apk \
+      android-project/bin/$apk_basename.apk
 fi
 
 # emit android package
-cp android-project/bin/$apk_basename "$build_dir/$apk_basename"
+cp android-project/bin/$apk_basename.apk "$build_dir"
