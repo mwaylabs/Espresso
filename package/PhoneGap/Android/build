@@ -2,22 +2,22 @@
 set -xeu
 
 # configuration
-build_dir="${build_dir-$PWD}"
-phonegap_dir="${phonegap_dir-$ROOT/../submodules/github/callback/phonegap}"
-sdk="${sdk}"
-mode="${mode-debug}"
-activity="${activity-MyActivity}"
-package="${package-com.test.mypackage}"
+export build_dir="${build_dir-$PWD}"
+export phonegap_dir="${phonegap_dir-$ROOT/../submodules/github/callback/phonegap}"
+export sdk="${sdk}"
+export mode="${mode-debug}"
+export activity="${activity-MyActivity}"
+export package="${package-com.test.mypackage}"
 
 validate-sdk
-# TODO validate $mode
+validate-mode
 # TODO validate $activity
 # TODO validate $package
 # TODO validate $build_dir [i.e. $build_dir/index.html]
 
 if test "$mode" = release; then
-  keystore="${keystore}"
-  keyalias="${keyalias}"
+  export keystore="${keystore}"
+  export keyalias="${keyalias}"
   # optional: storepass, keypass
   # TODO validate $keystore
   apk_basename="$activity.apk"

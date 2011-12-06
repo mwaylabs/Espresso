@@ -6,12 +6,12 @@ build
 set -xeu
 
 # configuration
-build_dir="${build_dir-$PWD}"
-mode="${mode-release}"
-activity="${activity-MyActivity}"
-package="${package-com.test.mypackage}"
+export build_dir="${build_dir-$PWD}"
+export mode="${mode-release}"
+export activity="${activity-MyActivity}"
+export package="${package-com.test.mypackage}"
 
-# TODO validate $mode
+validate-mode
 # TODO validate $activity
 # TODO validate $package
 # TODO validate $build_dir [i.e. $build_dir/index.html]
