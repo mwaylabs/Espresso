@@ -1,3 +1,7 @@
+** Version 0.8.0 - Date 06.12.2011 **
+
+  * Add "package" command to build native apps with PhoneGap.
+
 ** Version 0.7.3 - Date 23.11.2011 **
 
   * Updated Espresso to work with node 0.6.x.
