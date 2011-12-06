@@ -22,10 +22,10 @@ validate-activity
 validate-package
 validate-build_dir
 
-#if test "$mode" = release; then
-  # TODO validate-store
+if test "$mode" = release; then
+  validate-keystore
   # TODO validate-keyalias
-#fi
+fi
 
 # derive configuration
 if test "$mode" = release; then
