@@ -1,0 +1,17 @@
+#! /bin/sh
+set -euf
+
+realpath() {
+  python -c 'import os, sys; print os.path.realpath(sys.argv[1])' "$1"
+}
+
+ROOT="$(dirname "$(realpath "$0")")"; export ROOT
+PATH="$ROOT/bin:${PATH+:$PATH}"; export PATH
+
+script="`read-config`"
+
+eval "$script"
+
+PATH="$ROOT/$method/$os:${PATH+:$PATH}"; export PATH
+
+exec "$action"

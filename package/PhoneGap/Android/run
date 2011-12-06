@@ -1,0 +1,35 @@
+#! /bin/sh
+
+build
+# TODO trap "rm -R '$build_dir'" (?)
+
+set -xeu
+
+# configuration
+export build_dir="${build_dir-$PWD}"
+export mode="${mode-release}"
+export activity="${activity-MyActivity}"
+export package="${package-com.test.mypackage}"
+
+# sanity-check configuration
+validate-mode
+validate-activity
+validate-package
+validate-build_dir
+
+apk_basename="$activity-$mode"
+if test "$mode" = release; then
+  # TODO? find the only apk in build_dir
+  if ! test -e "$build_dir/$apk_basename.apk"; then
+    apk_basename="$activity"
+    if ! test -e "$build_dir/$apk_basename.apk"; then
+      echo "No .apk-file found (this should not happen)." >&2
+      exit 23
+    fi
+  fi
+fi
+
+# (re-)start the application in the emulator
+adb -e wait-for-device uninstall "$package" || :
+adb -e wait-for-device install "$build_dir/$apk_basename.apk"
+adb -e wait-for-device shell am start -n "$package/.$activity"

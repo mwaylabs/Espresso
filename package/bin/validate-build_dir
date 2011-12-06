@@ -1,0 +1,18 @@
+#! /bin/sh
+set -eu
+
+key='build_dir'
+value="$build_dir"
+
+if ! test -d "$value"; then
+  exec >&2
+  echo "The $key ([31m$value[m) is not a directory."
+  exit 23
+fi
+
+if ! test -f "$value/index.html"; then
+  exec >&2
+  echo "The $key ([31m$value[m) does not contain an index.html file."
+  exit 23
+fi
+

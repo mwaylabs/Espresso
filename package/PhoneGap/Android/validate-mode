@@ -1,0 +1,20 @@
+#! /bin/sh
+set -eu
+
+key='mode'
+value="$mode"
+options="$(echo release debug | tr \  \\n)"
+zero_solution='Your Espresso installation seems broken in some obscure way.'
+
+if ! echo "$options" | grep -q "^$value$"; then
+  exec >&2
+  echo "The $key specified in config.json is not available on this system!"
+  if test -z "$options"; then
+    echo "$zero_solution"
+  else
+    echo "Possible $key-choices for \"package $action\" are:"
+    echo "$options" | sed 's/^/    /'
+  fi
+  exit 23
+fi
+
