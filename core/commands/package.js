@@ -50,14 +50,23 @@ exports.run = function (options, positional) {
 
       var spawn = require('child_process').spawn;
       var join = require('path').join;
+      var createWriteStream = require('fs').createWriteStream;
       packageTargets.forEach(function (target) {
 
         var command = join(__dirname,'..','..','package','index');
         var args = [];
+        var log_filename = join(buildDir, 'package.log')
+        var logger = (function () {
+          var log = createWriteStream(log_filename);
+          return function (data) {
+            log.write(data);
+            process.stderr.write('.');
+          }
+        })();
         var options = {
           cwd: buildDir,
           env: JSON.parse(JSON.stringify(process.env)),
-          customFds: [ 0, 1, 2 ]
+          customFds: [ 0, -1, -1 ]
         };
 
         // adjust the child's environment
@@ -65,7 +74,18 @@ exports.run = function (options, positional) {
         options.env.target = target;
         options.env.file = join(process.cwd(), 'config.json');
 
-        require('child_process').spawn(command, args, options);
+        process.stderr.write('package ' + action);
+        var child = require('child_process').spawn(command, args, options);
+        child.stdout.on('data', logger);
+        child.stderr.on('data', logger);
+        child.on('exit', function logger_finalize (code) {
+          if (code === 0) {
+            process.stderr.write(' done\n');
+          } else {
+            process.stderr.write(' fail\n'
+              + 'For more information see ' + log_filename + '\n');
+          };
+        });
       });
     });
   });
