@@ -2,16 +2,17 @@
 set -xeu
 
 # configuration
-build_dir="${build_dir-$PWD}"
+export build_dir="${build_dir-$PWD}"
 # !4 iOS: phonegap_dir="${phonegap_dir-$HOME/phonegap-1.1.0}"
-sdk="${sdk}"
-activity="${activity-MyActivity}"
-package="${package-com.test.mypackage}"
+export sdk="${sdk}"
+export activity="${activity-MyActivity}"
+export package="${package-com.test.mypackage}"
 
+# sanity-check configuration
+validate-activity
+validate-package
+validate-build_dir
 validate-sdk iphonesimulator
-# TODO validate $activity
-# TODO validate $package
-# TODO validate $build_dir [i.e. $build_dir/index.html]
 
 # setup self-destructive working directory
 cd "`mktemp -d "${TMPDIR-/tmp/}package-phonegap-iOS.XXXXXXXXXX"`"
