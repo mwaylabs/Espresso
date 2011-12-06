@@ -99,8 +99,9 @@ var generate = exports.generate = function generate(options) {
 
       Fs.mkdir(dirPath, 0755, function (err) {
           if (err) {
+            // Note: for <node-0.6 the errno was 17!
             /* 17 = error code for: File exists!*/
-            if (err.errno === 17) {
+            if (err.code === 'EEXIST' || err.errno === 17) {
               console.log(Style.cyan('Project with name: ') + Style.magenta('"' + projectName + '"') + Style.cyan(' already exists!'));
               process.exit(1);
             } else {
