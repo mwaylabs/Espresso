@@ -13,7 +13,7 @@ export package="${package-com.test.mypackage}"
 
 validate-mode
 validate-activity
-# TODO validate $package
+validate-package
 # TODO validate $build_dir [i.e. $build_dir/index.html]
 
 if test "$mode" = release; then
