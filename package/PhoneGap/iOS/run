@@ -33,6 +33,17 @@ cp -R src/* iOS-project/www
 rm -f iOS-project/www/config.json
 #TODO??? rm -f iOS-project/www/*.apk
 
+# TODO setup icons
+
+# setup splash screen
+if test -e src/theme/images/splash.png; then
+  cp src/theme/images/splash.png \
+      iOS-project/$activity/Resources/splash/Default.png
+else
+  echo "No splash.png found." >&2
+fi
+
+
 gsedi iOS-project/www/index.html '
   s|\(</\?\)[sS][cC][rR][iI][pP][tT]|\1script|g
   1,/<script/{
