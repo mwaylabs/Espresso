@@ -62,7 +62,7 @@ while read px dpi; do
       convert android-project/assets/theme/images/icon.png -resize ${px}x$px \
           android-project/res/drawable-$dpi/ic_launcher.png
     else
-      echo "Neither icon-$px.png nor icon.png found, using default icon for ldpi" >&2
+      echo "Neither icon-$px.png nor icon.png found." >&2
     fi
   else
     echo "Skipping $dpi" >&2

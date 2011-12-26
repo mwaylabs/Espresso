@@ -34,6 +34,25 @@ rm -f iOS-project/www/config.json
 #TODO??? rm -f iOS-project/www/*.apk
 
 # setup icons
+/usr/libexec/PlistBuddy -x -c "Delete :CFBundleIconFiles" \
+    iOS-project/$activity/$activity-info.plist
+/usr/libexec/PlistBuddy -x -c "Add :CFBundleIconFiles array" \
+    iOS-project/$activity/$activity-info.plist
+while read px name; do
+  if test -e src/theme/images/icon-$px.png; then
+    cp src/theme/images/icon-$px.png \
+        iOS-project/$activity/Resources/icons/$name
+  fi
+  /usr/libexec/PlistBuddy -x -c "Add :CFBundleIconFiles: string $name" \
+      iOS-project/$activity/$activity-info.plist
+done<<EOF
+ 57 icon.png
+114 icon@2x.png
+ 72 icon-72.png
+ 29 icon-Small.png
+ 50 icon-Small-50.png
+ 58 icon-Small@2x.png
+EOF
 
 # setup splash screen
 if test -e src/theme/images/splash.png; then
@@ -52,14 +71,6 @@ Landscape
 LandscapeLeft
 LandscapeRight
 EOF
-
-if test -e src/theme/images/splash-portrait.png; then
-  cp src/theme/images/splash.png \
-      iOS-project/$activity/Resources/splash/Default.png
-else
-  echo "No splash.png found." >&2
-fi
-
 
 gsedi iOS-project/www/index.html '
   s|\(</\?\)[sS][cC][rR][iI][pP][tT]|\1script|g
