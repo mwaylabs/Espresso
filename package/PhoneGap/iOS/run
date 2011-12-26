@@ -45,6 +45,8 @@ gsedi iOS-project/www/index.html '
   }
 '
 
+setup-plists
+
 # build iOS package
 cd iOS-project
 gsedi phonegap/debug 's/^xcodebuild/exec &/'
