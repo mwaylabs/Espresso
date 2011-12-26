@@ -1,0 +1,7 @@
+#! /usr/bin/env node
+
+value = JSON.parse(require('fs').readFileSync(process.argv[2]))
+process.argv.slice(3).forEach(function (key) {
+  value = value[key];
+});
+console.log(JSON.stringify(value, null, 2));
