@@ -74,6 +74,20 @@ done<<EOF
 96 xhdpi
 EOF
 
+# setup splash screen
+if test -e android-project/assets/theme/images/splash.png; then
+  mkdir -p android-project/res/drawable
+  cp android-project/assets/theme/images/splash.png \
+      android-project/res/drawable/
+  gsedi android-project/src/`echo $package | tr . /`/$activity.java '
+    s|super\.onCreate([^)]*);|\
+      super.setIntegerProperty("splashscreen", R.drawable.splash);\
+      &|
+  '
+else
+  echo "No splash.png found." >&2
+fi
+
 # update android project files to use phonegap
 gsedi android-project/src/`echo $package | tr . /`/$activity.java '
   s|extends Activity|extends DroidGap|
