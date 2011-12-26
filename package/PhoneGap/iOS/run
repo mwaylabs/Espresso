@@ -33,10 +33,27 @@ cp -R src/* iOS-project/www
 rm -f iOS-project/www/config.json
 #TODO??? rm -f iOS-project/www/*.apk
 
-# TODO setup icons
+# setup icons
 
 # setup splash screen
 if test -e src/theme/images/splash.png; then
+  cp src/theme/images/splash.png \
+      iOS-project/$activity/Resources/splash/Default.png
+fi
+while read orientation; do
+  if test -e src/theme/images/splash-$orientation.png; then
+    cp src/theme/images/splash-$orientation.png \
+        iOS-project/$activity/Resources/splash/Default-$orientation.png
+  fi
+done<<EOF
+Portrait
+PortraitUpsideDown
+Landscape
+LandscapeLeft
+LandscapeRight
+EOF
+
+if test -e src/theme/images/splash-portrait.png; then
   cp src/theme/images/splash.png \
       iOS-project/$activity/Resources/splash/Default.png
 else
