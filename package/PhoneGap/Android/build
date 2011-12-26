@@ -58,11 +58,6 @@ while read px dpi; do
     if test -e android-project/assets/theme/images/icon-$px.png; then
       cp android-project/assets/theme/images/icon-$px.png \
           android-project/res/drawable-$dpi/ic_launcher.png
-    elif test -e android-project/assets/theme/images/icon.png; then
-      convert android-project/assets/theme/images/icon.png -resize ${px}x$px \
-          android-project/res/drawable-$dpi/ic_launcher.png
-    else
-      echo "Neither icon-$px.png nor icon.png found." >&2
     fi
   else
     echo "Skipping $dpi" >&2
