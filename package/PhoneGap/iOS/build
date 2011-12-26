@@ -41,6 +41,9 @@ cp -R src/* iOS-project/www
 rm -f iOS-project/www/config.json
 rm -f iOS-project/www/*.ipa
 
+setup-icons
+setup-splash
+
 gsedi iOS-project/www/index.html '
   s|\(</\?\)[sS][cC][rR][iI][pP][tT]|\1script|g
   1,/<script/{
@@ -49,6 +52,8 @@ gsedi iOS-project/www/index.html '
 \2|
   }
 '
+
+setup-plists
 
 # build iOS package
 cd iOS-project
