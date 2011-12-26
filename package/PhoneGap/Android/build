@@ -28,7 +28,7 @@ if test "$mode" = release; then
 fi
 
 # setup self-destructive working directory
-cd "`mktemp -d "${TMPDIR-/tmp/}package-phonegap-android.XXXXXXXXXX"`"
+cd "`mktemp -d "${TMPDIR-/tmp}/package-phonegap-android.XXXXXXXXXX"`"
 trap "cd '$OLDPWD'; rm -fR '$PWD'" EXIT INT QUIT
 ln -s "$phonegap_dir/Android" phonegap
 ln -s "$build_dir" src
