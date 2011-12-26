@@ -52,6 +52,28 @@ cp phonegap/phonegap-*.js android-project/assets/phonegap.js
 cp phonegap/phonegap-*.jar android-project/libs/phonegap.jar
 cp -R phonegap/xml android-project/res/
 
+# setup icons
+while read px dpi; do
+  if test -d android-project/res/drawable-$dpi; then
+    if test -e android-project/assets/theme/images/icon-$px.png; then
+      cp android-project/assets/theme/images/icon-$px.png \
+          android-project/res/drawable-$dpi/ic_launcher.png
+    elif test -e android-project/assets/theme/images/icon.png; then
+      convert android-project/assets/theme/images/icon.png -resize ${px}x$px \
+          android-project/res/drawable-$dpi/ic_launcher.png
+    else
+      echo "Neither icon-$px.png nor icon.png found, using default icon for ldpi" >&2
+    fi
+  else
+    echo "Skipping $dpi" >&2
+  fi
+done<<EOF
+36 ldpi
+48 mdpi
+72 hdpi
+96 xhdpi
+EOF
+
 # update android project files to use phonegap
 gsedi android-project/src/`echo $package | tr . /`/$activity.java '
   s|extends Activity|extends DroidGap|
