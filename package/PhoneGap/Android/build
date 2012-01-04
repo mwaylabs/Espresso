@@ -28,7 +28,7 @@ if test "$mode" = release; then
 fi
 
 # setup self-destructive working directory
-cd "`mktemp -d "${TMPDIR-/tmp/}package-phonegap-android.XXXXXXXXXX"`"
+cd "`mktemp -d "${TMPDIR-/tmp}/package-phonegap-android.XXXXXXXXXX"`"
 trap "cd '$OLDPWD'; rm -fR '$PWD'" EXIT INT QUIT
 ln -s "$phonegap_dir/Android" phonegap
 ln -s "$build_dir" src
@@ -52,6 +52,37 @@ cp phonegap/phonegap-*.js android-project/assets/phonegap.js
 cp phonegap/phonegap-*.jar android-project/libs/phonegap.jar
 cp -R phonegap/xml android-project/res/
 
+# setup icons
+while read px dpi; do
+  if test -d android-project/res/drawable-$dpi; then
+    if test -e android-project/assets/theme/images/icon-$px.png; then
+      cp android-project/assets/theme/images/icon-$px.png \
+          android-project/res/drawable-$dpi/ic_launcher.png
+    fi
+  else
+    echo "Skipping $dpi" >&2
+  fi
+done<<EOF
+36 ldpi
+48 mdpi
+72 hdpi
+96 xhdpi
+EOF
+
+# setup splash screen
+if test -e android-project/assets/theme/images/splash.png; then
+  mkdir -p android-project/res/drawable
+  cp android-project/assets/theme/images/splash.png \
+      android-project/res/drawable/
+  gsedi android-project/src/`echo $package | tr . /`/$activity.java '
+    s|super\.onCreate([^)]*);|\
+      super.setIntegerProperty("splashscreen", R.drawable.splash);\
+      &|
+  '
+else
+  echo "No splash.png found." >&2
+fi
+
 # update android project files to use phonegap
 gsedi android-project/src/`echo $package | tr . /`/$activity.java '
   s|extends Activity|extends DroidGap|
@@ -60,30 +91,9 @@ gsedi android-project/src/`echo $package | tr . /`/$activity.java '
     super.loadUrl("file:///android_asset/index.html");|
   s|import android.app.Activity|import com.phonegap.*|
 '
-gsedi android-project/AndroidManifest.xml '
-  s|.*versionName.*|&\
-    <supports-screens\
-            android:largeScreens="true"\
-            android:normalScreens="true"\
-            android:smallScreens="true"\
-            android:resizeable="true"\
-            android:anyDensity="true"\
-            />\
-    <uses-permission android:name="android.permission.CAMERA" />\
-    <uses-permission android:name="android.permission.VIBRATE" />\
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />\
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />\
-    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />\
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />\
-    <uses-permission android:name="android.permission.INTERNET" />\
-    <uses-permission android:name="android.permission.RECEIVE_SMS" />\
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />\
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />\
-    <uses-permission android:name="android.permission.READ_CONTACTS" />\
-    <uses-permission android:name="android.permission.WRITE_CONTACTS" />\
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />\
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />|
-'
+
+setup-manifest
+
 gsedi android-project/assets/index.html '
   s|\(</\?\)[sS][cC][rR][iI][pP][tT]|\1script|g
   1,/<script/{

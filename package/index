@@ -2,7 +2,7 @@
 set -euf
 
 realpath() {
-  python -c 'import os, sys; print os.path.realpath(sys.argv[1])' "$1"
+  python -c 'import os, sys; print(os.path.realpath(sys.argv[1]))' "$1"
 }
 
 ROOT="$(dirname "$(realpath "$0")")"; export ROOT
