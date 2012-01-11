@@ -24,6 +24,7 @@ var generate = exports.generate = function generate(options) {
   var templateRenderer = Renderer.createRenderer(templatePath);
   var config = Utils.readConfig(options.directory);
   var dispatcher = {};
+  var port = options.port;
 
 
   /**
@@ -34,7 +35,7 @@ var generate = exports.generate = function generate(options) {
    * @return {undefined}
    * @api private
    */
-  function genericGenerate(type, templateFile, name) {
+  function genericGenerate(type, templateFile, name, port) {
     var directory = options.directory + '/app/' + type + '/';
     var outputPath = directory + name + '.js';
     var callback = function callback(err) {
@@ -45,7 +46,8 @@ var generate = exports.generate = function generate(options) {
 
     var ctx = {
       name: name,
-      appName: config.name
+      appName: config.name,
+      port: port
     };
 
     Fs.mkdir(directory, 0755, function (err) {
@@ -154,6 +156,25 @@ var generate = exports.generate = function generate(options) {
     genericGenerate('resources/i18n', 'de_de.js', 'de_de');
     genericGenerate('resources/i18n', 'en_us.js', 'en_us');
   };
+
+  /**
+   * Generate socket-server
+   *
+   * @param {String} serverName
+   * @param {Integer} port
+   * @return {undefined}
+   * @api private
+   */
+  dispatcher.generateSockserver = function generateSocketServer(serverName) {
+    genericGenerate('../', 'socket-server.js', serverName, port);
+    Utils.log('Run the server with: "node '+serverName+'.js"');
+  };
+
+  /**
+   * NOP-function so that file-generator must not be modified
+   * to add customized port in socket-server-generation
+   */
+  dispatcher.generatePort = function generatePort(){};
 
   (function dispatchOperations() {
       Object.keys(options).forEach(function (operation) {
