@@ -354,6 +354,9 @@ Framework.prototype.save = function (callback) {
 
       if (_cF !== undefined) {
         switch (true) {
+        case (_cF.isWebfont()):
+          that.copyFile(files, _cF.path, _outputPath + '/theme/' + _cF.getBaseName() + _cF.getFileExtension());
+          break;
         case (_cF.isImage()):
           that.copyFile(files, _cF.path, _outputPath + '/theme/images/' + _cF.getBaseName() + _cF.getFileExtension());
           break;
