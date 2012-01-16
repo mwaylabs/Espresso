@@ -94,6 +94,7 @@ exports.run = function (options, positional) {
       var failed = [];
       deployTargets.forEach(function (target) {
         var config = configs[target];
+        config.LOGNAME = process.env.LOGNAME;
         var handler = handlers[target];
         process.stdout.write(
           'deploy '
