@@ -10,10 +10,11 @@
    port=10021            # optional; default is 21
    username=foo          # required
    password=bar          # required
-   targetPath=/foo       # optional; default is '/'
+   targetPath=/foo       # required
+   deleteTargetPath=true # optional; default is false
    timeout=10000         # optional; default is 15000
 
-   export host port username password targetPath timeout
+   export host port username password targetPath timeout deleteTargetPath
 
    # deploy $PWD/bar as ftp://foo@bar:ftp.panacoda.com:10021/foo
    exec python2 deploy.py bar
@@ -60,6 +61,18 @@ def delete(ftp, path):
       # let's presume the target directory or file didn't exist...
       # that's just what we wanted -> yay, nothing to do! ^_^
       pass
+
+def exists(ftp, path):
+  """check if a remote file or directory exists"""
+
+  path = normpath(path)
+  try:
+    ftp.sendcmd('MLst ' + path)
+    result = True
+  except ftplib.error_perm:
+    result = False
+
+  return result
 
 def put(ftp, sourcePath, targetPath):
   """upload a file or directory (recursive)"""
@@ -112,7 +125,11 @@ if __name__ == '__main__':
     step(ftp.connect(host, port, timeout))
     step(ftp.login(username, password))
 
-    delete(ftp, targetPath)
+    if exists(ftp, targetPath):
+      if 'deleteTargetPath' in config and config['deleteTargetPath'] == 'true':
+        delete(ftp, targetPath)
+      else:
+        raise Exception('targetPath already exists, use deleteTargetPath to remove it first');
 
     for sourcePath in source_directory_names:
       put(ftp, sourcePath, targetPath)

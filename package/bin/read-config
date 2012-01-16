@@ -11,6 +11,7 @@ try {
   readFileSync = require("fs").readFileSync;
   config = JSON.parse(readFileSync(filename));
   env = config.package[target];
+  env.target = target;
   env.name = config.name;
 } catch (exn) {
   console.error("Error: failed to load package configuration from config.json")
