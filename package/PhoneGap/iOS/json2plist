@@ -1,0 +1,72 @@
+#! /usr/bin/env node
+
+depth = 0;
+
+prn = function (s) {
+  var prefix = '';
+  for (var i = 0; i < depth; ++i) {
+    prefix += '        ';
+  };
+  console.log(prefix + s);
+};
+
+dump = function (x) {
+  prn('<?xml version="1.0" encoding="UTF-8"?>');
+  prn('<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">');
+  prn('<plist version="1.0">');
+  JSON.stringify(x,
+      function rec (key, value) {
+        if (key !== '') {
+          prn('<key>' + key + '</key>');
+        };
+        switch (typeof value) {
+          case 'object':
+            if (value instanceof Array) {
+              prn('<array>');
+              depth++;
+              value.forEach(function (x) {
+                rec('', x);
+              });
+              depth--;
+              prn('</array>');
+            } else {
+              prn('<dict>');
+              depth++;
+              Object.keys(value).forEach(function (key) {
+                rec(key, value[key]);
+              });
+              depth--;
+              prn('</dict>');
+            };
+            break;
+          case 'string':
+            prn('<string>' + value + '</string>');
+            break;
+          case 'number':
+            if (/\./.test(value.toString())) {
+              prn('<real>' + value + '</real>');
+            } else {
+              prn('<integer>' + value + '</integer>');
+            };
+            break;
+          case 'boolean':
+            prn(value ? '<true/>' : '<false/>');
+            break;
+        };
+      });
+  prn('</plist>');
+};
+
+data = '';
+
+process.stdin.resume();
+process.stdin.setEncoding('utf8');
+
+process.stdin.on('data', function (chunk) {
+  data += chunk;
+});
+
+process.stdin.on('end', function () {
+  dump(JSON.parse(data));
+});
+
