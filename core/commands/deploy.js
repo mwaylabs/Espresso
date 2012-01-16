@@ -62,7 +62,8 @@ exports.run = function (options, positional) {
           + JSON.stringify(target)
           + ']'
           + (config instanceof Object &&
-             config[target] instanceof Object
+             config[target] instanceof Object &&
+             typeof config[target].method === 'string'
             ? '[' + JSON.stringify(config[target].method) + ']'
             : '')
           + ' is made of stupid!'
