@@ -1,7 +1,7 @@
 { "name" : "espresso",
   "description" : "Development tools for The-M-Project",
-  "version" : "0.8.0",
-  "author" : "M-WAY Solutions GmbH <s.pfleiderer@mwaysolutions.com>",
+  "version" : "1.0.0RC1",
+  "author" : "Panacoda GmbH <info@panacoda.com>",
   "repository" : { 
     "type" : "git",
     "url" : "http://github.com/mwaylabs/Espresso.git"

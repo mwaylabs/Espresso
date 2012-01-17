@@ -62,7 +62,8 @@ exports.run = function (options, positional) {
           + JSON.stringify(target)
           + ']'
           + (config instanceof Object &&
-             config[target] instanceof Object
+             config[target] instanceof Object &&
+             typeof config[target].method === 'string'
             ? '[' + JSON.stringify(config[target].method) + ']'
             : '')
           + ' is made of stupid!'
@@ -93,6 +94,7 @@ exports.run = function (options, positional) {
       var failed = [];
       deployTargets.forEach(function (target) {
         var config = configs[target];
+        config.LOGNAME = process.env.LOGNAME;
         var handler = handlers[target];
         process.stdout.write(
           'deploy '

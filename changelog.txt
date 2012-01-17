@@ -1,3 +1,10 @@
+** Version 1.0.0RC1 - Date 13.01.2012 **
+
+  * Added support for web fonts as resources.
+  * Fixed a bug with project init and the d8 library.
+  * Added app icon support to native packaging.
+  * Added splashscreen support to native packaging.
+
 ** Version 0.8.0 - Date 06.12.2011 **
 
   * Add "package" command to build native apps with PhoneGap.

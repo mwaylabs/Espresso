@@ -15,7 +15,7 @@ validate-build_dir
 validate-sdk iphonesimulator
 
 # setup self-destructive working directory
-cd "`mktemp -d "${TMPDIR-/tmp/}package-phonegap-iOS.XXXXXXXXXX"`"
+cd "`mktemp -d "${TMPDIR-/tmp}/package-phonegap-iOS.XXXXXXXXXX"`"
 trap "cd '$OLDPWD'; rm -fR '$PWD'" EXIT INT QUIT
 # !4 iOS: ln -s "$phonegap_dir/iOS" phonegap
 ln -s "$build_dir" src
@@ -33,6 +33,9 @@ cp -R src/* iOS-project/www
 rm -f iOS-project/www/config.json
 #TODO??? rm -f iOS-project/www/*.apk
 
+setup-icons
+setup-splash
+
 gsedi iOS-project/www/index.html '
   s|\(</\?\)[sS][cC][rR][iI][pP][tT]|\1script|g
   1,/<script/{
@@ -41,6 +44,8 @@ gsedi iOS-project/www/index.html '
 \2|
   }
 '
+
+setup-plists
 
 # build iOS package
 cd iOS-project
