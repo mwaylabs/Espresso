@@ -42,14 +42,14 @@ If you don't want to use NPM, you can check out the project with git, init the s
 
 4. Create an alias:
 
-    `alias espresso='/path/to/Espresso/bin/espresso.js'
+    `alias espresso='/path/to/Espresso/bin/espresso.js'`
 
 Usage
 =====
 
 1. Create a new HelloWorld project:
     
-    `espresso init -project HelloWorld --example`
+    `espresso init --project HelloWorld --example`
 
 2. Build it:
     
