@@ -56,6 +56,11 @@ Task_PreSort.prototype.duty = function(framework,callback){
         _sorted = [];
 
     _files.forEach(function(file) {
+        /* if this is an i18n file, skip it */
+        if(file.path.search('/i18n/')!== -1) {
+            return;
+        }
+
         if(file.path.search('/controllers/')!== -1) {
             _controllers.push(file);
         } else if(file.path.search('/views/')!== -1) {

@@ -1,3 +1,8 @@
+** Version 1.0.0 - Date 24.01.2012 **
+
+  * Added param to customize the default config.json
+  * Fixed i18n-duplicates: They now don't get merged into APPNAME_App.js
+
 ** Version 1.0.0RC1 - Date 13.01.2012 **
 
   * Added support for web fonts as resources.
