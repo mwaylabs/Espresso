@@ -9,7 +9,8 @@ exports.description = 'Command line tool to generate a new project';
 exports.examples = [
   '--project myNewProject',
   '--project myNewProject --directory ~/projects/ --example',
-  '-p myNewProject -d ~/projects/ -e'
+  '-p myNewProject -d ~/projects/ -e',
+  '--config ~/path/to/custom_config.json'
 ];
 
 exports.options = {
@@ -28,6 +29,11 @@ exports.options = {
 
   example: {
     'description': 'Generate an example "Hello World" application',
+    'default': false
+  },
+
+  config: {
+    'description': 'Merge your custom config.json into the default configuration',
     'default': false
   }
 

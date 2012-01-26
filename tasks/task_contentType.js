@@ -36,7 +36,11 @@ Task_ContentType = exports.Task_ContentType = function() {
     ".jpg"     :  "image/jpeg",
     ".gif"     :  "image/gif",
     ".svg"     :  "image/svg+xml",
-    ".json"    :  "application/json"
+    ".json"    :  "application/json",
+    ".ttf"     :  "application/x-font-ttf",
+    ".otf"     :  "font/opentype",
+    ".eot"     :  "application/vnd.ms-fontobject",
+    ".woff"    :  "application/x-woff"
   };
 };
 
@@ -56,6 +60,9 @@ var self = this;
   cF.contentType = (self.contentTypes[cF.getFileExtension()]) ? self.contentTypes[cF.getFileExtension()] :  'text/plain';
 
    switch (true) {
+     case (cF.isWebfont()):
+       cF.requestPath = 'theme/'+cF.getBaseName()+cF.getFileExtension();
+       break;
      case (cF.isImage()):
        cF.requestPath = 'theme/images/'+cF.getBaseName()+cF.getFileExtension();
        break;

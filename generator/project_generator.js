@@ -26,6 +26,7 @@ var generate = exports.generate = function generate(options) {
   var espressoPath = __dirname + '/..';
   var templatePath = __dirname + '/templates';   
   var templateRenderer = Renderer.createRenderer(templatePath);
+  var customConfigPath = options.config;
   var tools = ['config.json']; // array with names of build tools, used in the a new project.
   var outPut = [];
   var path;
@@ -73,9 +74,7 @@ var generate = exports.generate = function generate(options) {
   outPut.push(path + projectName + '/frameworks/The-M-Project/modules/themes/jquery_mobile/images');
   outPut.push(path + projectName + '/frameworks/The-M-Project/modules/tmp_themes');
   outPut.push(path + projectName + '/frameworks/The-M-Project/modules/underscore');
-  if(require('path').existsSync(path + projectName + '/frameworks/The-M-Project/modules/d8')) {
-    outPut.push(path + projectName + '/frameworks/The-M-Project/modules/d8');
-  }
+  outPut.push(path + projectName + '/frameworks/The-M-Project/modules/d8');
 
 
   /**
@@ -125,6 +124,24 @@ var generate = exports.generate = function generate(options) {
   var generateBuildTools = function generateBuildTools(callback) {
     var templateFile = tools.shift();
     var outputPath = path + projectName + '/' + templateFile;
+    /* custom config stuff */
+    if(customConfigPath){
+      try{
+        var c  = JSON.parse(Fs.readFileSync(__dirname + '/templates/' + templateFile, 'utf8'));
+        var cc = JSON.parse(Fs.readFileSync(customConfigPath, 'utf8'));
+        for(var prop in cc) {
+          c[prop] = cc[prop];
+        }
+        c['name'] = '{{appName}}';
+        var content = JSON.stringify(c);
+        Fs.writeFileSync(__dirname + '/templates/_config.json', content, 'utf8');
+        templateFile = '_config.json';
+        outputPath = path + projectName + '/config.json';
+      }catch(e){
+        templateFile = 'config.json';
+      }
+    }
+
     var ctx = {
       espresso: espressoPath,
       appName: projectName
@@ -134,7 +151,10 @@ var generate = exports.generate = function generate(options) {
         templateFile: templateFile,
         ctx: ctx,
         outputPath: outputPath,
-        callback: callback
+        callback: function(){
+          Fs.unlink(__dirname + '/templates/_config.json');
+          callback();
+        }
       });
   };
 

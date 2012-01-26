@@ -137,6 +137,14 @@ File.prototype.isStylesheet = function() {
   return this.getFileExtension() === '.css';
 };
 
+/**
+ * @description
+ * Test if a File is a web-font.
+ * @return {boolean}, true if file is a web-font.
+ */
+File.prototype.isWebfont = function() {
+  return this.getFileExtension() === '.eot' || this.getFileExtension() === '.svg' || this.getFileExtension() === '.ttf' || this.getFileExtension() === '.woff';
+};
 
 /**
  * @description
