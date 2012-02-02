@@ -25,10 +25,10 @@ while read px name; do
   /usr/libexec/PlistBuddy -x -c "Add :CFBundleIconFiles: string $name" \
       iOS-project/$activity/$activity-info.plist
 done<<EOF
- 57 appicon.png
-114 appicon@2x.png
- 72 appicon-72.png
- 29 appicon-Small.png
- 50 appicon-Small-50.png
- 58 appicon-Small@2x.png
+ 57 icon.png
+114 icon@2x.png
+ 72 icon-72.png
+ 29 icon-Small.png
+ 50 icon-Small-50.png
+ 58 icon-Small@2x.png
 EOF
