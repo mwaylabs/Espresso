@@ -6,12 +6,24 @@ set -xeuf
 /usr/libexec/PlistBuddy -x -c "Add :CFBundleIconFiles array" \
     iOS-project/$activity/$activity-info.plist
 while read px name; do
-  if test -e src/theme/images/icon-$px.png; then
-    cp src/theme/images/icon-$px.png \
+  if test -e src/theme/images/appicon-$px.png; then
+    cp src/theme/images/appicon-$px.png \
         iOS-project/$activity/Resources/icons/$name
-    /usr/libexec/PlistBuddy -x -c "Add :CFBundleIconFiles: string $name" \
-        iOS-project/$activity/$activity-info.plist
+  elif test "${autoScaleIcon-false}" = true; then
+    if test -e src/theme/images/appicon.png; then
+      convert src/theme/images/appicon.png \
+          -resize ${px}x$px \
+          iOS-project/$activity/Resources/icons/$name
+    else
+      echo "Warning: missing appicon.png to autoScaleIcon" >&2
+      continue
+    fi
+  else
+    echo "Warning: missing appicon-$px.png and autoScaleIcon is not true" >&2
+    continue
   fi
+  /usr/libexec/PlistBuddy -x -c "Add :CFBundleIconFiles: string $name" \
+      iOS-project/$activity/$activity-info.plist
 done<<EOF
  57 icon.png
 114 icon@2x.png
