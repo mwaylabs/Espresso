@@ -55,9 +55,21 @@ cp -R phonegap/xml android-project/res/
 # setup icons
 while read px dpi; do
   if test -d android-project/res/drawable-$dpi; then
-    if test -e android-project/assets/theme/images/icon-$px.png; then
-      cp android-project/assets/theme/images/icon-$px.png \
+    if test -e android-project/assets/theme/images/appicon-$px.png; then
+      cp android-project/assets/theme/images/appicon-$px.png \
           android-project/res/drawable-$dpi/ic_launcher.png
+    elif test "${autoScaleIcon-false}" = true; then
+      if test -e android-project/assets/theme/images/appicon.png; then
+        convert android-project/assets/theme/images/appicon.png \
+            -resize ${px}x$px \
+            android-project/res/drawable-$dpi/ic_launcher.png
+      else
+        echo "Warning: missing appicon.png to autoScaleIcon" >&2
+        continue
+      fi
+    else
+      echo "Warning: missing appicon-$px.png and autoScaleIcon is not true" >&2
+      continue
     fi
   else
     echo "Skipping $dpi" >&2
