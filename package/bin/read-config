@@ -7,6 +7,12 @@ function print_export(key, value) {
   console.log(key + "=" + JSON.stringify(value) + "; export " + key);
 };
 
+function print_drop(key, reason) {
+  console.error("Warning: dropping " + key
+      + (reason ? " because " + reason : "")
+      + ".");
+};
+
 try {
   readFileSync = require("fs").readFileSync;
   config = JSON.parse(readFileSync(filename));
@@ -30,10 +36,21 @@ try {
 };
 Object.keys(env)
   .filter(function (key) {
-    return typeof env[key] === "string";
+    // please note that booleans get coerced to strings!
+    // maybe we should also export ${key}_type=...
+    if (typeof env[key] === "string" ||
+        typeof env[key] === "boolean") {
+      return true;
+    } else {
+      print_drop(key, "typeof is neither string nor boolean");
+    };
   })
   .filter(function (key) {
-    return /^[A-Za-z]+$/.test(key);
+    if (/^[A-Za-z]+$/.test(key)) {
+      return true;
+    } else {
+      print_drop(key, "it doesn't match /^[A-Za-z]+$/");
+    };
   })
   .forEach(function (key) {
     print_export(key, env[key]);
