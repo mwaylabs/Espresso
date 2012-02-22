@@ -13,6 +13,10 @@ var Task_PreSort,
     Task = require('./task').Task;
 var normalize = require('path').normalize;
 
+var normalize4RegExp = function (name) {
+  return normalize(name).replace(/\\/g, '\\\\');
+};
+
 /**
  * @class
  * Task to sort the files of framework, according to the demands of The-M-Project� core.
@@ -61,17 +65,17 @@ Task_PreSort.prototype.duty = function(framework,callback){
         var path = normalize(file.path);
 
         /* if this is an i18n file, skip it */
-        if (path.search(normalize('/i18n/')) !== -1) {
+        if (path.search(normalize4RegExp('/i18n/')) !== -1) {
             return;
         }
 
-        if (path.search(normalize('/controllers/')) !== -1) {
+        if (path.search(normalize4RegExp('/controllers/')) !== -1) {
             _controllers.push(file);
-        } else if (path.search(normalize('/views/')) !== -1) {
+        } else if (path.search(normalize4RegExp('/views/')) !== -1) {
             _views.push(file);
-        } else if (path.search(normalize('/models/')) !== -1) {
+        } else if (path.search(normalize4RegExp('/models/')) !== -1) {
             _models.push(file);
-        } else if (path.search(normalize('/stores/')) !== -1) {
+        } else if (path.search(normalize4RegExp('/stores/')) !== -1) {
             _stores.push(file);
         } else {
             _misc.push(file);
