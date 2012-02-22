@@ -10,6 +10,7 @@
 
 var E = require('./e').E;
 var File = require('./file').File;
+var normalize = require('path').normalize;
 
 /**
  * @class
@@ -197,11 +198,12 @@ Framework.prototype.browseFiles = function (path, callback) {
      * @param path, the path to check.
      */
     that.checkIfFileShouldBeExcluded = function (path) {
+      path = normalize(path);
       // exclude hidden files
       if (/\/\.[\w]+\/(\.[\w]+)?/.test(path)) {
         return true;
       }
-      var _fileBaseName = path.split('/');
+      var _fileBaseName = path.split(normalize('/'));
       if (that.checkIfFolderShouldBeExcluded(path)) {
         return true;
       }
@@ -214,7 +216,12 @@ Framework.prototype.browseFiles = function (path, callback) {
     that.checkIfFolderShouldBeExcluded = function (path) {
 
       self.excludedFolders.forEach(function (folder) {
-          if (path.search('/' + folder + '/') !== -1) {
+          // Replace() escapes backslashes of DOS-style paths to not interfere
+          // with JavaScript's RegExp.
+          // We should probably escape all magic characters...
+          var pattern =
+              new RegExp(normalize('/' + folder + '/').replace(/\\/g, '\\\\'));
+          if (path.search(pattern) !== -1) {
             return true;
           }
         });

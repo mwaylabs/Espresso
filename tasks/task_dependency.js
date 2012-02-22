@@ -11,6 +11,7 @@
 
 var Task = require('./task').Task;
 var File = require('../core/file').File;
+var normalize = require('path').normalize;
 
 /**
  * @class
@@ -139,7 +140,7 @@ Task_Dependency.prototype.duty = function(framework,cb) {
               that.files.forEach(function(file){
                   file.dependencies.forEach(function (dep){
                       if(file.getName() !== node.name){ /* don«t use itself as a dependency*/
-                        if(dep === node.name){
+                        if (normalize(dep) === node.name) {
                           /* adding child nodes, looking for children of that child node as well. */
             node.addChildeNode(that.buildTree(new _TreeNode(file.getName(),file)));
           }
@@ -233,7 +234,7 @@ return node
             for(var i = 0; i < _currentNode_Deps.length; i++ ){
               /* check if all dependencies are already done*/
             for(var x = 0; x < _done.length; x++ ){
-              if(_done[x] === _currentNode_Deps[i] ){
+              if (normalize(_done[x]) === normalize(_currentNode_Deps[i])) {
                 _deps_found++;
               }
             }

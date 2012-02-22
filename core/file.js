@@ -11,6 +11,7 @@
 
 
 var E = require('./e').E;
+var normalize = require('path').normalize;
 
 /**
  * @class
@@ -92,7 +93,7 @@ File.prototype.isVirtual = function(){
  * @return {string}, the name of the file.
  */
 File.prototype.getName = function(){
-  var _filename =  this.name.split(this.frDelimiter)[1];
+  var _filename = normalize(this.name).split(normalize(this.frDelimiter))[1];
   if (!_filename) {
     throw new Error('Unsplittable filename: ' + this.name + '. Delimiter: ' + this.frDelimiter);
   }
