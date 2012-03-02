@@ -10,9 +10,9 @@
 
 exports.description = 'Command to build native applications';
 
-exports.usage = ('Usage: espresso package <mode> [<target>]'
+exports.usage = ('Usage: espresso package <action> [<target>]'
 + '\n'
-+ '\nAvailable modes:'
++ '\nAvailable actions:'
 + '\n   run                         Build and run project in emulator.'
 + '\n   build                       Build native application package.'
 + '\n'
