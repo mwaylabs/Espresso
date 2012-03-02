@@ -19,6 +19,7 @@ var Style = require('../lib/color');
 var Utils = require('../lib/espresso_utils');
 var File = require('../core/file').File;
 var Renderer = require('../lib/renderer');
+var normalize = require('path').normalize;
 
 // TODO: Implement transaction mechanism to roll back on error
 
@@ -241,7 +242,7 @@ var generate = exports.generate = function generate(options) {
     var currentFile = files.shift();
 
     if (currentFile) {
-      var fileTarget = currentFile.path.split('frameworks/')[1];
+      var fileTarget = currentFile.path.split(normalize('frameworks/'))[1];
       fileTarget = fileTarget.split(currentFile.getBaseName() + currentFile.getFileExtension())[0];
       var streamPath = path + projectName + '/frameworks/' + fileTarget + 
         currentFile.getBaseName() + currentFile.getFileExtension();

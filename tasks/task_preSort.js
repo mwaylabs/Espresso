@@ -11,6 +11,11 @@
 
 var Task_PreSort,
     Task = require('./task').Task;
+var normalize = require('path').normalize;
+
+var normalize4RegExp = function (name) {
+  return normalize(name).replace(/\\/g, '\\\\');
+};
 
 /**
  * @class
@@ -56,18 +61,21 @@ Task_PreSort.prototype.duty = function(framework,callback){
         _sorted = [];
 
     _files.forEach(function(file) {
+
+        var path = normalize(file.path);
+
         /* if this is an i18n file, skip it */
-        if(file.path.search('/i18n/')!== -1) {
+        if (path.search(normalize4RegExp('/i18n/')) !== -1) {
             return;
         }
 
-        if(file.path.search('/controllers/')!== -1) {
+        if (path.search(normalize4RegExp('/controllers/')) !== -1) {
             _controllers.push(file);
-        } else if(file.path.search('/views/')!== -1) {
+        } else if (path.search(normalize4RegExp('/views/')) !== -1) {
             _views.push(file);
-        } else if(file.path.search('/models/')!== -1) {
+        } else if (path.search(normalize4RegExp('/models/')) !== -1) {
             _models.push(file);
-        } else if(file.path.search('/stores/')!== -1) {
+        } else if (path.search(normalize4RegExp('/stores/')) !== -1) {
             _stores.push(file);
         } else {
             _misc.push(file);
