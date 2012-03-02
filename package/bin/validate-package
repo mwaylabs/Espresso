@@ -4,11 +4,11 @@ set -eu
 key='package'
 value="$package"
 value_pattern='[a-z][a-z0-9]*\(\.[a-z][a-z0-9]*\)*'
-pattern_hint="Please specify the $key like \"com.test.MyPackage\"."
+pattern_hint="Please specify the $key like \"com.test.mypackage\"."
 
 if ! echo "$value" | grep -i -q "^$value_pattern$"; then
   exec >&2
-  echo "The $key ([31m$value[m) specified in config.json looks odd."
+  echo "The $key ([31m$value[m) specified in config.json looks odd (only lowercases are allowed)."
   echo "$pattern_hint"
   exit 23
 fi
