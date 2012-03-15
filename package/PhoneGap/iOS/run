@@ -21,7 +21,7 @@ trap "cd '$OLDPWD'; rm -fR '$PWD'" EXIT INT QUIT
 ln -s "$build_dir" src
 
 # create iOS project directory
-cd $ROOT/../submodules/github/callback/callback-ios/
+cd $ROOT/../submodules/github/4z3/callback-ios/
 ./bin/create "$OLDPWD/iOS-project" "$package" "$activity"
 cd "$OLDPWD"
 rm -fR iOS-project/www
