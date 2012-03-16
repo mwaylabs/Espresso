@@ -16,9 +16,9 @@
 [submodule "submodules/github/callback/phonegap"]
 	path = submodules/github/callback/phonegap
 	url = https://github.com/callback/phonegap
-[submodule "submodules/github/callback/callback-ios"]
-	path = submodules/github/callback/callback-ios
-	url = https://github.com/callback/callback-ios
 [submodule "submodules/github/Fingertips/ios-sim"]
 	path = submodules/github/Fingertips/ios-sim
 	url = https://github.com/Fingertips/ios-sim
+[submodule "submodules/github/4z3/callback-ios"]
+	path = submodules/github/4z3/callback-ios
+	url = https://github.com/4z3/callback-ios
