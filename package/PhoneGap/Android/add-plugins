@@ -1,13 +1,6 @@
 #! /bin/sh
 set -xeuf
 
-## remove closing tag from res/xml/plugins.xml
-tmp=$(mktemp plugins.xml.XXXXXXXX)
-sed -n '/^<\/plugins>$/!p' \
-    android-project/res/xml/plugins.xml > $tmp
-mv $tmp android-project/res/xml/plugins.xml
-
-## process plugins
 plugins="$(json-print $file package $target plugins | plugins2args)"
 echo "$plugins" | while read name value; do
 
@@ -19,19 +12,17 @@ echo "$plugins" | while read name value; do
   done
 
   # link js to html
-  tmp=$(mktemp $name,index.html,XXXXXXXX)
-  sed "s:</head>:$(
+  gsedi android-project/assets/index.html "s:</head>:$(
     find app/plugins/$name/assets -name '*.js' | sed -r '
         s:^app/plugins/'"$name"'/assets/(.*):<script type="application/javascript" src="\1"></script>:
-    ')\n&:" \
-      android-project/assets/index.html > $tmp
-  mv $tmp android-project/assets/index.html
+    ')\n&:"
 
   # add element to res/xml/plugins.xml
   echo "    <plugin name=\""$name"\" value=\""$value"\" />" \
       >> android-project/res/xml/plugins.xml
 done
 
-## add closing tag again
+# move closing tag to the end
+gsedi android-project/res/xml/plugins.xml 's:</plugins>::'
 echo '</plugins>' \
     >>android-project/res/xml/plugins.xml
