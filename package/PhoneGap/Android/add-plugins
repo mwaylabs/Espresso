@@ -2,12 +2,10 @@
 set -xeuf
 
 ## remove closing tag from res/xml/plugins.xml
-cp android-project/res/xml/plugins.xml \
-    android-project/res/xml/plugins.xml.tmp
+tmp=$(mktemp plugins.xml.XXXXXXXX)
 sed -n '/^<\/plugins>$/!p' \
-    android-project/res/xml/plugins.xml.tmp \
-    > android-project/res/xml/plugins.xml
-rm android-project/res/xml/plugins.xml.tmp
+    android-project/res/xml/plugins.xml > $tmp
+mv $tmp android-project/res/xml/plugins.xml
 
 ## process plugins
 json-print $file package $target plugins | plugins2args |
