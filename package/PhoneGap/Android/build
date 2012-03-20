@@ -113,7 +113,6 @@ gsedi android-project/src/`echo $package | tr . /`/$activity.java '
 '
 
 setup-manifest
-add-plugins
 
 gsedi android-project/assets/index.html '
   s|\(</\?\)[sS][cC][rR][iI][pP][tT]|\1script|g
@@ -123,6 +122,8 @@ gsedi android-project/assets/index.html '
 \2|
   }
 '
+
+add-plugins
 
 # build android package
 (cd android-project && ant --noconfig "$mode")

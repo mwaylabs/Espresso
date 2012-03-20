@@ -53,6 +53,7 @@ gsedi iOS-project/www/index.html '
   }
 '
 
+add-plugins
 setup-plists
 
 # build iOS package

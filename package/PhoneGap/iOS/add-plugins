@@ -1,0 +1,27 @@
+#! /bin/sh
+set -xeuf
+
+plugins="$(json-print $file package $target plists PhoneGap Plugins | plugins2args)"
+echo "$plugins" | while read name value; do
+
+  # copy plugin files
+  (
+    cd app/plugins/$name
+    find . -name '*.h'
+    find . -name '*.cpp'
+    find . -name '*.mm'
+  ) |
+  tar -C app/plugins/$name -T- |
+      tar -C "$(find iOS-project -type d -name Plugins)" -x -v
+
+  js_files="$(cd app/plugins/$name && find . -name '*.js')"
+  echo "$js_files" |
+      tar -C app/plugins/$name -T- |
+      tar -C iOS-project/www -x -v
+
+  # link js to html
+  gsedi iOS-project/www/index.html "s:</head>:$(
+    echo "$js_files" | sed -r '
+        s:^\./(.*):<script type="application/javascript" src="\1"></script>:
+    ')\n&:"
+done
