@@ -8,8 +8,8 @@ sed -n '/^<\/plugins>$/!p' \
 mv $tmp android-project/res/xml/plugins.xml
 
 ## process plugins
-json-print $file package $target plugins | plugins2args |
-while read name value; do
+plugins="$(json-print $file package $target plugins | plugins2args)"
+echo "$plugins" | while read name value; do
 
   # copy plugin files
   for i in src libs assets; do

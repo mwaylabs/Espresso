@@ -13,7 +13,17 @@ prn = function (s) {
 dump = function (x) {
   Object.keys(x).forEach(function (key) {
     var value = x[key];
-    prn([value.name, value.value].join(' '));
+    switch (typeof value) {
+      case 'string':
+        // nothing to do
+        break;
+      default:
+        throw new Error('Value is not a string ('
+            + 'key: ' + JSON.stringify(key)
+            + ', value: ' + JSON.stringify(value)
+            + ')');
+    };
+    prn([value, key].join(' '));
   });
 };
 
