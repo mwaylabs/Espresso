@@ -29,9 +29,15 @@ fi
 
 # setup self-destructive working directory
 cd "`mktemp -d "${TMPDIR-/tmp}/package-phonegap-android.XXXXXXXXXX"`"
-trap "cd '$OLDPWD'; rm -fR '$PWD'" EXIT INT QUIT
+if echo "${ESPRESSO_DEBUG-}" | grep -q package; then
+  : debugging espresso package
+else
+  # activate self-destructive if we're not debugging this component
+  trap "cd '$OLDPWD'; rm -fR '$PWD'" EXIT INT QUIT
+fi
 ln -s "$phonegap_dir/Android" phonegap
 ln -s "$build_dir" src
+ln -s "$applicationDirectory" app
 
 # create android project directory
 android create project \
@@ -107,6 +113,7 @@ gsedi android-project/src/`echo $package | tr . /`/$activity.java '
 '
 
 setup-manifest
+add-plugins
 
 gsedi android-project/assets/index.html '
   s|\(</\?\)[sS][cC][rR][iI][pP][tT]|\1script|g

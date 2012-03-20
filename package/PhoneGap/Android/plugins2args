@@ -1,0 +1,32 @@
+#! /usr/bin/env node
+
+depth = 0;
+
+prn = function (s) {
+  var prefix = '';
+  for (var i = 0; i < depth; ++i) {
+    prefix += '        ';
+  };
+  console.log(prefix + s);
+};
+
+dump = function (x) {
+  Object.keys(x).forEach(function (key) {
+    var value = x[key];
+    prn([value.name, value.value].join(' '));
+  });
+};
+
+data = '';
+
+process.stdin.resume();
+process.stdin.setEncoding('utf8');
+
+process.stdin.on('data', function (chunk) {
+  data += chunk;
+});
+
+process.stdin.on('end', function () {
+  dump(JSON.parse(data));
+});
+
