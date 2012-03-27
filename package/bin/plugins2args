@@ -1,0 +1,42 @@
+#! /usr/bin/env node
+
+depth = 0;
+
+prn = function (s) {
+  var prefix = '';
+  for (var i = 0; i < depth; ++i) {
+    prefix += '        ';
+  };
+  console.log(prefix + s);
+};
+
+dump = function (x) {
+  Object.keys(x).forEach(function (key) {
+    var value = x[key];
+    switch (typeof value) {
+      case 'string':
+        // nothing to do
+        break;
+      default:
+        throw new Error('Value is not a string ('
+            + 'key: ' + JSON.stringify(key)
+            + ', value: ' + JSON.stringify(value)
+            + ')');
+    };
+    prn([value, key].join(' '));
+  });
+};
+
+data = '';
+
+process.stdin.resume();
+process.stdin.setEncoding('utf8');
+
+process.stdin.on('data', function (chunk) {
+  data += chunk;
+});
+
+process.stdin.on('end', function () {
+  dump(JSON.parse(data));
+});
+

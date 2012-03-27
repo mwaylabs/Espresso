@@ -1,0 +1,28 @@
+#! /bin/sh
+set -xeuf
+
+plugins="$(json-print $file package $target plugins | plugins2args)"
+echo "$plugins" | while read name value; do
+
+  # copy plugin files
+  for i in src libs assets; do
+    if test -d app/plugins/$name/$i; then
+      tar -C app/plugins/$name -c $i | tar -C android-project -x -v
+    fi
+  done
+
+  # link js to html
+  gsedi android-project/assets/index.html "s:</head>:$(
+    find app/plugins/$name/assets -name '*.js' | sed -r '
+        s:^app/plugins/'"$name"'/assets/(.*):<script type="application/javascript" src="\1"></script>:
+    ')\n&:"
+
+  # add element to res/xml/plugins.xml
+  echo "    <plugin name=\""$name"\" value=\""$value"\" />" \
+      >> android-project/res/xml/plugins.xml
+done
+
+# move closing tag to the end
+gsedi android-project/res/xml/plugins.xml 's:</plugins>::'
+echo '</plugins>' \
+    >>android-project/res/xml/plugins.xml
