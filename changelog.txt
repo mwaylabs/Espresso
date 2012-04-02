@@ -1,3 +1,6 @@
+** Version 1.1.0 - Date 27.03.2012 **
+  * Fixed missing quotes in view template
+
 ** Version 1.0.0 - Date 25.01.2012 **
 
   * Added param to customize the default config.json
