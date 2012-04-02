@@ -2,6 +2,7 @@
 
   * Fixed missing quotes in view template
   * Added generator to start local socket server
+  * Fixed iOS simulator for xcode 4.3 (updated ios-sim)
 
 ** Version 1.0.0 - Date 25.01.2012 **
 
