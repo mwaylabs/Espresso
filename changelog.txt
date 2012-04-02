@@ -1,5 +1,7 @@
-** Version 1.1.0 - Date 27.03.2012 **
+** Version 1.1.0 - Date 02.04.2012 **
+
   * Fixed missing quotes in view template
+  * Added generator to start local socket server
 
 ** Version 1.0.0 - Date 25.01.2012 **
 
