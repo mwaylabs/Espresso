@@ -19,6 +19,7 @@ cd "`mktemp -d "${TMPDIR-/tmp}/package-phonegap-iOS.XXXXXXXXXX"`"
 trap "cd '$OLDPWD'; rm -fR '$PWD'" EXIT INT QUIT
 # !4 iOS: ln -s "$phonegap_dir/iOS" phonegap
 ln -s "$build_dir" src
+ln -s "$applicationDirectory" app
 
 setup-project
 
