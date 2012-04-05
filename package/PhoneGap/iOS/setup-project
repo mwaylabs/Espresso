@@ -1,0 +1,31 @@
+#! /bin/sh
+set -xeuf
+
+# create iOS project directory
+cd $ROOT/../submodules/github/4z3/callback-ios/
+./bin/create "$OLDPWD/iOS-project" "$package" "$activity"
+cd "$OLDPWD"
+rm -fR iOS-project/www
+mkdir iOS-project/www
+
+# copy application files into iOS project directory
+cp -R src/* iOS-project/www
+# remove potential cruft
+rm -f iOS-project/www/config.json
+rm -f iOS-project/www/*.ipa
+
+setup-icons
+setup-splash
+
+gsedi iOS-project/www/index.html '
+  s|\(</\?\)[sS][cC][rR][iI][pP][tT]|\1script|g
+  1,/<script/{
+    s|\(.*\)\(<script.*\)|\1\<script type="application/javascript" src="phonegap.js"></script>\
+<script type="application/javascript">var isPhoneGap = true;</script>\
+\2|
+  }
+'
+
+add-plugins
+setup-plists
+

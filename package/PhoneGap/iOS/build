@@ -28,28 +28,7 @@ trap "cd '$OLDPWD'; rm -fR '$PWD'" EXIT INT QUIT
 # !4 iOS: ln -s "$phonegap_dir/iOS" phonegap
 ln -s "$build_dir" src
 
-create-project "$package" "$activity"
-
-# copy application files into iOS project directory
-cp -R src/* iOS-project/www
-# remove potential cruft
-rm -f iOS-project/www/config.json
-rm -f iOS-project/www/*.ipa
-
-setup-icons
-setup-splash
-
-gsedi iOS-project/www/index.html '
-  s|\(</\?\)[sS][cC][rR][iI][pP][tT]|\1script|g
-  1,/<script/{
-    s|\(.*\)\(<script.*\)|\1\<script type="application/javascript" src="phonegap.js"></script>\
-<script type="application/javascript">var isPhoneGap = true;</script>\
-\2|
-  }
-'
-
-add-plugins
-setup-plists
+setup-project
 
 # build iOS package
 cd iOS-project
