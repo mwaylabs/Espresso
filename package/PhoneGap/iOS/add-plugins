@@ -26,8 +26,8 @@ echo "$plugins" | while read name value; do
 
     # link js to html
     gsedi iOS-project/www/index.html "s:</head>:$(
-      echo "$js_files" | sed -r '
-          s:^\./(.*):<script type="application/javascript" src="\1"></script>:
+      echo "$js_files" | sed '
+          s:^\./\(.*\):<script type="application/javascript" src="\1"></script>:
       ')\n&:"
   fi
 done
