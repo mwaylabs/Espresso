@@ -39,7 +39,9 @@ code='<!-- ZXing activities -->
         <category android:name="android.intent.category.DEFAULT"/>
       </intent-filter>
     </activity>'
-gsedi android-project/AndroidManifest.xml "s</application>$code\n"
+gsedi android-project/AndroidManifest.xml "s</application>$(
+  echo -n "$code" | sed 's/$/\n\\/'
+)\n&"
 
 # move closing tag to the end
 gsedi android-project/res/xml/plugins.xml 's:</plugins>::'
