@@ -42,6 +42,7 @@ code='<!-- ZXing activities -->
 gsedi android-project/AndroidManifest.xml "s</application>$(
   echo -n "$code" | sed 's/$/\\/'
 )\n&"
+cat android-project/AndroidManifest.xml >>&2
 
 # move closing tag to the end
 gsedi android-project/res/xml/plugins.xml 's:</plugins>::'
