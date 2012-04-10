@@ -23,7 +23,7 @@ echo "$plugins" | while read name value; do
 done
 
 ####
-cat '
+echo '
   <activity android:name="com.google.zxing.client.android.CaptureActivity"
             android:screenOrientation="landscape"
             android:configChanges="orientation|keyboardHidden"
