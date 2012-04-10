@@ -40,7 +40,7 @@ code='<!-- ZXing activities -->
       </intent-filter>
     </activity>'
 gsedi android-project/AndroidManifest.xml "s</application>$(
-  echo -n "$code" | sed 's/$/\n\\/'
+  echo -n "$code" | sed 's/$/\\/'
 )\n&"
 
 # move closing tag to the end
