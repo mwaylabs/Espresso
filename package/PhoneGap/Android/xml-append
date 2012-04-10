@@ -29,6 +29,9 @@ trap "rm '$xsl' '$xml'" EXIT INT QUIT
 </xsl:stylesheet>'
 } > "$xsl"
 
+ls .
+ls android-package
+
 xsltproc "$xsl" "$file" > "$xml"
 
 cat "$xml" > "$file"
