@@ -40,7 +40,7 @@ echo '
       <category android:name="android.intent.category.DEFAULT"/>
     </intent-filter>
   </activity>' |
-xml-append android-package/AndroidManifest.xml application -
+xml-append android-project/AndroidManifest.xml application -
 
 cat android-project/AndroidManifest.xml >&2
 ###
