@@ -5,15 +5,15 @@ var dump = function (x) {
   if (typeof x === 'string') {
     y += JSON.stringify(x)
   } else if (x instanceof Array) {
-    y += '( '
-    y += x.map(dump).join(',')
-    y += ' )'
+    y += '(\n'
+    y += x.map(dump).join(',\n') + ',\n'
+    y += ')'
   } else if (x instanceof Object) {
-    y += '{ '
+    y += '{\n'
     Object.keys(x).forEach(function (key) {
-      y += key + ' = ' + dump(x[key]) + ';'
+      y += dump(key) + ' = ' + dump(x[key]) + ';\n'
     })
-    y += ' }'
+    y += '}'
   } else {
     throw new Error('bad value: ' + require('sys').inspect(x))
   }
