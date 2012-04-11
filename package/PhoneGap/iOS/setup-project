@@ -9,7 +9,7 @@ rm -fR iOS-project/www
 mkdir iOS-project/www
 phonegap_js="$(
   find $ROOT/../submodules/github/4z3/callback-ios/bin/templates/project/www |
-      grep '.*phonegap[^.]*\.js'
+      grep '.*/phonegap[^/]*\.js$'
 )"
 cp "$phonegap_js" iOS-project/www/phonegap.js
 
