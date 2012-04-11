@@ -5,15 +5,15 @@ var dump = function (x) {
   if (typeof x === 'string') {
     y += JSON.stringify(x)
   } else if (x instanceof Array) {
-    y += '('
+    y += '( '
     y += x.map(dump).join(',')
-    y += ')'
+    y += ' )'
   } else if (x instanceof Object) {
-    y += '{'
+    y += '{ '
     Object.keys(x).forEach(function (key) {
       y += key + ' = ' + dump(x[key]) + ';'
     })
-    y += '}'
+    y += ' }'
   } else {
     throw new Error('bad value: ' + require('sys').inspect(x))
   }
@@ -31,6 +31,6 @@ process.stdin.on('data', function (chunk) {
 });
 
 process.stdin.on('end', function () {
-  console.log('// !$*UTF8*$!\n' + dump(JSON.parse(data)))
+  console.log(dump(JSON.parse(data)))
 });
 
