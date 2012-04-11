@@ -7,6 +7,7 @@ cd $ROOT/../submodules/github/4z3/callback-ios/
 cd "$OLDPWD"
 rm -fR iOS-project/www
 mkdir iOS-project/www
+cp "$ROOT/../submodules/github/4z3/callback-ios/bin/template/project/phonegap*.js" iOS-project/www/phonegap.js
 
 # copy application files into iOS project directory
 cp -R src/* iOS-project/www
