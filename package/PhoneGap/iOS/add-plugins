@@ -60,9 +60,6 @@ echo "$plugins" | while read name value; do
   fi
 done
 
-# TODO path = www, sourceTree = "<group>"
-pbx-add-resource "$pbxproj_json" iOS-project/www
-
 pbx-json2plist < "$pbxproj_json" > "$pbxproj_plist"
 cat "$pbxproj_json" # debug output
 cat "$pbxproj_plist" # debug output
