@@ -10,13 +10,30 @@ echo "$plugins" | while read name value; do
     mm_files="$(cd app/plugins/$name && find . -name '*.mm')"
     js_files="$(cd app/plugins/$name && find . -name '*.js')"
 
+    plugins_dir="$(find iOS-project -type d -name Plugins)"
+    test "$(echo "$plugins_dir" | wc -l)" -ne 1
+
     {
       echo "$h_files"
       echo "$cpp_files"
       echo "$mm_files"
     } |
         tar -C app/plugins/$name -T- -c |
-        tar -C "$(find iOS-project -type d -name Plugins)" -x -v
+        tar -C "$plugins_dir" -x -v
+
+    # link plugins source files to pbxproj
+    pbxproj_plist="iOS-project/$activity.xcodeproj/project.pbxproj"
+    pbxproj_json="$(plutil -convert json "$pbxproj_plist")"
+    {
+      echo "$h_files"
+      echo "$cpp_files"
+      echo "$mm_files"
+    } |
+        while read file; do
+          ./pbx-add-plugin-source-file "$pbxproj_json" "$plugins_dir/$file"
+        done
+    cat "$pbxproj_json" # debug output
+    json2plist < "$pbxproj_json" > "$pbxproj_plist"
 
     {
       echo "$js_files"
