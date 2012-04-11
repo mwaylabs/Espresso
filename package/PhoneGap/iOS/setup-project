@@ -7,8 +7,11 @@ cd $ROOT/../submodules/github/4z3/callback-ios/
 cd "$OLDPWD"
 rm -fR iOS-project/www
 mkdir iOS-project/www
-find $ROOT/../submodules/github/4z3/callback-ios/bin/templates/project/www
-cp "$ROOT/../submodules/github/4z3/callback-ios/bin/templates/project/www/phonegap*.js" iOS-project/www/phonegap.js
+phonegap_js="$(
+  find $ROOT/../submodules/github/4z3/callback-ios/bin/templates/project/www |
+      grep '.*phonegap[^.]*\.js'
+)"
+cp "$phonegap_js" iOS-project/www/phonegap.js
 
 # copy application files into iOS project directory
 cp -R src/* iOS-project/www
