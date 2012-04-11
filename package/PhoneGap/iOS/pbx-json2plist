@@ -1,0 +1,36 @@
+#! /usr/bin/env node
+
+var dump = function (x) {
+  var y = '';
+  if (typeof x === 'string') {
+    y += JSON.stringify(x)
+  } else if (x instanceof Array) {
+    y += '('
+    y += x.map(dump).join(',')
+    y += ')'
+  } else if (x instanceof Object) {
+    y += '{'
+    Object.keys(x).forEach(function (key) {
+      y += key + ' = ' + dump(x[key]) + ';'
+    })
+    y += '}'
+  } else {
+    throw new Error('bad value: ' + require('sys').inspect(x))
+  }
+  return y
+}
+
+
+data = ''
+
+process.stdin.resume()
+process.stdin.setEncoding('utf8')
+
+process.stdin.on('data', function (chunk) {
+  data += chunk
+});
+
+process.stdin.on('end', function () {
+  console.log('// !$*UTF8*$!\n' + dump(JSON.parse(data)))
+});
+
