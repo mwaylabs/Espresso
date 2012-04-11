@@ -118,13 +118,13 @@ var project = findObjectsByType(pbxproj, "PBXProject")[0]
 var mainGroup = pbxproj.objects[project.mainGroup]
 mainGroup.children.push(fileReferenceUUID)
 
-// link PBXBuildFile to PBXFrameworksBuildPhase
+// link PBXBuildFile to PBXResourcesBuildPhase
 project.targets.forEach(function (targetUUID) {
   var target = pbxproj.objects[targetUUID]
   // TODO target isa PBXNativeTarget
   target.buildPhases.forEach(function (buildPhaseUUID) {
     var buildPhase = pbxproj.objects[buildPhaseUUID]
-    if (buildPhase.isa === 'PBXFrameworksBuildPhase') {
+    if (buildPhase.isa === 'PBXResourcesBuildPhase') {
       if (buildPhase.files.length > 0) {
         buildPhase.files.push(buildFileUUID)
       }

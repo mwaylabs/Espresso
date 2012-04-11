@@ -51,7 +51,8 @@ var pathToFileType = function (p) {
     ".bundle": "wrapper.plug-in", // always?
     // TODO folders
     ".mm": "sourcecode.cpp.objcpp",
-    ".pch": "sourcecode.c.h" // always?
+    ".pch": "sourcecode.c.h", // always?
+    "": "folder"
   }[extname]
 }
 

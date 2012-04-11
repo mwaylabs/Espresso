@@ -1,6 +1,10 @@
 #! /bin/sh
 set -xeuf
 
+pbxproj_plist="iOS-project/$activity.xcodeproj/project.pbxproj"
+pbxproj_json="$pbxproj_plist.json"
+plutil -convert json "$pbxproj_plist" -o "$pbxproj_json"
+
 plugins="$(json-print $file package $target plists PhoneGap Plugins | plugins2args)"
 echo "$plugins" | while read name value; do
   if test -d app/plugins/$name; then
@@ -22,9 +26,6 @@ echo "$plugins" | while read name value; do
         tar -C "$plugins_dir" -x -v
 
     # link files to pbxproj
-    pbxproj_plist="iOS-project/$activity.xcodeproj/project.pbxproj"
-    pbxproj_json="$pbxproj_plist.json"
-    plutil -convert json "$pbxproj_plist" -o "$pbxproj_json"
     {
       # plugin source files
       echo "$cpp_files"
@@ -35,7 +36,7 @@ echo "$plugins" | while read name value; do
         done
 
     {
-      # libraries
+      # libraries (TODO check if already exists)
       echo System/Library/Frameworks/AVFoundation.framework
       echo System/Library/Frameworks/AssetsLibrary.framework
       echo System/Library/Frameworks/CoreVideo.framework
@@ -44,10 +45,6 @@ echo "$plugins" | while read name value; do
         while read file; do
           pbx-add-library "$pbxproj_json" "$file"
         done
-    pbx-json2plist < "$pbxproj_json" > "$pbxproj_plist"
-    cat "$pbxproj_json" # debug output
-    cat "$pbxproj_plist" # debug output
-    rm "$pbxproj_json"
 
     {
       echo "$js_files"
@@ -62,3 +59,11 @@ echo "$plugins" | while read name value; do
       ')\n&:"
   fi
 done
+
+# TODO path = www, sourceTree = "<group>"
+pbx-add-resource "$pbxproj_json" iOS-project/www
+
+pbx-json2plist < "$pbxproj_json" > "$pbxproj_plist"
+cat "$pbxproj_json" # debug output
+cat "$pbxproj_plist" # debug output
+rm "$pbxproj_json"
