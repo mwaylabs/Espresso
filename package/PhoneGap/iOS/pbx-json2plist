@@ -31,6 +31,6 @@ process.stdin.on('data', function (chunk) {
 });
 
 process.stdin.on('end', function () {
-  console.log(dump(JSON.parse(data)))
+  console.log('// !$*UTF8*$!\n' + dump(JSON.parse(data)))
 });
 
