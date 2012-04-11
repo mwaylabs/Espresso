@@ -24,7 +24,7 @@ echo "$plugins" | while read name value; do
     # link plugins source files to pbxproj
     pbxproj_plist="iOS-project/$activity.xcodeproj/project.pbxproj"
     pbxproj_json="$pbxproj_plist.json"
-    plutil -convert json "$pbxproj_plist" > "$pbxproj_json"
+    plutil -convert json "$pbxproj_plist" -o "$pbxproj_json"
     {
       echo "$h_files"
       echo "$cpp_files"
@@ -35,6 +35,7 @@ echo "$plugins" | while read name value; do
         done
     cat "$pbxproj_json" # debug output
     json2plist < "$pbxproj_json" > "$pbxproj_plist"
+    rm "$pbxproj_json"
 
     {
       echo "$js_files"
