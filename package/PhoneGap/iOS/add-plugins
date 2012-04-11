@@ -32,8 +32,9 @@ echo "$plugins" | while read name value; do
         while read file; do
           pbx-add-plugin-source-file "$pbxproj_json" "$plugins_dir/$file"
         done
-    cat "$pbxproj_json" # debug output
     pbx-json2plist < "$pbxproj_json" > "$pbxproj_plist"
+    cat "$pbxproj_json" # debug output
+    cat "$pbxproj_plist" # debug output
     rm "$pbxproj_json"
 
     {
