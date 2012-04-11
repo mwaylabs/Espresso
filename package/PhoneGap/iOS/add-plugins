@@ -11,7 +11,7 @@ echo "$plugins" | while read name value; do
     js_files="$(cd app/plugins/$name && find . -name '*.js')"
 
     plugins_dir="$(find iOS-project -type d -name Plugins)"
-    test $(echo "$plugins_dir" | wc -l) -ne 1
+    test $(echo "$plugins_dir" | wc -l) = 1
 
     {
       echo "$h_files"
