@@ -26,7 +26,6 @@ echo "$plugins" | while read name value; do
     pbxproj_json="$pbxproj_plist.json"
     plutil -convert json "$pbxproj_plist" -o "$pbxproj_json"
     {
-      echo "$h_files"
       echo "$cpp_files"
       echo "$mm_files"
     } |
