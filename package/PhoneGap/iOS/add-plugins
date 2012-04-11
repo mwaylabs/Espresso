@@ -35,6 +35,9 @@ echo "$plugins" | while read name value; do
         done
     {
       # libraries
+      echo /System/Library/Frameworks/AVFoundation.framework
+      echo /System/Library/Frameworks/AssetsLibrary.framework
+      echo /System/Library/Frameworks/CoreVideo.framework
       echo /usr/lib/libiconv.dylib
     } |
         while read file; do
