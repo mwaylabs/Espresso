@@ -34,7 +34,6 @@ echo "$plugins" | while read name value; do
           pbx-add-plugin-source-file "$pbxproj_json" "$plugins_dir/$file"
         done
 
-    echo "$SDKROOT"
     {
       # libraries
       echo System/Library/Frameworks/AVFoundation.framework

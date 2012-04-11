@@ -61,8 +61,16 @@ var createPBXFileReference = function (p) {
   that.fileEncoding = "4" // TODO
   that.lastKnownFileType = pathToFileType(p)
   that.name = path.basename(p)
-  that.path = fs.realpathSync(p)
-  that.sourceTree = "<absolute>"
+  try {
+    that.path = fs.realpathSync(p)
+    that.sourceTree = "<absolute>"
+  } catch (exn) {
+    // TODO have some more reliable way to determine path and sourceTree
+    if (that.lastKnownFileType === 'wrapper.framework') {
+      that.path = p
+      that.sourceTree = 'SDKROOT'
+    }
+  }
   return that
 }
 
