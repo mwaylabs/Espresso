@@ -215,6 +215,7 @@ Framework.prototype.browseFiles = function (path, callback) {
      */
     that.checkIfFolderShouldBeExcluded = function (path) {
 
+      var ret = false;
       self.excludedFolders.forEach(function (folder) {
           // Replace() escapes backslashes of DOS-style paths to not interfere
           // with JavaScript's RegExp.
@@ -222,10 +223,10 @@ Framework.prototype.browseFiles = function (path, callback) {
           var pattern =
               new RegExp(normalize('/' + folder + '/').replace(/\\/g, '\\\\'));
           if (path.search(pattern) !== -1) {
-            return true;
+            ret = true;
           }
         });
-      return false;
+      return ret;
     };
 
     that.browse = function (path) {
