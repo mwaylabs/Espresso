@@ -26,7 +26,6 @@
         "version": "0.0.1",
         "debugMode": true,
         "useTransitions": true,
-        "enableTouchOverflow": true,
         "keyPrefix": "#m#",
         "keySuffix": "_",
         "timeStampCreated": "created_at",
