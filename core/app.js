@@ -152,12 +152,19 @@ App.prototype.loadTheApplication = function () {
       _theApplicationResources,
       _i18n;
 
+  var viewdir = that._e_.fs.readdirSync(that.applicationDirectory + '/app/views/');
+  viewdir.forEach(function(elem, ind){
+    if(elem === that.targetQuery.group || elem === 'base'){
+        viewdir.splice(ind);
+    }
+  });
   _theApplication = ['app'].map(function (module) {
     var _frameworkOptions  = {};
     _frameworkOptions.path = that.applicationDirectory + '/' + module;
     _frameworkOptions.name = that.name + '_App';
     _frameworkOptions.frDelimiter = that.applicationDirectory + '/';
     _frameworkOptions.excludedFolders = ['resources'].concat(that.excludedFolders);
+    _frameworkOptions.excludedFolders = viewdir.concat(_frameworkOptions.excludedFolders);
     _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
     _frameworkOptions.app = that;
     if (!that.eliminate) {
