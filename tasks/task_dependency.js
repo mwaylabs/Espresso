@@ -99,7 +99,7 @@ Task_Dependency.prototype.duty = function(framework,cb) {
               /**
                * Helper object to generate nodes.
                *
-               * @param nodeName - the node«s name
+               * @param nodeName - the nodeï¿½s name
                * @param file - the file, represented by this node.
                */
             var _TreeNode = function(nodeName,file) {
@@ -119,7 +119,7 @@ Task_Dependency.prototype.duty = function(framework,cb) {
 
             /* find and add the root nodes first!*/
             fr.files.forEach(function (file){
-                if(file.isJavaScript() && file.dependencies.length === 0){
+                if((file.isJavaScript() || file.isCoffeeScript()) && file.dependencies.length === 0){
                   _roots.push(new _TreeNode(file.getName(),file));
                 }
               });
@@ -139,7 +139,7 @@ Task_Dependency.prototype.duty = function(framework,cb) {
             that.buildTree = function(node){
               that.files.forEach(function(file){
                   file.dependencies.forEach(function (dep){
-                      if(file.getName() !== node.name){ /* don«t use itself as a dependency*/
+                      if(file.getName() !== node.name){ /* donï¿½t use itself as a dependency*/
                         if (normalize(dep) === node.name) {
                           /* adding child nodes, looking for children of that child node as well. */
             node.addChildeNode(that.buildTree(new _TreeNode(file.getName(),file)));
@@ -229,7 +229,7 @@ return node
             /*Set the dependency found-counter for the next round  back to: 0
              *The counter is used to determine if all dependencies of a particular
              *node have been saved in the orderedFiles Array.
-             *If NOT, the current node/file can«t yet be written to the orderedFiles array. */
+             *If NOT, the current node/file canï¿½t yet be written to the orderedFiles array. */
             var _deps_found  = 0;
             for(var i = 0; i < _currentNode_Deps.length; i++ ){
               /* check if all dependencies are already done*/

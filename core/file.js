@@ -174,6 +174,14 @@ File.prototype.isJavaScript = function() {
   return this.getFileExtension() === '.js'; 
 };
 
+/**
+ * @description
+ * Test if a File is a CoffeeScript file.
+ * @return {boolean}, true if file is CoffeeScript.
+ */
+File.prototype.isCoffeeScript = function() {
+    return this.getFileExtension() === '.coffee';
+};
 
 /**
  * @description

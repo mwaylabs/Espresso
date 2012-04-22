@@ -10,6 +10,7 @@
 
 var File = require('../core/file').File;
 var Task = require('./task').Task;
+var CoffeeScript = require('coffee-script');
 
 /**
  * @class
@@ -51,6 +52,13 @@ Task_Merge.prototype.duty = function duty(framework, callback) {
       } else if (file.isStylesheet() && framework.is_a_plugin) {
         that.mergedCSSFile += '\n' + file.content;
         //that.notJSfiles.push(file);
+      } else if (file.isCoffeeScript()) {
+          try{
+            var javascript = CoffeeScript.compile(file.content.toString());
+            that.mergedFile += '\n' + javascript;
+          }catch(e){
+              //TODO throw e;
+          }
       }
     });
 
