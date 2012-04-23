@@ -59,7 +59,6 @@ cp phonegap/phonegap-*.jar android-project/libs/phonegap.jar
 cp -R phonegap/xml android-project/res/
 
 # setup icons
-ls android-project/assets/theme/images/ || :
 while read px dpi; do
   if test -e android-project/assets/theme/images/appicon-$px.png; then
     if ! test -d android-project/res/drawable-$dpi; then
