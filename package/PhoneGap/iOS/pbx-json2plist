@@ -1,0 +1,52 @@
+#! /usr/bin/env node
+
+depth = 0;
+
+var prn = function (s) {
+  var prefix = ''
+  for (var i = 0; i < depth; ++i) {
+    prefix += '  '
+  }
+  return prefix + s
+}
+
+var dump = function (x) {
+  var y = '';
+  if (typeof x === 'string') {
+    y += JSON.stringify(x)
+  } else if (x instanceof Array) {
+    y += '(\n'
+    depth++
+    if (x.length > 0) {
+      y += x.map(dump).map(prn).join(',\n') + ',\n'
+    }
+    depth--
+    y += prn(')')
+  } else if (x instanceof Object) {
+    y += '{\n'
+    depth++
+    Object.keys(x).forEach(function (key) {
+      y += prn(dump(key) + ' = ' + dump(x[key]) + ';\n')
+    })
+    depth--
+    y += prn('}')
+  } else {
+    throw new Error('bad value: ' + require('sys').inspect(x))
+  }
+  return y
+}
+
+
+data = ''
+
+process.stdin.resume()
+process.stdin.setEncoding('utf8')
+
+process.stdin.on('data', function (chunk) {
+  data += chunk
+});
+
+process.stdin.on('end', function () {
+  console.log(dump(JSON.parse(data)))
+});
+

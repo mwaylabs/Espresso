@@ -1,0 +1,38 @@
+#! /bin/sh
+set -xeu
+
+# create iOS project directory
+cd $ROOT/../submodules/github/4z3/callback-ios/
+./bin/create "$OLDPWD/iOS-project" "$package" "$activity"
+cd "$OLDPWD"
+rm -fR iOS-project/www
+mkdir iOS-project/www
+phonegap_js="$(
+  find $ROOT/../submodules/github/4z3/callback-ios/bin/templates/project/www |
+      grep '.*/phonegap[^/]*\.js$'
+)"
+cp "$phonegap_js" iOS-project/www/phonegap.js
+
+# copy application files into iOS project directory
+cp -R src/* iOS-project/www
+# remove potential cruft
+rm -f iOS-project/www/config.json
+rm -f iOS-project/www/*.ipa
+rm -f iOS-project/www/package.log
+
+setup-icons
+setup-splash
+
+gsedi iOS-project/www/index.html '
+  s|\(</\?\)[sS][cC][rR][iI][pP][tT]|\1script|g
+  1,/<script/{
+    s|\(.*\)\(<script.*\)|\1\<script type="application/javascript" src="phonegap.js"></script>\
+<script type="application/javascript">var isPhoneGap = true;</script>\
+\2|
+  }
+'
+
+#add-plugins
+setup-plists
+
+find iOS-project
