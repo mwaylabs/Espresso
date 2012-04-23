@@ -3,7 +3,7 @@ set -xeu
 
 # configuration
 export build_dir="${build_dir-$PWD}"
-export phonegap_dir="${phonegap_dir-$ROOT/../submodules/github/callback/phonegap}"
+export phonegap_dir="${phonegap_dir-$ROOT/../submodules/github/4z3/phonegap}"
 export sdk="${sdk}"
 export mode="${mode-debug}"
 export activity="${activity-MyActivity}"
@@ -123,7 +123,7 @@ gsedi android-project/assets/index.html '
   }
 '
 
-add-plugins
+#add-plugins
 
 # build android package
 (cd android-project && ant --noconfig "$mode")

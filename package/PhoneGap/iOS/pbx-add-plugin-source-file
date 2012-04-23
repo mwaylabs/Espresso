@@ -1,0 +1,124 @@
+#! /usr/bin/env node
+//
+// usage: pbx-add-file pbxproj.json filename
+//
+// Add filename to pbxproj.json (in-place).
+// Note: a file can be added multiple times.
+//
+
+var fs = require('fs')
+var path = require('path')
+var crypto = require('crypto')
+
+var findObjectsByType = function (pbxproj, type) {
+  var objects = []
+  Object.keys(pbxproj.objects).forEach(function (key) {
+    var object = pbxproj.objects[key];
+    if (object.isa === type) {
+      objects.push(object)
+    }
+  })
+  return objects
+}
+
+var findPBXGroupByName = function (pbxproj, name) {
+  var group;
+  findObjectsByType(pbxproj, "PBXGroup").forEach(function (object) {
+    if (object.name === name) {
+      if (group) {
+        throw new Error("Multiple objects with type = PBXGroup and name = "
+            + name)
+      } else {
+        group = object
+      }
+    }
+  })
+  return group
+}
+
+var pathToFileType = function (p) {
+  var extname = path.extname(p)
+  return {
+    ".framework": "wrapper.framework",
+    ".png": "image.png",
+    ".m": "sourcecode.c.objc",
+    // TODO README -> "text"
+    ".h": "sourcecode.c.h",
+    ".dynlib": "compiled.mach-o.dylib", // always?
+    ".plist": "text.plist.xml", // always?
+    ".xib": "file.xib",
+    ".cpp": "sourcecode.cpp.cpp",
+    ".bundle": "wrapper.plug-in", // always?
+    // TODO folders
+    ".mm": "sourcecode.cpp.objcpp",
+    ".pch": "sourcecode.c.h", // always?
+    "": "folder"
+  }[extname]
+}
+
+var createPBXFileReference = function (p) {
+  var that = {}
+  that.isa = "PBXFileReference"
+  that.fileEncoding = "4" // TODO
+  that.lastKnownFileType = pathToFileType(p)
+  that.name = path.basename(p)
+  try {
+    that.path = fs.realpathSync(p)
+    that.sourceTree = "<absolute>"
+  } catch (exn) {
+    // TODO have some more reliable way to determine path and sourceTree
+    if (that.lastKnownFileType === 'wrapper.framework') {
+      that.path = p
+      that.sourceTree = 'SDKROOT'
+    }
+  }
+  return that
+}
+
+var createPBXBuildFile = function (fileReferenceUUID) {
+  var that = {}
+  that.isa = "PBXBuildFile"
+  that.fileRef = fileReferenceUUID
+  return that
+}
+
+var createUUID = function (pbxproj) {
+  // TODO see RFC 4122
+  for (;;) {
+    var uuid = crypto.randomBytes(12).toString('hex').toUpperCase()
+    if (!(uuid in pbxproj.objects)) {
+      return uuid
+    }
+  }
+}
+
+function log (x) {
+  console.log(JSON.stringify(x, null, 2))
+}
+
+
+var pbxprojFilename = process.argv[2]
+var filename = process.argv[3]
+
+var pbxproj = JSON.parse(fs.readFileSync(pbxprojFilename))
+
+var fileReference = createPBXFileReference(filename)
+var fileReferenceUUID = createUUID(pbxproj)
+pbxproj.objects[fileReferenceUUID] = fileReference
+
+var buildFile = createPBXBuildFile(fileReferenceUUID)
+var buildFileUUID = createUUID(pbxproj)
+pbxproj.objects[buildFileUUID] = buildFile
+
+var plugins = findPBXGroupByName(pbxproj, "Plugins")
+plugins.children.push(fileReferenceUUID)
+
+var sourcesBuildPhases = findObjectsByType(pbxproj, "PBXSourcesBuildPhase")
+sourcesBuildPhases.forEach(function (sourcesBuildPhase) {
+  // TODO do we have to add buildFile to all sourcesBuildPhase?
+  if (sourcesBuildPhase.files.length > 0) {
+    sourcesBuildPhase.files.push(buildFileUUID)
+  }
+})
+
+fs.writeFileSync(pbxprojFilename, JSON.stringify(pbxproj, null, 2))

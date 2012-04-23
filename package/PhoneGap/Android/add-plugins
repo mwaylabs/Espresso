@@ -13,8 +13,8 @@ echo "$plugins" | while read name value; do
 
   # link js to html
   gsedi android-project/assets/index.html "s:</head>:$(
-    find app/plugins/$name/assets -name '*.js' | sed -r '
-        s:^app/plugins/'"$name"'/assets/(.*):<script type="application/javascript" src="\1"></script>:
+    find app/plugins/$name/assets -name '*.js' | sed '
+        s:^app/plugins/'"$name"'/assets/\(.*\):<script type="application/javascript" src="\1"></script>:
     ')\n&:"
 
   # add element to res/xml/plugins.xml
