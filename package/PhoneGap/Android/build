@@ -74,6 +74,10 @@ while read px dpi; do
       convert android-project/assets/theme/images/appicon.png \
           -resize ${px}x$px \
           android-project/res/drawable-$dpi/ic_launcher.png
+    elif test -e android-project/assets/theme/images/Icon@2x.png; then
+      convert android-project/assets/theme/images/Icon@2x.png \
+          -resize ${px}x$px \
+          android-project/res/drawable-$dpi/ic_launcher.png
     else
       echo "Warning: missing appicon.png to autoScaleIcon" >&2
       continue
