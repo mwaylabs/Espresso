@@ -123,7 +123,7 @@ gsedi android-project/assets/index.html '
   }
 '
 
-add-plugins
+#add-plugins
 
 # build android package
 (cd android-project && ant --noconfig "$mode")
