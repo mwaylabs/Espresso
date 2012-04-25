@@ -14,6 +14,7 @@ var Report = require('./report').Report;
 var Resource = require('./resource').Resource;
 var Utils = require('../lib/espresso_utils');
 var HTML = Utils.HTML;
+var normalize = require('path').normalize;
 
 /**
  * @class
@@ -141,6 +142,20 @@ App.prototype.addFrameworks = function (frameworks) {
   };
 };
 
+App.prototype.exludeDeviceSpecificViews = function (excludedFolders, excludedFiles) {
+    var that = this;
+    var viewDir = that._e_.fs.readdirSync(that.applicationDirectory + normalize('/app/views/'));
+    var files = '';
+    viewDir.forEach(function(elem, ind){
+        if(elem === that.targetQuery.group || elem === 'base'){
+
+        }else{
+            excludedFolders.push(elem);
+        }
+    });
+    console.log(excludedFolders);
+}
+
 /**
  * @description
  * Load the projects related files.
@@ -152,21 +167,18 @@ App.prototype.loadTheApplication = function () {
       _theApplicationResources,
       _i18n;
 
-  var viewdir = that._e_.fs.readdirSync(that.applicationDirectory + '/app/views/');
-  viewdir.forEach(function(elem, ind){
-    if(elem === that.targetQuery.group || elem === 'base'){
-        viewdir.splice(ind);
-    }
-  });
+
   _theApplication = ['app'].map(function (module) {
     var _frameworkOptions  = {};
     _frameworkOptions.path = that.applicationDirectory + '/' + module;
     _frameworkOptions.name = that.name + '_App';
     _frameworkOptions.frDelimiter = that.applicationDirectory + '/';
     _frameworkOptions.excludedFolders = ['resources'].concat(that.excludedFolders);
-    _frameworkOptions.excludedFolders = viewdir.concat(_frameworkOptions.excludedFolders);
     _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
     _frameworkOptions.app = that;
+//    that.exludeDeviceSpecificViews(_frameworkOptions.excludedFolders, _frameworkOptions.excludedFiles);
+      console.log(_frameworkOptions.excludedFolders);
+//      console.log(_frameworkOptions.excludedFiles);
     if (!that.eliminate) {
       _frameworkOptions.taskChain = new TaskManager([
         "preSort",
