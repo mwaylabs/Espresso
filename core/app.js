@@ -472,6 +472,11 @@ App.prototype.buildIndexHTML = function (callback, _frameworkNamesForIndexHtml, 
             href: 'theme/' + basename,
             rel: 'stylesheet'
           }));
+        case '.coffee':
+          return _indexHtml.push(HTML('script', {
+              type: 'application/javascript',
+              src: basename
+          }, ''));
       };
     };
   });

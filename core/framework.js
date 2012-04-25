@@ -401,6 +401,10 @@ Framework.prototype.prepareForServer = function (server, callback) {
       if (!server.files) {
         server.files = {};
       }
+      if('PLUGIN.coffee' === file.requestPath){
+          console.log(file.requestPath);
+          console.log(file);
+      }
       server.files['/' + appName + '/' + file.requestPath] = file;
     });
   callback();
