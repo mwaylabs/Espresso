@@ -147,7 +147,7 @@ App.prototype.exludeDeviceSpecificViews = function (excludedFolders, excludedFil
     var viewDir = that._e_.fs.readdirSync(that.applicationDirectory + normalize('/app/views/'));
     var files = '';
     viewDir.forEach(function(elem, ind){
-        if(elem === that.targetQuery.group || elem === 'base'){
+        if(elem === that.targetQuery.subGroup || elem === 'base'){
 
         }else{
             excludedFolders.push(elem);
@@ -176,7 +176,7 @@ App.prototype.loadTheApplication = function () {
     _frameworkOptions.excludedFolders = ['resources'].concat(that.excludedFolders);
     _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
     _frameworkOptions.app = that;
-//    that.exludeDeviceSpecificViews(_frameworkOptions.excludedFolders, _frameworkOptions.excludedFiles);
+    that.exludeDeviceSpecificViews(_frameworkOptions.excludedFolders, _frameworkOptions.excludedFiles);
       console.log(_frameworkOptions.excludedFolders);
 //      console.log(_frameworkOptions.excludedFiles);
     if (!that.eliminate) {
