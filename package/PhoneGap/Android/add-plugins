@@ -2,6 +2,9 @@
 set -xeuf
 
 plugins="$(json-print $file package $target plugins | plugins2args)"
+
+validate-plugins `echo "$plugins" | awk '{print$1}'`
+
 echo "$plugins" | while read name value; do
 
   # copy plugin files

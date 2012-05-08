@@ -6,9 +6,14 @@ pbxproj_json="$pbxproj_plist.json"
 plutil -convert json "$pbxproj_plist" -o "$pbxproj_json"
 
 plugins="$(json-print $file package $target plists PhoneGap Plugins | plugins2args)"
+
+# TODO add this line, when we've got an OSX development platform
+#validate-plugins `echo "$plugins" | awk '{print$1}'`
+
 echo "$plugins" | while read name value; do
   if test -d app/plugins/$name; then
 
+    # TODO collect only from src/ and assets/
     h_files="$(cd app/plugins/$name && find . -name '*.h')"
     cpp_files="$(cd app/plugins/$name && find . -name '*.cpp')"
     mm_files="$(cd app/plugins/$name && find . -name '*.mm')"
