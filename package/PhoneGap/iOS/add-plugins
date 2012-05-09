@@ -6,6 +6,9 @@ pbxproj_json="$pbxproj_plist.json"
 plutil -convert json "$pbxproj_plist" -o "$pbxproj_json"
 
 plugins="$(json-print $file package $target plists PhoneGap Plugins | plugins2args)"
+
+validate-plugins `echo "$plugins" | awk '{print$1}'`
+
 echo "$plugins" | while read name value; do
   if test -d app/plugins/$name; then
 
