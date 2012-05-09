@@ -15,6 +15,8 @@
             action: 'init'
         }
     },
+    
+    cssClass: '{{name}}',
 
     childViews: 'header content footer',
 

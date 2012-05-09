@@ -58,7 +58,8 @@ Task_PreSort.prototype.duty = function(framework,callback){
         _views = [],
         _stores = [],
         _misc = [],
-        _sorted = [];
+        _sorted = [],
+        _validators = [];
 
     _files.forEach(function(file) {
 
@@ -77,12 +78,14 @@ Task_PreSort.prototype.duty = function(framework,callback){
             _models.push(file);
         } else if (path.search(normalize4RegExp('/stores/')) !== -1) {
             _stores.push(file);
+        } else if (path.search(normalize4RegExp('/validators/')) !== -1) {
+            _validators.push(file);
         } else {
             _misc.push(file);
         }
     });
 
-     _sorted = _sorted.concat(_models, _stores, _controllers, _views,_misc);
+     _sorted = _sorted.concat(_models, _stores, _controllers, _validators, _views,_misc);
     framework.files = _sorted;
     callback(framework);
 };

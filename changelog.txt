@@ -1,3 +1,11 @@
+** Version 1.1.0 - Date 23.04.2012 **
+
+  * Fixed missing quotes in view template
+  * Added generator to start local socket server
+  * Fixed iOS simulator for xcode 4.3 (updated ios-sim)
+  * Added validators to preSort task
+  * Fixed the native packaging for ios and android
+
 ** Version 1.0.0 - Date 25.01.2012 **
 
   * Added param to customize the default config.json
