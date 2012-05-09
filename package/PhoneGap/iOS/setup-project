@@ -32,7 +32,7 @@ gsedi iOS-project/www/index.html '
   }
 '
 
-#add-plugins
+add-plugins
 setup-plists
 
 find iOS-project
