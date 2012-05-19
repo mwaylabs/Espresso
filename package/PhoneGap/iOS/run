@@ -29,7 +29,7 @@ gsedi phonegap/debug 's/^xcodebuild/exec &/'
 sh phonegap/debug "$PWD" "$activity"
 
 # prepare launcher
-(cd $ROOT/../submodules/github/Fingertips/ios-sim
+(cd $ROOT/../submodules/github/phonegap/ios-sim
   rake install prefix="$ROOT/phonegap-ios/ios-sim")
 sim="$ROOT/phonegap-ios/ios-sim/bin/ios-sim"
 chmod 0755 "$sim"
