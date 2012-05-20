@@ -12,6 +12,6 @@ script="`read-config`"
 
 eval "$script"
 
-PATH="$ROOT/$method/$os:${PATH+:$PATH}"; export PATH
+PATH="$ROOT/$method/$os/bin:${PATH+:$PATH}"; export PATH
 
 exec "$action"
