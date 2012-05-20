@@ -3,13 +3,13 @@
 // implement Object.prototype.merge for mergin JSON objects
 Object.defineProperty(Object.prototype, 'merge', {
   enumerable: false,
-  value: require('./merge'))
+  value: require('./merge')
 })
 
 require('./ObjTree'); // for json2xml conversion
 var xotree = new XML.ObjTree();
 
-var pd  = require('./pretty-data.js').pd; // for pretty printing xml strings
+var pd = require('./pretty-data.js').pd; // for pretty printing xml strings
 
 dump = function (config) {
   // our default android manifest in json format
