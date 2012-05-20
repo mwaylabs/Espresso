@@ -1,6 +1,10 @@
 #! /usr/bin/env node
 
-require('./merge.js'); // for merging json objects
+// implement Object.prototype.merge for mergin JSON objects
+Object.defineProperty(Object.prototype, 'merge', {
+  enumerable: false,
+  value: require('./merge'))
+})
 
 require('./ObjTree'); // for json2xml conversion
 var xotree = new XML.ObjTree();

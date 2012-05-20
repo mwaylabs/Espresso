@@ -1,6 +1,5 @@
-Object.defineProperty(Object.prototype, "merge", {
-    enumerable: false,
-    value: function () {
+module.exports =
+    function () {
         var override = true,
             dest = this,
             len = arguments.length,
@@ -48,4 +47,3 @@ Object.defineProperty(Object.prototype, "merge", {
         }
         return this;
     }
-});
