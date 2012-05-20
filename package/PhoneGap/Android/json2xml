@@ -20,7 +20,7 @@ dump = function (config) {
   var activityElements = defaultManifest.application.activity;
   for(var i = 0; i < activityElements.length; i++) {
     if('-android:name' in activityElements[i] && activityElements[i]['-android:name'] == "${activity}") {
-      activityElements[i]['-android:name'] = process.env.activity;
+      activityElements[i]['-android:name'] = '.' + process.env.activity;
     }
   }
 
