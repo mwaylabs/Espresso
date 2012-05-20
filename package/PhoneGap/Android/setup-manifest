@@ -1,6 +1,8 @@
 #! /bin/sh
 set -eu
 
+export minSdkVersion=`echo $sdk | sed 's/android-//'`
+
 cat>android-project/AndroidManifest.xml<<EOF
 $(if json-print $file package $target |
   json2xml >xml 2>xml.err; then
