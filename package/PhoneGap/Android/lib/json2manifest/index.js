@@ -6,7 +6,7 @@ Object.defineProperty(Object.prototype, 'merge', {
   value: require('./merge')
 })
 
-require('./ObjTree'); // for json2xml conversion
+var XML = require('./XML')
 var xotree = new XML.ObjTree();
 
 var pd = require('./pretty-data.js').pd; // for pretty printing xml strings
