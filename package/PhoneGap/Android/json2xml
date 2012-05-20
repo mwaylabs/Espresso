@@ -12,12 +12,14 @@ dump = function (config) {
   var defaultManifest = require('./default-manifest.json');
 
   // replace 'package' from config
-  defaultManifest["-package"] = process.env.package;
+  if(defaultManifest["-package"] == "${package}") {
+    defaultManifest["-package"] = process.env.package;
+  }
 
   // replace 'activity' from config
   var activityElements = defaultManifest.application.activity;
   for(var i = 0; i < activityElements.length; i++) {
-    if('-android:name' in activityElements[i]) {
+    if('-android:name' in activityElements[i] && activityElements[i]['-android:name'] == "${activity}") {
       activityElements[i]['-android:name'] = process.env.activity;
     }
   }
