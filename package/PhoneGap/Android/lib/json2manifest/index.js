@@ -24,11 +24,6 @@ dump = function (config) {
     }
   }
 
-  // replace 'minSdkVersion' from config
-  if(defaultManifest["uses-sdk"]["-android:minSdkVersion"] == "${minSdkVersion}") {
-      defaultManifest["uses-sdk"]["-android:minSdkVersion"] = process.env.minSdkVersion;
-  }
-
   var result = defaultManifest;
 
   if('manifest' in config) {
