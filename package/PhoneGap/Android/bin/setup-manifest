@@ -1,0 +1,5 @@
+#! /bin/sh
+set -euf
+
+json-print $file package $target |
+    json2manifest > android-project/AndroidManifest.xml
