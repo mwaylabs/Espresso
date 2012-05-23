@@ -1,7 +1,16 @@
 #! /bin/sh
 set -xeuf
 
-plugins="$(json-print $file package $target plugins | plugins2args)"
+if plugins="$(json-print $file package $target plugins)"; then
+  plugins="$(echo "$plugins" | plugins2args)"
+  if test -z "$plugins"; then
+    : plugins property is empty
+    exit 0
+  fi
+else
+  : no plugins property configured
+  exit 0
+fi
 
 validate-plugins `echo "$plugins" | awk '{print$1}'`
 
