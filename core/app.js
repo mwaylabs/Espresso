@@ -144,16 +144,20 @@ App.prototype.addFrameworks = function (frameworks) {
 
 App.prototype.exludeDeviceSpecificViews = function (excludedFolders, excludedFiles) {
     var that = this;
-    var viewDir = that._e_.fs.readdirSync(that.applicationDirectory + normalize('/app/views/'));
-    var files = '';
-    viewDir.forEach(function(elem, ind){
-        if(elem === that.targetQuery.subGroup || elem === 'base'){
+    var path = require('path');
+    var exists = path.existsSync((that.applicationDirectory + normalize('/app/views/')));
+    if(exists){
+        var viewDir = that._e_.fs.readdirSync(that.applicationDirectory + normalize('/app/views/'));
+        var files = '';
+        viewDir.forEach(function(elem, ind){
+            if(elem === that.targetQuery.subGroup || elem === 'base'){
 
-        }else{
-            excludedFolders.push(elem);
-        }
-    });
-    console.log(excludedFolders);
+            }else{
+                excludedFolders.push(elem);
+            }
+        });
+        console.log(excludedFolders);
+    }
 }
 
 /**
