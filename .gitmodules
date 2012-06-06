@@ -25,3 +25,6 @@
 [submodule "submodules/apache/incubator-cordova-android"]
 	path = submodules/apache/incubator-cordova-android
 	url = git://git.apache.org/incubator-cordova-android.git
+[submodule "node_modules/xmldom"]
+	path = node_modules/xmldom
+	url = https://github.com/jindw/xmldom

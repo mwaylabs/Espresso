@@ -11,52 +11,51 @@ var xotree = new XML.ObjTree();
 
 var pd = require('./pretty-data.js').pd; // for pretty printing xml strings
 
-dump = function (config) {
-  // our default android manifest in json format
-  var defaultManifest = require('./default-manifest.json');
+var readFileSync = require('fs').readFileSync
+var extname = require('path').extname
+var inspect = require('util').inspect
 
-  // replace 'package' from config
-  if(defaultManifest["-package"] == "${package}") {
-    defaultManifest["-package"] = process.env.package;
-  }
+var parsers = {
+  ".xml": function (x) { return xotree.parseXML(x.toString()) },
+  ".json": JSON.parse
+}
 
-  // replace 'activity' from config
-  var activityElements = defaultManifest.application.activity;
-  for(var i = 0; i < activityElements.length; i++) {
-    if('-android:name' in activityElements[i] && activityElements[i]['-android:name'] == "${activity}") {
-      activityElements[i]['-android:name'] = '.' + process.env.activity;
-    }
-  }
+var variables = {
+  "${package}": process.env.package,
+  "${activity}": process.env.activity
+}
 
-  var result = defaultManifest;
+function parseFileSync (p) {
+  var parse = parsers[extname(p)]
+  return JSON.parse(JSON.stringify(parse(readFileSync(p))), function (k, v) {
+    return variables.hasOwnProperty(v) ? variables[v] : v
+  })
+}
 
-  if('manifest' in config) {
-    // config.json contains a 'manifest' section, so merge this section with our default manifest
-    result = result.merge(config.manifest);
-  }
+function str_obj (x) {
+  return inspect(x, false, null)
+}
 
-  manifest = {
-    "manifest" : result
-  }
-
-  // convert the resulting json to xml
-  var xml = xotree.writeXML(manifest);
-
-  // pretty print the xml
-  var formattedXml = pd.xml(xml);
-
-  console.log(formattedXml);
-};
+function str_xml (x) {
+  return pd.xml(xotree.writeXML(x))
+}
 
-data = '';
+var manifest = {}
 
-process.stdin.resume();
-process.stdin.setEncoding('utf8');
+process.argv.slice(2).forEach(function (p) {
+  try {
+    var x = parseFileSync(p)
+    console.error('merge: ' + p + ' ====>\n' + str_obj(x))
+    manifest.merge(x)
+  } catch (exn) {
+    console.error('merge: ' + p + ' failed')
+    console.error(exn.stack)
+    process.exit(23)
+  }
+})
 
-process.stdin.on('data', function (chunk) {
-  data += chunk;
-});
+// debug output
+console.error('manifest as object:\n' + str_obj(manifest))
+console.error('manifest as document:\n' + str_xml(manifest))
 
-process.stdin.on('end', function () {
-  dump(JSON.parse(data));
-});
+console.log(str_xml(manifest))

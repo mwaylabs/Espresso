@@ -121,9 +121,8 @@ gsedi android-project/assets/www/index.html '
 setup-icons
 setup-splash
 #cat android-project/src/`echo $package | tr . /`/$activity.java
-cat android-project/AndroidManifest.xml
-# TODO setup-manifest
-#cat android-project/AndroidManifest.xml
+setup-manifest
+
 add-plugins
 
 cat android-project/assets/www/index.html
