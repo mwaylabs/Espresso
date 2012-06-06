@@ -1,5 +1,4 @@
 #! /bin/sh
-# usage: create-cordova-android-project
 set -xeuf
 
 # TODO configuration
