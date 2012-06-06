@@ -1,17 +1,8 @@
 #! /bin/sh
 set -xeuf
 
-# TODO configuration
-# TODO export src_dir="${src_dir-$PWD}"
-# TODO export phonegap_dir="${phonegap_dir-$ROOT/../submodules/github/4z3/phonegap}"
-# TODO export sdk="${sdk}"
-# TODO export mode="${mode-debug}"
-export activity="${activity-MyActivity}"
-export package="${package-com.test.mypackage}"
-
 # configuration
 export build_dir="${build_dir-$PWD}"
-# TODO[?] phonegap_dir="${phonegap_dir-$ROOT/../submodules/github/4z3/phonegap}"
 export sdk="${sdk}"
 export mode="${mode-debug}"
 export activity="${activity-MyActivity}"
@@ -43,24 +34,21 @@ else
   # activate self-destructive if we're not debugging this component
   trap "cd '$OLDPWD'; rm -fR '$PWD'" EXIT INT QUIT
 fi
-# TODO ln -s "$phonegap_dir/Android" phonegap
-# TODO ln -s "$src_dir" src
 ln -s "$applicationDirectory" app
 
-# TODO dynamic (this was $phonegap_dir before)
-cordova_home="$HOME/Espresso/submodules/apache/incubator-cordova-android"
-cordova_version="$(cat "$cordova_home/VERSION")"
-
+# create android project directory
 if test -n "${proj_skel-}"; then
+  # TODO? validate proj_skel
   cp -R "$proj_skel" android-project
 else
-  # create android project directory
+  cordova_home="$ROOT/../submodules/apache/incubator-cordova-android"
+  cordova_version="$(cat "$cordova_home/VERSION")"
+
   (
     cd "$cordova_home"
     unset POSIXLY_CORRECT
     # TODO modify bin/create's TARGET to match ours!
     bin/create "$OLDPWD/android-project" "$package" "$activity"
-      # 2>&1 | sed 's/^/cordova: /'
   )
 
   # sanitize android project directory
@@ -74,15 +62,8 @@ else
     mv cordova-$cordova_version.js cordova.js
   )
 fi
-# cp -R android-project /tmp/android-project.skel
 
-pwd
-ls -lA
-#find
-
-# - copy application files into android project directory (cp ... assets/)
-#   - rm bin/create's assets (see $path/cordova/templates/project/assets/www)
-#   - copy selectively (instead of wildcarding and cleaning pot. cruft)
+# copy application files into android project directory
 (
   cd "$build_dir"
   find -type f | grep -E '\.(html|js|css|png)$' | tar -c -T -
@@ -90,42 +71,26 @@ ls -lA
 find android-project/assets/www
 
 # sanitize application files
-# TODO omit type="..." in Espresso core
 gsedi android-project/assets/www/index.html '
   s|\(</\?\)[sS][cC][rR][iI][pP][tT]|\1script|g
   s|\(<script[^>]*\) type="[^/]*/javascript"\([^>]*>\)|\1\2|g;
 '
-
-find android-project/assets
 
 # update android project files to use Cordova
 gsedi android-project/src/`echo $package | tr . /`/$activity.java '
   s|^\([ ]*\)\(super.loadUrl(.*);.*\)|\1super.setIntegerProperty("loadUrlTimeoutValue", 60000);\
 \1\2|
 '
-# TODO[debug] diff
-#cat android-project/src/`echo $package | tr . /`/$activity.java
-# TODO? charset="utf-8" type="application/javascript"
 gsedi android-project/assets/www/index.html '
   1,/<script/s|\(.*\)\(<\(script\).*\)|\1\<\3 src="cordova.js"></\3>\
 <\3>var isPhoneGap = true;</\3>\
 \2|
 '
-# TODO[debug] diff
-#cat android-project/assets/www/index.html
-
-#(cd android-project; find)
-#exit
 
 setup-icons
 setup-splash
-#cat android-project/src/`echo $package | tr . /`/$activity.java
 setup-manifest
-
 add-plugins
-
-cat android-project/assets/www/index.html
-find android-project/assets/www
 
 # build android package
 (cd android-project && ant --noconfig "$mode")
