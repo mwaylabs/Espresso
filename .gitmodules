@@ -22,3 +22,6 @@
 [submodule "submodules/github/phonegap/ios-sim"]
 	path = submodules/github/phonegap/ios-sim
 	url = https://github.com/phonegap/ios-sim
+[submodule "submodules/apache/incubator-cordova-android"]
+	path = submodules/apache/incubator-cordova-android
+	url = git://git.apache.org/incubator-cordova-android.git
