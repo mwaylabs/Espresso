@@ -1,4 +1,7 @@
 #! /usr/bin/env node
+// usage: blend-manifest [input-files...] > output-file
+// where input-files's content-type ∈ { application/json, application/xml }
+// and respective file extension ∈ { .json, .xml }
 
 // implement Object.prototype.merge for mergin JSON objects
 Object.defineProperty(Object.prototype, 'merge', {

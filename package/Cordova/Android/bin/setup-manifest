@@ -9,5 +9,5 @@ cat > $extracted_json <<EOF
 EOF
 
 temp=`TMPDIR="$PWD" mktemp -t AndroidManifest.part-XXXXXXXX.xml`
-json2manifest $generated_xml $extracted_json > $temp
+blend-manifest $generated_xml $extracted_json > $temp
 mv $temp android-project/AndroidManifest.xml
