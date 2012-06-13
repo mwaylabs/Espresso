@@ -27,7 +27,7 @@ echo "$plugins" | while read name value; do
 
   # link js to html
   gsedi android-project/assets/www/index.html "s:</head>:$(
-    find app/plugins/$name/assets -name '*.js' | sed '
+    find app/plugins/$name/assets/www -name '*.js' | sed '
         s:^app/plugins/'"$name"'/assets/www/\(.*\):<script src="\1"></script>:
     ')\n&:"
 
