@@ -24,7 +24,7 @@ maybe_cp() {
 # src px dpi -> boolean
 maybe_convert() {
   set -- $1 $2x$2 res/drawable-$3/ic_launcher.png
-  convert $src -resize $1 $2
+  convert $1 -resize $2 $3
 }
 
 autoScaleIcon="${autoScaleIcon-false}"
