@@ -22,9 +22,9 @@
 [submodule "submodules/github/phonegap/ios-sim"]
 	path = submodules/github/phonegap/ios-sim
 	url = https://github.com/phonegap/ios-sim
-[submodule "submodules/apache/incubator-cordova-android"]
-	path = submodules/apache/incubator-cordova-android
-	url = git://git.apache.org/incubator-cordova-android.git
 [submodule "node_modules/xmldom"]
 	path = node_modules/xmldom
 	url = https://github.com/jindw/xmldom
+[submodule "submodules/git-wip-us.apache.org/repos/asf/incubator-cordova-android"]
+	path = submodules/git-wip-us.apache.org/repos/asf/incubator-cordova-android
+	url = https://git-wip-us.apache.org/repos/asf/incubator-cordova-android
