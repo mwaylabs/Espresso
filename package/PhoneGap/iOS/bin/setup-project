@@ -26,11 +26,7 @@ else
 fi
 
 # copy application files into iOS project directory
-(
-  cd "$build_dir"
-  find . -type f | grep -E '\.(html|js|css|png)$' | tar -c -T -
-) | tar -C iOS-project/www -x
-find iOS-project/www
+xcopy-htmlapp "$build_dir" iOS-project/www
 
 # sanitize application files
 gsedi iOS-project/www/index.html '

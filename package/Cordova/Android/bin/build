@@ -60,11 +60,7 @@ else
 fi
 
 # copy application files into android project directory
-(
-  cd "$build_dir"
-  find . -type f | grep -E '\.(html|js|css|png)$' | tar -c -T -
-) | tar -C android-project/assets/www -x
-find android-project/assets/www
+xcopy-htmlapp "$build_dir" android-project/assets/www
 
 # sanitize application files
 gsedi android-project/assets/www/index.html '
