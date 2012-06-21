@@ -2,9 +2,11 @@
 set -xeuf
 
 /usr/libexec/PlistBuddy -x -c "Delete :CFBundleIconFiles" \
-    iOS-project/$activity/$activity-info.plist
+    iOS-project/$activity/$activity-info.plist || :
+
 /usr/libexec/PlistBuddy -x -c "Add :CFBundleIconFiles array" \
     iOS-project/$activity/$activity-info.plist
+
 while read px name; do
   if test -e src/theme/images/appicon-$px.png; then
     cp src/theme/images/appicon-$px.png \
