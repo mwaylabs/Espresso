@@ -16,8 +16,8 @@ while read px name; do
       convert src/theme/images/appicon.png \
           -resize ${px}x$px \
           iOS-project/$activity/Resources/icons/$name
-    elif test -e android-project/assets/theme/images/Icon@2x.png; then
-      convert android-project/assets/theme/images/Icon@2x.png \
+    elif test -e iOS-project/assets/theme/images/Icon@2x.png; then
+      convert iOS-project/assets/theme/images/Icon@2x.png \
           -resize ${px}x$px \
           iOS-project/$activity/Resources/icons/$name
     else
