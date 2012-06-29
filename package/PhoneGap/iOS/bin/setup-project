@@ -7,8 +7,8 @@ if test -n "${proj_skel-}"; then
   cp -R "$proj_skel" iOS-project
 else
   cordova_home="$ROOT/../submodules/git-wip-us.apache.org/repos/asf/incubator-cordova-ios"
-  #cordova_version="$(head -n 1 "$cordova_home/CordovaLib/VERSION")"
-  cordova_version="$(head -n 1 "/Users/Shared/Cordova/Frameworks/Cordova.framework/VERSION")"
+  cordova_version="$(head -n 1 "$cordova_home/CordovaLib/VERSION")"
+  #cordova_version="$(head -n 1 "/Users/Shared/Cordova/Frameworks/Cordova.framework/VERSION")"
 
   (
     mkdir cordova
