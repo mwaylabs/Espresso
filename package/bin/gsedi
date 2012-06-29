@@ -2,6 +2,6 @@
 #
 # `gsedi file script` is similar to GNU sed's `sed -i script file`
 #
-mv "$1" "$1.orig"
+cp "$1" "$1.orig"
 sed "$2" "$1.orig" > "$1"
 rm "$1.orig"

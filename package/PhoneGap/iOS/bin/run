@@ -3,7 +3,6 @@ set -xeu
 
 # configuration
 export build_dir="${build_dir-$PWD}"
-# !4 iOS: phonegap_dir="${phonegap_dir-$HOME/phonegap-1.1.0}"
 export sdk="${sdk}"
 export activity="${activity-MyActivity}"
 export package="${package-com.test.mypackage}"
@@ -15,18 +14,23 @@ validate-build_dir
 validate-sdk iphonesimulator
 
 # setup self-destructive working directory
-cd "`mktemp -d "${TMPDIR-/tmp}/package-phonegap-iOS.XXXXXXXXXX"`"
-trap "cd '$OLDPWD'; rm -fR '$PWD'" EXIT INT QUIT
-# !4 iOS: ln -s "$phonegap_dir/iOS" phonegap
-ln -s "$build_dir" src
+cd "`mktemp -d -t Espresso-package-cordova-iOS.XXXXXXXXXX`"
+if echo "${ESPRESSO_DEBUG-}" | grep -q package; then
+  : debugging espresso package
+else
+  # activate self-destructive if we're not debugging this component
+  trap "cd '$OLDPWD'; rm -fR '$PWD'" EXIT INT QUIT
+fi
 ln -s "$applicationDirectory" app
 
 setup-project
 
 # build iOS package
 cd iOS-project
-gsedi phonegap/debug 's/^xcodebuild/exec &/'
-sh phonegap/debug "$PWD" "$activity"
+gsedi cordova/debug 's/^xcodebuild/exec &/'
+gsedi cordova/debug 's/^SDK=/# &/'
+
+SDK="$sdk" sh cordova/debug "$PWD" "$activity"
 
 # prepare launcher
 (cd $ROOT/../submodules/github/phonegap/ios-sim
