@@ -50,7 +50,7 @@ var Resource = exports.Resource = function (properties) {
 /*
  * Getting all basic Espresso functions from Framework
  */
-require('sys').inherits(Resource, Framework);
+require('util').inherits(Resource, Framework);
 
 
 /**
