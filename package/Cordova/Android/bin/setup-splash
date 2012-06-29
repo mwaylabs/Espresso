@@ -1,0 +1,14 @@
+#! /bin/sh
+set -euf
+
+cd android-project
+
+if test -e assets/www/theme/images/splash.png; then
+  cp assets/www/theme/images/splash.png res/drawable/
+  gsedi src/`echo $package | tr . /`/$activity.java '
+    s|\([ ]*\)\(super\.onCreate([^)]*);.*\)|\1super.setIntegerProperty("splashscreen", R.drawable.splash);\
+\1\2|
+  '
+else
+  echo "Warning: missing splash.png" >&2
+fi

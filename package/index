@@ -14,4 +14,9 @@ eval "$script"
 
 PATH="$ROOT/$method/$os/bin:${PATH+:$PATH}"; export PATH
 
+cat >&2<<EOF
+#
+# Espresso package $action $method/$os (`date +'%Y-%d-%m %H:%M:%S %z'`)
+#
+EOF
 exec "$action"

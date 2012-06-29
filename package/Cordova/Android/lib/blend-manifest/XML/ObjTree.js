@@ -22,6 +22,9 @@ XML.ObjTree.prototype.overrideMimeType = 'text/xml';
 
 //  method: parseXML( xmlsource )
 
+var DOMParser = require('xmldom').DOMParser
+var window = { DOMParser: DOMParser }
+
 XML.ObjTree.prototype.parseXML = function ( xml ) {
     var root;
     if ( window.DOMParser ) {

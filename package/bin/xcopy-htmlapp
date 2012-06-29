@@ -1,0 +1,6 @@
+#! /bin/sh
+set -xeuf
+findp "$1"
+findp "$2"
+xcopy "$1" "$2" '\.(html|js|css|png|gif)$'
+findp "$2"
