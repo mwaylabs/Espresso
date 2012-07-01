@@ -1,13 +1,13 @@
 #! /bin/sh
 set -xeuf
 
-if json-print $file package $target plists PhoneGap | json2plist > myPhoneGap.plist 2>/dev/null; then
+if json-print $file package $target plists Cordova | json2plist > myCordova.plist 2>/dev/null; then
   /usr/libexec/PlistBuddy -x \
-      -c "Merge iOS-project/$activity/PhoneGap.plist" \
-      myPhoneGap.plist
-  mv myPhoneGap.plist iOS-project/$activity/PhoneGap.plist
+      -c "Merge iOS-project/$activity/Cordova.plist" \
+      myCordova.plist
+  mv myCordova.plist iOS-project/$activity/Cordova.plist
 else
-  rm myPhoneGap.plist
+  rm myCordova.plist
 fi
 
 if json-print $file package $target plists info | json2plist > myInfo.plist 2>/dev/null; then

@@ -1,9 +1,11 @@
 #! /bin/sh
+set -xeu
+
+# stop and uninstall application (if installed)
+adb -e wait-for-device uninstall "$package" || :
 
 build
 # TODO trap "rm -R '$build_dir'" (?)
-
-set -xeu
 
 # configuration
 export build_dir="${build_dir-$PWD}"
@@ -29,7 +31,6 @@ if test "$mode" = release; then
   fi
 fi
 
-# (re-)start the application in the emulator
-adb -e wait-for-device uninstall "$package" || :
+# (re-)start application
 adb -e wait-for-device install "$build_dir/$apk_basename.apk"
 adb -e wait-for-device shell am start -n "$package/.$activity"

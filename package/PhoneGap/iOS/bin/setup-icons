@@ -2,20 +2,22 @@
 set -xeuf
 
 /usr/libexec/PlistBuddy -x -c "Delete :CFBundleIconFiles" \
-    iOS-project/$activity/$activity-info.plist
+    iOS-project/$activity/$activity-info.plist || :
+
 /usr/libexec/PlistBuddy -x -c "Add :CFBundleIconFiles array" \
     iOS-project/$activity/$activity-info.plist
+
 while read px name; do
-  if test -e src/theme/images/appicon-$px.png; then
-    cp src/theme/images/appicon-$px.png \
+  if test -e iOS-project/www/theme/images/appicon-$px.png; then
+    cp iOS-project/www/theme/images/appicon-$px.png \
         iOS-project/$activity/Resources/icons/$name
   elif test "${autoScaleIcon-false}" = true; then
-    if test -e src/theme/images/appicon.png; then
-      convert src/theme/images/appicon.png \
+    if test -e iOS-project/www/theme/images/appicon.png; then
+      convert iOS-project/www/theme/images/appicon.png \
           -resize ${px}x$px \
           iOS-project/$activity/Resources/icons/$name
-    elif test -e android-project/assets/theme/images/Icon@2x.png; then
-      convert android-project/assets/theme/images/Icon@2x.png \
+    elif test -e iOS-project/www/theme/images/Icon@2x.png; then
+      convert iOS-project/www/theme/images/Icon@2x.png \
           -resize ${px}x$px \
           iOS-project/$activity/Resources/icons/$name
     else

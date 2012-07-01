@@ -1,0 +1,3 @@
+#! /bin/sh
+set -euf
+find "$1" | sed -n "s^$1/  p"

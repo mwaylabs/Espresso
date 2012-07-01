@@ -1,0 +1,23 @@
+#! /bin/sh
+set -xeuf
+
+if test -e iOS-project/www/theme/images/splash.png; then
+  cp iOS-project/www/theme/images/splash.png \
+      iOS-project/$activity/Resources/splash/Default~iphone.png
+fi
+if test -e iOS-project/www/theme/images/splash@2x.png; then
+  cp iOS-project/www/theme/images/splash@2x.png \
+      iOS-project/$activity/Resources/splash/Default@2x~iphone.png
+fi
+while read orientation; do
+  if test -e iOS-project/www/theme/images/splash-$orientation.png; then
+    cp iOS-project/www/theme/images/splash-$orientation.png \
+        iOS-project/$activity/Resources/splash/Default-$orientation~iphone.png
+  fi
+done<<EOF
+Portrait
+PortraitUpsideDown
+Landscape
+LandscapeLeft
+LandscapeRight
+EOF

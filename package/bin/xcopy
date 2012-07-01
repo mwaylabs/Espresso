@@ -1,0 +1,13 @@
+#! /bin/sh
+# usage: xcopy SRC DST [filter]
+# pre: test -d DST && test `ls DST | wc -l` = 0
+set -euf
+
+src="$1"
+dst="$2"
+filter="${3-.}"
+
+(
+  cd "$src"
+  find . -type f | grep -E "$filter" | tar -c -T -
+) | tar -C "$dst" -x

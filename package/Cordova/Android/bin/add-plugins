@@ -1,8 +1,22 @@
 #! /bin/sh
 set -xeuf
 
-plugins="$(json-print $file package $target plugins | plugins2args)"
+if plugins="$(json-print $file package $target plugins)"; then
+  plugins="$(echo "$plugins" | plugins2args)"
+  if test -z "$plugins"; then
+    : plugins property is empty
+    exit 0
+  fi
+else
+  : no plugins property configured
+  exit 0
+fi
+
+validate-plugins `echo "$plugins" | awk '{print$1}'`
+
 echo "$plugins" | while read name value; do
+
+  # TODO plugin files should be in some appropriate subdirectory of www/
 
   # copy plugin files
   for i in src libs assets; do
@@ -12,9 +26,9 @@ echo "$plugins" | while read name value; do
   done
 
   # link js to html
-  gsedi android-project/assets/index.html "s:</head>:$(
-    find app/plugins/$name/assets -name '*.js' | sed '
-        s:^app/plugins/'"$name"'/assets/\(.*\):<script type="application/javascript" src="\1"></script>:
+  gsedi android-project/assets/www/index.html "s:</head>:$(
+    find app/plugins/$name/assets/www -name '*.js' | sed '
+        s:^app/plugins/'"$name"'/assets/www/\(.*\):<script src="\1"></script>:
     ')\n&:"
 
   # add element to res/xml/plugins.xml

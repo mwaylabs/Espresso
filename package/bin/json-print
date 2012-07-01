@@ -1,7 +1,15 @@
 #! /usr/bin/env node
 
-value = JSON.parse(require('fs').readFileSync(process.argv[2]))
+filename = process.argv[2]
+jsonpath = []
+value = JSON.parse(require('fs').readFileSync(filename))
 process.argv.slice(3).forEach(function (key) {
-  value = value[key];
-});
-console.log(JSON.stringify(value, null, 2));
+  value = value[key]
+  jsonpath.push(key)
+  if (typeof value === 'undefined') {
+    console.error(filename + ':', jsonpath.join('.'), 'is', value)
+    process.exit(23)
+  }
+})
+
+console.log(JSON.stringify(value, null, 2))
