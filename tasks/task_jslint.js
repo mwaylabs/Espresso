@@ -41,7 +41,7 @@ Task_JSLINT.prototype.duty = function(framework,callback){
 var files = framework.files;
 var that = this;
 
-this._e_.sys.puts('Running Task JSLINT');
+this._e_.util.puts('Running Task JSLINT');
     files.forEach(function (file){
       if(file.isJavaScript()){
         erg = that.jslint(file.content);
@@ -51,9 +51,9 @@ this._e_.sys.puts('Running Task JSLINT');
               e = that.jslint.errors[i];
 
               if (e) {
-                  this._e_.sys.puts('WARNING: jslint error in "'+ file +'" at line ' + e.line + ' character ' + e.character + ': ' + e.reason);
-                  this._e_.sys.puts('         ' + (e.evidence || '').replace(/^\s*(\S*(\s+\S+)*)\s*$/, "$1"));
-                  this._e_.sys.puts('');
+                  this._e_.util.puts('WARNING: jslint error in "'+ file +'" at line ' + e.line + ' character ' + e.character + ': ' + e.reason);
+                  this._e_.util.puts('         ' + (e.evidence || '').replace(/^\s*(\S*(\s+\S+)*)\s*$/, "$1"));
+                  this._e_.util.puts('');
               }
           }
         }

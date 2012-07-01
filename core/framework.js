@@ -331,7 +331,7 @@ Framework.prototype.save = function (callback) {
     };
 
     that.copyFile = function (files, filePath, fileOutputPath) {
-      self._e_.sys.pump(self._e_.fs.createReadStream(filePath),
+      self._e_.util.pump(self._e_.fs.createReadStream(filePath),
         self._e_.fs.createWriteStream(fileOutputPath),
         function (err) {
           if (err) {

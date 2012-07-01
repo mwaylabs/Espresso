@@ -30,7 +30,7 @@ var E = exports.E = function() {
  */
 E.prototype._e_ = {};
 E.prototype._e_.fs = require('fs');
-E.prototype._e_.sys = require('sys');
+E.prototype._e_.util = require('util');
 E.prototype._e_.path = require('path');
 
 
