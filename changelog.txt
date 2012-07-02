@@ -1,3 +1,9 @@
+** Version 1.2.0 - Date 02.07.2012 **
+
+  * Switched from PhoneGap to Cordova
+  * Added support for Cordova plugins
+  * Bump cordova to 1.9.0
+
 ** Version 1.1.0 - Date 23.04.2012 **
 
   * Fixed missing quotes in view template
