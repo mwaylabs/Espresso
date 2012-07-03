@@ -12,6 +12,12 @@ script="`read-config`"
 
 eval "$script"
 
+# rewrite method for backward-compatibility
+case "$method" in
+  (PhoneGap) method=Cordova;;
+esac
+export method
+
 PATH="$ROOT/$method/$os/bin:${PATH+:$PATH}"; export PATH
 
 cat >&2<<EOF
