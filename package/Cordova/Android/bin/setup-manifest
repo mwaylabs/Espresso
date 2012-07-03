@@ -1,0 +1,13 @@
+#! /bin/sh
+set -euf
+
+generated_xml=android-project/AndroidManifest.xml
+extracted_json=extract-from-config.json
+
+cat > $extracted_json <<EOF
+{"manifest":$(json-print $file package $target manifest)}
+EOF
+
+temp=`TMPDIR="$PWD" mktemp -t AndroidManifest.part-XXXXXXXX.xml`
+blend-manifest $generated_xml $extracted_json > $temp
+mv $temp android-project/AndroidManifest.xml

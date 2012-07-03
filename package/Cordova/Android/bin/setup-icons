@@ -1,0 +1,67 @@
+#! /bin/sh
+set -euf
+
+cd android-project
+
+# TODO[?] there's also res/drawable-$dpi/icon.png -- what's that?
+
+get_autoScaleIcon_src() {
+  for src in \
+    assets/www/theme/images/appicon.png \
+    assets/www/theme/images/Icon@2x.png \
+  ; do
+      if test -e $src; then
+        echo  "$src"
+      fi
+    done | head -n 1 | grep .
+}
+
+# px dpi -> boolean
+maybe_cp() {
+  set -- assets/www/theme/images/appicon-$1.png res/drawable-$2
+  for basename in \
+    ic_launcher.png \
+    icon.png \
+  ; do
+      test -e $1 && cp $1 $2/$basename
+    done
+}
+# src px dpi -> boolean
+maybe_convert() {
+  set -- $1 $2x$2 res/drawable-$3
+  for basename in \
+    ic_launcher.png \
+    icon.png \
+  ; do
+      convert $1 -resize $2 $3/$basename
+    done
+}
+
+autoScaleIcon="${autoScaleIcon-false}"
+echo "+ autoScaleIcon=$autoScaleIcon" >&2
+
+if test "$autoScaleIcon" = true; then
+  if src="`get_autoScaleIcon_src`"; then
+    echo "+ autoScaleIcon_src=$src" >&2
+    while read px dpi; do
+      maybe_cp $px $dpi ||
+      maybe_convert $src $px $dpi
+    done
+  else
+    echo 'Warning: missing appicon.png (autoScaleIcon source)' >&2
+    while read px dpi; do
+      maybe_cp $px $dpi ||
+      echo "Warning: missing appicon-$px.png for drawable-$dpi" >&2
+    done
+  fi
+else
+  while read px dpi; do
+    maybe_cp $px $dpi ||
+    echo "Warning: missing appicon-$px.png for drawable-$dpi" >&2
+  done
+fi<<EOF
+36 ldpi
+48 mdpi
+72 hdpi
+96 xhdpi
+EOF

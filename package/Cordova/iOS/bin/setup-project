@@ -1,0 +1,57 @@
+#! /bin/sh
+set -xeu
+
+# create iOS project directory
+if test -n "${proj_skel-}"; then
+  # TODO? validate proj_skel
+  cp -R "$proj_skel" iOS-project
+else
+  cordova_home="$ROOT/../submodules/git-wip-us.apache.org/repos/asf/incubator-cordova-ios"
+  cordova_version="$(head -n 1 "$cordova_home/CordovaLib/VERSION")"
+  #cordova_version="$(head -n 1 "/Users/Shared/Cordova/Frameworks/Cordova.framework/VERSION")"
+
+  (
+    mkdir cordova
+    cd cordova
+    tar -C "$cordova_home" -c . | tar -xp
+
+    gsedi bin/create '
+      s/sed -i .. -e \("[^"]*"\) \(.*\)/gsedi "\2" \1/
+    '
+
+    unset POSIXLY_CORRECT
+    # TODO modify bin/create's TARGET to match ours!
+    bin/create "$OLDPWD/iOS-project" "$package" "$activity"
+  )
+fi
+
+# copy application files into iOS project directory
+xcopy-htmlapp "$build_dir" iOS-project/www
+
+# sanitize application files
+gsedi iOS-project/www/index.html '
+  s|\(</\?\)[sS][cC][rR][iI][pP][tT]|\1script|g
+  s|\(<script[^>]*\) type="[^/]*/javascript"\([^>]*>\)|\1\2|g;
+'
+
+# update iOS project files to use Cordova
+gsedi iOS-project/www/index.html '
+  1,/<script/s|\(.*\)\(<\(script\).*\)|\1\<\3 src="cordova-'"`
+    echo $cordova_version
+  `"'.js"></\3>\
+<\3>var isPhoneGap = true;</\3>\
+\2|
+'
+
+setup-icons
+setup-splash
+add-plugins
+setup-plists
+
+# XXX setup-plists modifies pbxproj in a way Cordova's "naive" check
+# cannot succeed, so we've to add a comment to the pbxproj:
+cat >> iOS-project/$activity.xcodeproj/project.pbxproj <<EOF
+// {isa = PBXFileReference; lastKnownFileType = folder; path = www; sourceTree = "<group>"; };
+EOF
+
+find iOS-project
