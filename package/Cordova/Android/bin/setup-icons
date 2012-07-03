@@ -18,13 +18,23 @@ get_autoScaleIcon_src() {
 
 # px dpi -> boolean
 maybe_cp() {
-  set -- assets/www/theme/images/appicon-$1.png res/drawable-$2/ic_launcher.png
-  test -e $1 && cp $1 $2
+  set -- assets/www/theme/images/appicon-$1.png res/drawable-$2
+  for basename in \
+    ic_launcher.png \
+    icon.png \
+  ; do
+      test -e $1 && cp $1 $2/$basename
+    done
 }
 # src px dpi -> boolean
 maybe_convert() {
-  set -- $1 $2x$2 res/drawable-$3/ic_launcher.png
-  convert $1 -resize $2 $3
+  set -- $1 $2x$2 res/drawable-$3
+  for basename in \
+    ic_launcher.png \
+    icon.png \
+  ; do
+      convert $1 -resize $2 $3/$basename
+    done
 }
 
 autoScaleIcon="${autoScaleIcon-false}"
