@@ -1,0 +1,53 @@
+#! /bin/sh
+set -xeu
+
+# configuration
+export build_dir="${build_dir-$PWD}"
+export sdk="${sdk}"
+export activity="${activity-MyActivity}"
+export package="${package-com.test.mypackage}"
+export keychain="${keychain-$HOME/Library/Keychains/login.keychain}"
+export sign="${sign}"
+# embed (provisioning profile) is optional 
+export archs="${archs-armv6 armv7}"
+
+# sanity-check configuration
+validate-activity
+validate-package
+validate-build_dir
+validate-sdk iphoneos
+# TODO validate $keychain
+# TODO validate $sign
+# TODO validate $embed
+# TODO validate $archs
+
+# setup self-destructive working directory
+cd "`mktemp -d -t Espresso-package-cordova-iOS.XXXXXXXXXX`"
+if echo "${ESPRESSO_DEBUG-}" | grep -q package; then
+  : debugging espresso package
+else
+  # activate self-destructive if we're not debugging this component
+  trap "cd '$OLDPWD'; rm -fR '$PWD'" EXIT INT QUIT
+fi
+ln -s "$applicationDirectory" app
+
+setup-project
+
+# build iOS package
+cd iOS-project
+gsedi cordova/debug "s/^xcodebuild .*/exec & ARCHS=\"$archs\"/"
+gsedi cordova/debug 's/^SDK=/# &/'
+
+# TODO do this only when building for iphoneos (i.e. not for iphonesimulator)
+if ! security show-keychain-info "$keychain" 2>/dev/null; then
+  security unlock-keychain "$keychain"
+fi
+
+SDK="$sdk" sh cordova/debug "$PWD" "$activity"
+
+# emit iOS package
+xcrun -sdk iphoneos PackageApplication \
+    -v "build/Release-iphoneos/$activity.app" \
+    -o "$build_dir/$activity.ipa" \
+    --sign "$sign" \
+    ${embed+--embed "$embed"}

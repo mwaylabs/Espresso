@@ -13,12 +13,18 @@
 [submodule "node_modules/mu"]
 	path = node_modules/mu
 	url = https://github.com/raycmorgan/Mu
-[submodule "submodules/github/callback/phonegap"]
-	path = submodules/github/callback/phonegap
-	url = https://github.com/callback/phonegap
-[submodule "submodules/github/Fingertips/ios-sim"]
-	path = submodules/github/Fingertips/ios-sim
-	url = https://github.com/Fingertips/ios-sim
-[submodule "submodules/github/4z3/callback-ios"]
-	path = submodules/github/4z3/callback-ios
-	url = https://github.com/4z3/callback-ios
+[submodule "submodules/github/4z3/phonegap"]
+	path = submodules/github/4z3/phonegap
+	url = https://github.com/4z3/phonegap
+[submodule "submodules/github/phonegap/ios-sim"]
+	path = submodules/github/phonegap/ios-sim
+	url = https://github.com/phonegap/ios-sim
+[submodule "node_modules/xmldom"]
+	path = node_modules/xmldom
+	url = https://github.com/jindw/xmldom
+[submodule "submodules/git-wip-us.apache.org/repos/asf/incubator-cordova-android"]
+	path = submodules/git-wip-us.apache.org/repos/asf/incubator-cordova-android
+	url = https://git-wip-us.apache.org/repos/asf/incubator-cordova-android
+[submodule "submodules/git-wip-us.apache.org/repos/asf/incubator-cordova-ios"]
+	path = submodules/git-wip-us.apache.org/repos/asf/incubator-cordova-ios
+	url = http://git-wip-us.apache.org/repos/asf/incubator-cordova-ios

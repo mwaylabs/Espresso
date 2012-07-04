@@ -1,0 +1,44 @@
+#! /bin/sh
+set -xeu
+
+# configuration
+export build_dir="${build_dir-$PWD}"
+export sdk="${sdk}"
+export activity="${activity-MyActivity}"
+export package="${package-com.test.mypackage}"
+
+# sanity-check configuration
+validate-activity
+validate-package
+validate-build_dir
+validate-sdk iphonesimulator
+
+# setup self-destructive working directory
+cd "`mktemp -d -t Espresso-package-cordova-iOS.XXXXXXXXXX`"
+if echo "${ESPRESSO_DEBUG-}" | grep -q package; then
+  : debugging espresso package
+else
+  # activate self-destructive if we're not debugging this component
+  trap "cd '$OLDPWD'; rm -fR '$PWD'" EXIT INT QUIT
+fi
+ln -s "$applicationDirectory" app
+
+setup-project
+
+# build iOS package
+cd iOS-project
+gsedi cordova/debug 's/^xcodebuild/exec &/'
+gsedi cordova/debug 's/^SDK=/# &/'
+
+SDK="$sdk" sh cordova/debug "$PWD" "$activity"
+
+# prepare launcher
+(cd $ROOT/../submodules/github/phonegap/ios-sim
+  rake install prefix="$ROOT/phonegap-ios/ios-sim")
+sim="$ROOT/phonegap-ios/ios-sim/bin/ios-sim"
+chmod 0755 "$sim"
+
+printf '\n\e[1;33mAbort debug output and return to shell with \e[35m^C\e[33m.\e[m\n\n'
+
+# run package
+("$sim" launch "build/Release-iphonesimulator/$activity.app")

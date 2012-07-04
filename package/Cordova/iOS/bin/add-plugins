@@ -1,0 +1,72 @@
+#! /bin/sh
+set -xeuf
+
+pbxproj_plist="iOS-project/$activity.xcodeproj/project.pbxproj"
+pbxproj_json="$pbxproj_plist.json"
+plutil -convert xml1 "$pbxproj_plist" -o "$pbxproj_plist.xml1"
+plist2json "$pbxproj_plist.xml1" "$pbxproj_json"
+
+plugins="$(json-print $file package $target plists PhoneGap Plugins | plugins2args)"
+
+# TODO add this line, when we've got an OSX development platform
+#validate-plugins `echo "$plugins" | awk '{print$1}'`
+
+echo "$plugins" | while read name value; do
+  if test -d app/plugins/$name; then
+
+    # TODO collect only from src/ and assets/
+    h_files="$(cd app/plugins/$name && find . -name '*.h')"
+    cpp_files="$(cd app/plugins/$name && find . -name '*.cpp')"
+    mm_files="$(cd app/plugins/$name && find . -name '*.mm')"
+    js_files="$(cd app/plugins/$name && find . -name '*.js')"
+
+    plugins_dir="$(find iOS-project -type d -name Plugins)"
+    test $(echo "$plugins_dir" | wc -l) = 1
+
+    {
+      echo "$h_files"
+      echo "$cpp_files"
+      echo "$mm_files"
+    } |
+        tar -C app/plugins/$name -T- -c |
+        tar -C "$plugins_dir" -x -v
+
+    # link files to pbxproj
+    {
+      # plugin source files
+      echo "$cpp_files"
+      echo "$mm_files"
+    } |
+        while read file; do
+          pbx-add-plugin-source-file "$pbxproj_json" "$plugins_dir/$file"
+        done
+
+    {
+      # libraries (TODO check if already exists)
+      echo System/Library/Frameworks/AVFoundation.framework
+      echo System/Library/Frameworks/AssetsLibrary.framework
+      echo System/Library/Frameworks/CoreVideo.framework
+      echo /usr/lib/libiconv.dylib
+    } |
+        while read file; do
+          pbx-add-library "$pbxproj_json" "$file"
+        done
+
+    {
+      echo "$js_files"
+    } |
+        tar -C app/plugins/$name -T- -c |
+        tar -C iOS-project/www -x -v
+
+    # link js to html
+    gsedi iOS-project/www/index.html "s:</head>:$(
+      echo "$js_files" | sed '
+          s:^\./\(.*\):<script type="application/javascript" src="\1"></script>:
+      ')\n&:"
+  fi
+done
+
+pbx-json2plist < "$pbxproj_json" > "$pbxproj_plist"
+cat "$pbxproj_json" # debug output
+cat "$pbxproj_plist" # debug output
+rm "$pbxproj_json"

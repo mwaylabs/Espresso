@@ -1,0 +1,38 @@
+#! /bin/sh
+# usage: xml-append file.xml nodeName snippet.xml
+#
+# Append snippet.xml to nodeName of file.xml
+#
+set -xeuf
+
+file="$1"
+nodeName="$2"
+snippet="$3"
+
+xsl="`mktemp "${TMPDIR-/tmp}/package-phonegap-android.XXXXXXXXXX.xsl"`"
+xml="`mktemp "${TMPDIR-/tmp}/package-phonegap-android.XXXXXXXXXX.xml"`"
+trap "rm '$xsl' '$xml'" EXIT INT QUIT
+
+{
+  echo '<xsl:stylesheet
+      xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0"
+      xmlns:android="http://schemas.android.com/apk/res/android">
+  <xsl:template match="'"$nodeName"'">
+    <xsl:copy>
+      <xsl:apply-templates select="@*"/>
+      <xsl:apply-templates select="node()" />'
+  cat "$snippet"
+  echo '
+    </xsl:copy>
+  </xsl:template>
+  <xsl:template match="@*|node()">
+    <xsl:copy>
+        <xsl:apply-templates select="@*|node()" />
+    </xsl:copy>
+  </xsl:template>
+</xsl:stylesheet>'
+} > "$xsl"
+
+xsltproc "$xsl" "$file" > "$xml"
+
+cat "$xml" > "$file"

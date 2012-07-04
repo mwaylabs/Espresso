@@ -33,6 +33,7 @@ var generate = exports.generate = function generate(options) {
   var path;
   var outPutFiles = [
     { src: 'style.css', dst: 'app/resources/base/style.css' },
+    { src: 'appicon.png', dst: 'app/resources/base/images/appicon.png' },
     { src: 'Icon.png', dst: 'app/resources/base/images/Icon.png' },
     { src: 'Icon-72.png', dst: 'app/resources/base/images/Icon-72.png' },
     { src: 'Icon@2x.png', dst: 'app/resources/base/images/Icon@2x.png' },
