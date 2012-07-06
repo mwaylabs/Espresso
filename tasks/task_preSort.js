@@ -80,6 +80,8 @@ Task_PreSort.prototype.duty = function(framework,callback){
             _stores.push(file);
         } else if (path.search(normalize4RegExp('/validators/')) !== -1) {
             _validators.push(file);
+        } else if (path.search(normalize4RegExp('/plugins/')) !== -1) {
+            _validators.push(file);
         } else {
             _misc.push(file);
         }
