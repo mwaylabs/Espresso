@@ -17,7 +17,7 @@ var commandparser = require(path.join(espresso_root, 'lib', 'commandparser'));
 var cmdParser = commandparser.create(COMMAND_FOLDER + '/', 'espresso');
 var args;
 
-if (process.argv[0].slice(-4) == "node") {
+if (process.argv[0].slice(-4) == "node" || process.argv[0].slice(-8) == "node.exe") {
   args = process.argv.slice(2);
 } else {
   args = process.argv.slice(1);
