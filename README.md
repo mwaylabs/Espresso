@@ -1,3 +1,4 @@
+[![build status](https://secure.travis-ci.org/mwaylabs/Espresso.png)](http://travis-ci.org/mwaylabs/Espresso)
 NOTE
 ====
 
