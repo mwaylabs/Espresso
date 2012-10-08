@@ -518,6 +518,9 @@ App.prototype.buildIndexHTML = function (callback, _frameworkNamesForIndexHtml, 
   +  (typeof this.application !== 'undefined'
       ? 'M.Application.config = ' + JSON.stringify(this.application) + ';'
       : '')
+  +  (typeof this.targetQuery !== 'undefined'
+      ? 'M.Application.targetQuery = ' + JSON.stringify(this.targetQuery) + ';'
+      : '')
   ));
 
   _indexHtml.push(HTML('script', {
