@@ -170,7 +170,11 @@ Server.prototype.proxyThat = function (request, response) {
             _respondErr(err.toString(), 500);
           })
         .on('http-error', function (err, resp) {
-            _respondErr(err.toString(), resp.statusCode);
+            if(err && resp) {
+                _respondErr(err.toString(), resp.statusCode);
+            } else {
+                _respondErr('http-error', 502);
+            }
           })
         .on('redirect', function (data, resp) {
             Utils.log('Redirecting to: ' + resp.headers.location);
