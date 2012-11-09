@@ -49,6 +49,8 @@ var Framework = exports.Framework = function (properties) {
   this.mergedFiles     = [];
   this.dependencyTrees = [];
   this.taskChain       = [];
+  this.filesToPreload  = [];
+  this.preloader       = true;
 
   /* Adding the properties fot this Frameworks */
   if (properties) {
@@ -130,7 +132,6 @@ Framework.prototype.readFiles = function (callback) {
 Framework.prototype.getFiles = function getFiles(path, callback) {
   var that = this;
   var manifest = path + '/manifest.json';
-
   this._e_.fs.stat(manifest, function (err, stat) {
       if (err) {
         that.browseFiles(path, callback);

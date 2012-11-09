@@ -32,6 +32,7 @@ ManagedTasks.Tasks['minify']      =  require('./task_minify').Task_Minify;
 ManagedTasks.Tasks['sass']        =  require('./task_sass').Task_SASS;
 ManagedTasks.Tasks['markLibrary'] =  require('./task_markLibrary').Task_MarkLibrary;
 ManagedTasks.Tasks['markCoreFramework'] =  require('./task_markCoreFramework').Task;
+ManagedTasks.Tasks['preloadImages']    =  require('./task_preloadImages').Task_PreloadImages;
 
 [ 'analyze'
 , 'globalAnalyze'
