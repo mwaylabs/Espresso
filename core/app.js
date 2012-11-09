@@ -503,7 +503,7 @@ App.prototype.buildIndexHTML = function (callback, _frameworkNamesForIndexHtml, 
       Object.keys(appConfig).forEach(function(ind){
           applicationConfig.push('M.Application.config["' + ind + '"] = ' + JSON.stringify(appConfig[ind]) + ';');
       });
-      return applicationConfig.join('\n');
+      return applicationConfig.join('');
   };
 
   _indexHtml.push(HTML('script', {
