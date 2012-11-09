@@ -78,6 +78,9 @@ var App = exports.App = function (options, server) {
   this.frameworks          = [];
   this.globalState         = {};
 
+  this.filesToPreload      = [];
+  this.preloadImages       = false;
+
   this.HEAD_IndexHtml = [];
   this.BODY_IndexHtml = [];
 
@@ -219,7 +222,8 @@ App.prototype.loadTheApplication = function () {
     _frameworkOptions.app = that;
     _frameworkOptions.taskChain = new TaskManager([
       "contentType",
-      "manifest"
+      "manifest",
+      "preloadImages"
     ]).getTaskChain();
     return new Resource(_frameworkOptions);
   });
@@ -478,6 +482,14 @@ App.prototype.buildIndexHTML = function (callback, _frameworkNamesForIndexHtml, 
     }, ''));
   });
 
+    /*preload*/
+  if(that.preloadImages){
+      _indexHtml.push(HTML('script', {
+          type: 'application/javascript',
+          src: 'preload.js'
+      }, ''));
+  }
+
   _frameworkNamesForIndexHtml.forEach(function (name) {
     var match = /^(.*\/)?([^\/]+(\.[^.\/]+))$/.exec(name);
     if (match) {
@@ -508,6 +520,15 @@ App.prototype.buildIndexHTML = function (callback, _frameworkNamesForIndexHtml, 
     });
   };
 
+  var addApplicationConfig = function(appConfig){
+      var applicationConfig = [];
+
+      Object.keys(appConfig).forEach(function(ind){
+          applicationConfig.push('M.Application.config["' + ind + '"] = ' + JSON.stringify(appConfig[ind]) + ';');
+      });
+      return applicationConfig.join('\n');
+  };
+
   _indexHtml.push(HTML('script', {
     type: 'application/javascript'
   }, 'var ' + this.name + ' = ' + this.name + ' || {};'
@@ -516,7 +537,7 @@ App.prototype.buildIndexHTML = function (callback, _frameworkNamesForIndexHtml, 
       ? 'M.Application.defaultLanguage = ' + JSON.stringify(this.defaultLanguage) + ';'
       : '')
   +  (typeof this.application !== 'undefined'
-      ? 'M.Application.config = ' + JSON.stringify(this.application) + ';'
+      ? addApplicationConfig(this.application)
       : '')
   +  (typeof this.targetQuery !== 'undefined'
       ? 'M.Application.targetQuery = ' + JSON.stringify(this.targetQuery) + ';'
@@ -551,6 +572,7 @@ App.prototype.buildIndexHTML = function (callback, _frameworkNamesForIndexHtml, 
     "contentType",
     "manifest"
   ]).getTaskChain();
+
   var fr = new Framework(_frameworkOptions);
 
   fr.files.push(new File({
@@ -653,6 +675,38 @@ App.prototype.buildManifest = function (callback) {
     callback(null,this.frameworks);
   };
 };
+
+App.prototype.buildPreloadFile = function (callback) {
+    var self = this, _cacheManifest = [];
+
+    if (!self.preloadImages) {
+        callback();
+    } else {
+        var _frameworkOptions  = {};
+        _frameworkOptions.path = this.applicationDirectory;
+        _frameworkOptions.name = 'preload';
+        _frameworkOptions.app = this;
+        _frameworkOptions.virtual = true;
+        _frameworkOptions.frDelimiter = '/';
+        _frameworkOptions.taskChain = new TaskManager([
+            "void"
+        ]).getTaskChain();
+        var fr = new Framework(_frameworkOptions);
+        fr.files.push(new File({
+            frDelimiter: fr.frDelimiter,
+            virtual: true,
+            name:'/preload.js',
+            path:'/preload.js',
+            contentType : 'application/javascript',
+            requestPath :'preload.js',
+            framework: fr, /* the framework, this file belongs to.*/
+            content: 'M.Application.config["preloadImages"] = ' + self.preloadImages + ';\nM.Application.config["filesToPreload"] = ' + JSON.stringify(self.filesToPreload) + ';'
+        }));
+        this.addFrameworks([fr]);
+        callback(null,this.frameworks);
+    };
+};
+
 
 /**
  * @description
@@ -858,6 +912,10 @@ App.prototype.build = function (callback) {
         self.buildManifest(this);
       },
       function (err, frameworks) {
+          if (err) { throw err; }
+          self.buildPreloadFile(this);
+      },
+      function (err, frameworks) {
         if (err) { throw err; }
         self.reporter.printReport();
         callback();
@@ -888,7 +946,7 @@ App.prototype.saveLocal = function (callback) {
     };
 
     that.save = function () {
-      app.frameworks.forEach(function (framework) {
+        app.frameworks.forEach(function (framework) {
         framework.save(function (fr) {
           // count = -1 if a framework has been saved.
           that._frameworkCounter -= 1;
@@ -971,4 +1029,9 @@ App.prototype.log = function (level) {
     var args = Array.prototype.slice.call(arguments, 1);
     return console.log.apply(this, args);
   };
+};
+
+
+App.prototype.addToPreloader = function(path){
+    this.filesToPreload.push(path);
 };
