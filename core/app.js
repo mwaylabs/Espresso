@@ -77,7 +77,7 @@ var App = exports.App = function (options, server) {
   this.frameworks          = [];
   this.globalState         = {};
 
-  this.filesToPreload      = [];
+  this.imagesToPreload      = [];
   this.preloadImages       = false;
 
   this.HEAD_IndexHtml = [];
@@ -463,7 +463,7 @@ App.prototype.buildIndexHTML = function (callback, _frameworkNamesForIndexHtml, 
   if(that.preloadImages){
       _indexHtml.push(HTML('script', {
           type: 'application/javascript',
-          src: 'preload.js'
+          src: 'preloadImages.js'
       }, ''));
   }
 
@@ -669,12 +669,12 @@ App.prototype.buildPreloadFile = function (callback) {
         fr.files.push(new File({
             frDelimiter: fr.frDelimiter,
             virtual: true,
-            name:'/preload.js',
-            path:'/preload.js',
+            name:'/preloadImages.js',
+            path:'/preloadImages.js',
             contentType : 'application/javascript',
-            requestPath :'preload.js',
+            requestPath :'preloadImages.js',
             framework: fr, /* the framework, this file belongs to.*/
-            content: 'M.Application.config["preloadImages"] = ' + self.preloadImages + ';\nM.Application.config["filesToPreload"] = ' + JSON.stringify(self.filesToPreload) + ';'
+            content: 'M.Application.config["preloadImages"] = ' + self.preloadImages + ';\nM.Application.config["imagesToPreload"] = ' + JSON.stringify(self.imagesToPreload) + ';'
         }));
         this.addFrameworks([fr]);
         callback(null,this.frameworks);
@@ -1007,5 +1007,5 @@ App.prototype.log = function (level) {
 
 
 App.prototype.addToPreloader = function(path){
-    this.filesToPreload.push(path);
+    this.imagesToPreload.push(path);
 };

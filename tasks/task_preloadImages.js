@@ -41,8 +41,8 @@ Task_PreloadImages.prototype.duty = function (framework, callback) {
     var that = this,
         _app = framework.app;
     framework.files.forEach(function (file) {
-        if (file.isImage) {
-            _app.filesToPreload.push(file.requestPath);
+        if (file.isImage()) {
+            _app.imagesToPreload.push(file.requestPath);
         }
     });
     callback(framework);
