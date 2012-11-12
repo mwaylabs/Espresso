@@ -540,7 +540,7 @@ App.prototype.buildIndexHTML = function (callback, _frameworkNamesForIndexHtml, 
       ? addApplicationConfig(this.application)
       : '')
   +  (typeof this.targetQuery !== 'undefined'
-      ? 'M.Application.targetQuery = ' + JSON.stringify(this.targetQuery) + ';'
+      ? addApplicationConfig(this.targetQuery)
       : '')
   ));
 
