@@ -522,7 +522,7 @@ App.prototype.buildIndexHTML = function (callback, _frameworkNamesForIndexHtml, 
 
   var addApplicationConfig = function(appConfig){
       var applicationConfig = [];
-
+      if(!appConfig){return}
       Object.keys(appConfig).forEach(function(ind){
           applicationConfig.push('M.Application.config["' + ind + '"] = ' + JSON.stringify(appConfig[ind]) + ';');
       });
