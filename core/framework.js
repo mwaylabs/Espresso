@@ -49,6 +49,8 @@ var Framework = exports.Framework = function (properties) {
   this.mergedFiles     = [];
   this.dependencyTrees = [];
   this.taskChain       = [];
+  this.filesToPreload  = [];
+  this.preloader       = true;
 
   /* Adding the properties fot this Frameworks */
   if (properties) {
@@ -130,7 +132,6 @@ Framework.prototype.readFiles = function (callback) {
 Framework.prototype.getFiles = function getFiles(path, callback) {
   var that = this;
   var manifest = path + '/manifest.json';
-
   this._e_.fs.stat(manifest, function (err, stat) {
       if (err) {
         that.browseFiles(path, callback);
@@ -215,6 +216,7 @@ Framework.prototype.browseFiles = function (path, callback) {
      */
     that.checkIfFolderShouldBeExcluded = function (path) {
 
+      var ret = false;
       self.excludedFolders.forEach(function (folder) {
           // Replace() escapes backslashes of DOS-style paths to not interfere
           // with JavaScript's RegExp.
@@ -222,10 +224,10 @@ Framework.prototype.browseFiles = function (path, callback) {
           var pattern =
               new RegExp(normalize('/' + folder + '/').replace(/\\/g, '\\\\'));
           if (path.search(pattern) !== -1) {
-            return true;
+            ret = true;
           }
         });
-      return false;
+      return ret;
     };
 
     that.browse = function (path) {

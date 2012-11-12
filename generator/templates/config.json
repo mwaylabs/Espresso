@@ -4,6 +4,7 @@
     "debugLevel": 1,
     "eliminate": false,
     "minify": false,
+    "preloadImages": false,
     "proxies": [
         {
             "baseUrl": "http://your.server.com",
