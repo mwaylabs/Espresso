@@ -1,8 +1,3 @@
-NOTE
-====
-
-This is the development branch of Espresso, and heavily under construction!
-
 Espresso README
 ===============
 
