@@ -14,6 +14,7 @@ var Report = require('./report').Report;
 var Resource = require('./resource').Resource;
 var Utils = require('../lib/espresso_utils');
 var HTML = Utils.HTML;
+var normalize = require('path').normalize;
 
 /**
  * @class
@@ -144,6 +145,24 @@ App.prototype.addFrameworks = function (frameworks) {
   };
 };
 
+App.prototype.exludeDeviceSpecificViews = function (excludedFolders, excludedFiles) {
+    var that = this;
+    var path = require('path');
+    var exists = path.existsSync((that.applicationDirectory + normalize('/app/views/')));
+    if(exists){
+        var viewDir = that._e_.fs.readdirSync(that.applicationDirectory + normalize('/app/views/'));
+        var files = '';
+        viewDir.forEach(function(elem, ind){
+            if(elem === that.targetQuery.subGroup || elem === 'base'){
+
+            }else{
+                excludedFolders.push(elem);
+            }
+        });
+        console.log(excludedFolders);
+    }
+}
+
 /**
  * @description
  * Load the projects related files.
@@ -155,6 +174,7 @@ App.prototype.loadTheApplication = function () {
       _theApplicationResources,
       _i18n;
 
+
   _theApplication = ['app'].map(function (module) {
     var _frameworkOptions  = {};
     _frameworkOptions.path = that.applicationDirectory + '/' + module;
@@ -163,6 +183,9 @@ App.prototype.loadTheApplication = function () {
     _frameworkOptions.excludedFolders = ['resources'].concat(that.excludedFolders);
     _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
     _frameworkOptions.app = that;
+    that.exludeDeviceSpecificViews(_frameworkOptions.excludedFolders, _frameworkOptions.excludedFiles);
+      console.log(_frameworkOptions.excludedFolders);
+//      console.log(_frameworkOptions.excludedFiles);
     if (!that.eliminate) {
       _frameworkOptions.taskChain = new TaskManager([
         "preSort",
@@ -499,7 +522,7 @@ App.prototype.buildIndexHTML = function (callback, _frameworkNamesForIndexHtml, 
 
   var addApplicationConfig = function(appConfig){
       var applicationConfig = [];
-
+      if(!appConfig){return}
       Object.keys(appConfig).forEach(function(ind){
           applicationConfig.push('M.Application.config["' + ind + '"] = ' + JSON.stringify(appConfig[ind]) + ';');
       });
@@ -515,6 +538,9 @@ App.prototype.buildIndexHTML = function (callback, _frameworkNamesForIndexHtml, 
       : '')
   +  (typeof this.application !== 'undefined'
       ? addApplicationConfig(this.application)
+      : '')
+  +  (typeof this.targetQuery !== 'undefined'
+      ? addApplicationConfig(this.targetQuery)
       : '')
   ));
 
