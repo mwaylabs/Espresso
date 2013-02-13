@@ -59,6 +59,7 @@ Task_PreSort.prototype.duty = function(framework,callback){
         _stores = [],
         _misc = [],
         _sorted = [],
+        _main = [],
         _validators = [];
 
     _files.forEach(function(file) {
@@ -82,12 +83,14 @@ Task_PreSort.prototype.duty = function(framework,callback){
             _validators.push(file);
         } else if (path.search(normalize4RegExp('/plugins/')) !== -1) {
             _validators.push(file);
+        }  else if (path.search(normalize4RegExp('main.js')) !== -1) {
+            _main.push(file);
         } else {
             _misc.push(file);
         }
     });
 
-     _sorted = _sorted.concat(_models, _stores, _controllers, _validators, _views,_misc);
+     _sorted = _sorted.concat(_models, _stores, _controllers, _validators, _views, _misc, _main);
     framework.files = _sorted;
     callback(framework);
 };
