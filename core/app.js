@@ -145,6 +145,12 @@ App.prototype.addFrameworks = function (frameworks) {
   };
 };
 
+
+/**
+ * @description
+ * Remove excludedFiles from the View directory
+ *
+ */
 App.prototype.exludeDeviceSpecificViews = function (excludedFolders, excludedFiles) {
     var that = this;
     var path = require('path');
@@ -152,14 +158,11 @@ App.prototype.exludeDeviceSpecificViews = function (excludedFolders, excludedFil
     if(exists){
         var viewDir = that._e_.fs.readdirSync(that.applicationDirectory + normalize('/app/views/'));
         var files = '';
-        viewDir.forEach(function(elem, ind){
-            if(elem === that.targetQuery.subGroup || elem === 'base'){
-
-            }else{
-                excludedFolders.push(elem);
+        viewDir.forEach(function(directoryName, ind){
+            if(that.targetQuery.subGroup && directoryName !== that.targetQuery.subGroup){
+                excludedFolders.push(directoryName);
             }
         });
-        console.log(excludedFolders);
     }
 }
 
