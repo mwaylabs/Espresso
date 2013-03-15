@@ -151,7 +151,7 @@ App.prototype.addFrameworks = function (frameworks) {
  * Remove excludedFiles from the View directory
  *
  */
-App.prototype.exludeDeviceSpecificViews = function (excludedFolders, excludedFiles) {
+App.prototype.excludeDeviceSpecificViews = function (excludedFolders, excludedFiles) {
     var that = this;
     var path = require('path');
     var exists = path.existsSync((that.applicationDirectory + normalize('/app/views/')));
@@ -186,7 +186,7 @@ App.prototype.loadTheApplication = function () {
     _frameworkOptions.excludedFolders = ['resources'].concat(that.excludedFolders);
     _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
     _frameworkOptions.app = that;
-    that.exludeDeviceSpecificViews(_frameworkOptions.excludedFolders, _frameworkOptions.excludedFiles);
+    that.excludeDeviceSpecificViews(_frameworkOptions.excludedFolders, _frameworkOptions.excludedFiles);
       console.log(_frameworkOptions.excludedFolders);
 //      console.log(_frameworkOptions.excludedFiles);
     if (!that.eliminate) {
