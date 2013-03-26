@@ -154,7 +154,7 @@ var generate = exports.generate = function generate(options) {
         ctx: ctx,
         outputPath: outputPath,
         callback: function(){
-          Fs.unlink(__dirname + '/templates/_config.json');
+          Fs.unlink(__dirname + '/templates/_config.json', function(){});
           callback();
         }
       });

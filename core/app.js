@@ -145,21 +145,24 @@ App.prototype.addFrameworks = function (frameworks) {
   };
 };
 
-App.prototype.exludeDeviceSpecificViews = function (excludedFolders, excludedFiles) {
+
+/**
+ * @description
+ * Remove excludedFiles from the View directory
+ *
+ */
+App.prototype.excludeDeviceSpecificViews = function (excludedFolders, excludedFiles) {
     var that = this;
     var path = require('path');
     var exists = path.existsSync((that.applicationDirectory + normalize('/app/views/')));
     if(exists){
         var viewDir = that._e_.fs.readdirSync(that.applicationDirectory + normalize('/app/views/'));
         var files = '';
-        viewDir.forEach(function(elem, ind){
-            if(elem === that.targetQuery.subGroup || elem === 'base'){
-
-            }else{
-                excludedFolders.push(elem);
+        viewDir.forEach(function(directoryName, ind){
+            if(that.targetQuery.subGroup && directoryName !== that.targetQuery.subGroup){
+                excludedFolders.push(directoryName);
             }
         });
-        console.log(excludedFolders);
     }
 }
 
@@ -183,7 +186,7 @@ App.prototype.loadTheApplication = function () {
     _frameworkOptions.excludedFolders = ['resources'].concat(that.excludedFolders);
     _frameworkOptions.excludedFiles = ['.DS_Store'].concat(that.excludedFiles);
     _frameworkOptions.app = that;
-    that.exludeDeviceSpecificViews(_frameworkOptions.excludedFolders, _frameworkOptions.excludedFiles);
+    that.excludeDeviceSpecificViews(_frameworkOptions.excludedFolders, _frameworkOptions.excludedFiles);
       console.log(_frameworkOptions.excludedFolders);
 //      console.log(_frameworkOptions.excludedFiles);
     if (!that.eliminate) {
