@@ -22,9 +22,9 @@
 [submodule "node_modules/xmldom"]
 	path = node_modules/xmldom
 	url = https://github.com/jindw/xmldom
-[submodule "submodules/git-wip-us.apache.org/repos/asf/incubator-cordova-android"]
-	path = submodules/git-wip-us.apache.org/repos/asf/incubator-cordova-android
-	url = https://git-wip-us.apache.org/repos/asf/incubator-cordova-android
-[submodule "submodules/git-wip-us.apache.org/repos/asf/incubator-cordova-ios"]
-	path = submodules/git-wip-us.apache.org/repos/asf/incubator-cordova-ios
-	url = http://git-wip-us.apache.org/repos/asf/incubator-cordova-ios
+[submodule "submodules/git-wip-us.apache.org/repos/asf/cordova-android"]
+	path = submodules/git-wip-us.apache.org/repos/asf/cordova-android
+	url = https://git-wip-us.apache.org/repos/asf/cordova-android
+[submodule "submodules/git-wip-us.apache.org/repos/asf/cordova-ios"]
+	path = submodules/git-wip-us.apache.org/repos/asf/cordova-ios
+	url = https://git-wip-us.apache.org/repos/asf/cordova-ios
