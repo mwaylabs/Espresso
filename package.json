@@ -1,6 +1,6 @@
 { "name" : "espresso",
   "description" : "Development tools for The-M-Project",
-  "version" : "1.3.0",
+  "version" : "1.4.0",
   "author" : "Panacoda GmbH <info@panacoda.com>",
   "repository" : { 
     "type" : "git",

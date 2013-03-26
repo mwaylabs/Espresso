@@ -1,3 +1,8 @@
+** Version 1.4.0 - Date 26.03.2013 **
+  * node v0.10.1 ready
+  * bugfix with subdirectories
+  * put main.js to the bottom of the *_App.js
+
 ** Version 1.3.0 - Date 07.12.2012 **
   * return 502 if remote server returns nothing
   * add targetQuery to M.Application
