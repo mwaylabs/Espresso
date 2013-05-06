@@ -56,6 +56,7 @@ Task_PreSort.prototype.duty = function(framework,callback){
         _controllers = [],
         _models = [],
         _views = [],
+        _templates = [],
         _stores = [],
         _misc = [],
         _sorted = [],
@@ -73,6 +74,8 @@ Task_PreSort.prototype.duty = function(framework,callback){
 
         if (path.search(normalize4RegExp('/controllers/')) !== -1) {
             _controllers.push(file);
+        } else if (path.search(normalize4RegExp('/templates/')) !== -1) {
+            _templates.push(file);
         } else if (path.search(normalize4RegExp('/views/')) !== -1) {
             _views.push(file);
         } else if (path.search(normalize4RegExp('/models/')) !== -1) {
@@ -90,7 +93,7 @@ Task_PreSort.prototype.duty = function(framework,callback){
         }
     });
 
-     _sorted = _sorted.concat(_models, _stores, _controllers, _validators, _views, _misc, _main);
+     _sorted = _sorted.concat(_models, _stores, _controllers, _validators, _templates, _views, _misc, _main);
     framework.files = _sorted;
     callback(framework);
 };
