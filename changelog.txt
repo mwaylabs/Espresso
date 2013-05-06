@@ -1,4 +1,5 @@
-** Version 1.5.0 - Date 26.03.2013 **
+** Version 1.5.0 - Date 06.05.2013 **
+  * Add try catch to the main function and set M.ErrorWhileLoadingApplication to false if an error occurs
 
 ** Version 1.4.0 - Date 26.03.2013 **
   * node v0.10.1 ready

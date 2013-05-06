@@ -555,9 +555,11 @@ App.prototype.buildIndexHTML = function (callback, _frameworkNamesForIndexHtml, 
   _indexHtml.push(HTML('/head'));
   _indexHtml.push(HTML('body'));
 
+  var applicationStartScript = 'M.ErrorWhileLoadingApplication = false; try{ ' + this.name + '.app.main(); } catch(e){ M.ErrorWhileLoadingApplication = true; };'
+
   _indexHtml.push(HTML('script', {
     type: 'application/javascript'
-  }, this.name + '.app.main();'));
+  }, applicationStartScript));
 
   _indexHtml.push(HTML('/body'));
   _indexHtml.push(HTML('/html'));
