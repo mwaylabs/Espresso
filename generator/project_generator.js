@@ -37,6 +37,7 @@ var generate = exports.generate = function generate(options) {
     { src: 'Icon.png', dst: 'app/resources/base/images/Icon.png' },
     { src: 'Icon-72.png', dst: 'app/resources/base/images/Icon-72.png' },
     { src: 'Icon@2x.png', dst: 'app/resources/base/images/Icon@2x.png' },
+    { src: 'favicon.ico', dst: 'app/resources/base/images/favicon.ico' }
   ];
 
   /* Properties */

@@ -1,3 +1,8 @@
+** Version 1.4.1 - Date 07.05.2013 **
+  * Add favicon
+  * Add templates directory to Espresso build process
+  * Add try catch to the main function and set M.ErrorWhileLoadingApplication to false if an error occurs
+
 ** Version 1.4.0 - Date 26.03.2013 **
   * node v0.10.1 ready
   * bugfix with subdirectories

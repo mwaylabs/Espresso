@@ -1,7 +1,0 @@
-#! /bin/sh
-set -euf
-! for name; do
-  loc="$applicationDirectory/plugins/$name"
-  test -d "$loc" ||
-      echo file not found: "$loc"
-done | grep . >&2

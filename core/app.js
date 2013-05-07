@@ -440,6 +440,11 @@ App.prototype.buildIndexHTML = function (callback, _frameworkNamesForIndexHtml, 
   }));
   _indexHtml.push(HTML('title', {}, _displayName));
 
+    _indexHtml.push(HTML('script', {
+            type: 'application/javascript'
+        }, 'var ' + this.name + ' = ' + this.name + ' || {};'
+    ));
+
   // Add frameworks in correct order.
   [ 'jquery'
   , 'bootstrapping'
@@ -555,9 +560,11 @@ App.prototype.buildIndexHTML = function (callback, _frameworkNamesForIndexHtml, 
   _indexHtml.push(HTML('/head'));
   _indexHtml.push(HTML('body'));
 
+  var applicationStartScript = 'M.ErrorWhileLoadingApplication = false; try{ ' + this.name + '.app.main(); } catch(e){ M.ErrorWhileLoadingApplication = true; };'
+
   _indexHtml.push(HTML('script', {
     type: 'application/javascript'
-  }, this.name + '.app.main();'));
+  }, applicationStartScript));
 
   _indexHtml.push(HTML('/body'));
   _indexHtml.push(HTML('/html'));
