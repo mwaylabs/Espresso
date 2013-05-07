@@ -440,6 +440,11 @@ App.prototype.buildIndexHTML = function (callback, _frameworkNamesForIndexHtml, 
   }));
   _indexHtml.push(HTML('title', {}, _displayName));
 
+    _indexHtml.push(HTML('script', {
+            type: 'application/javascript'
+        }, 'var ' + this.name + ' = ' + this.name + ' || {};'
+    ));
+
   // Add frameworks in correct order.
   [ 'jquery'
   , 'bootstrapping'

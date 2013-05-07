@@ -44,7 +44,7 @@ var File = exports.File = function (properties) {
   this.content               = {}; // buffer object, to hold the content of a file.
 
   this.dependencies          = [];
-  this.resourceExtensions    = ['.png', '.jpg', '.gif', '.svg'];
+  this.resourceExtensions    = ['.png', '.jpg', '.gif', '.svg', '.ico'];
 
   this.extname;
   this.basename;
