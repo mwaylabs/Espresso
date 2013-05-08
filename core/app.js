@@ -440,11 +440,6 @@ App.prototype.buildIndexHTML = function (callback, _frameworkNamesForIndexHtml, 
   }));
   _indexHtml.push(HTML('title', {}, _displayName));
 
-    _indexHtml.push(HTML('script', {
-            type: 'application/javascript'
-        }, 'var ' + this.name + ' = ' + this.name + ' || {};'
-    ));
-
   // Add frameworks in correct order.
   [ 'jquery'
   , 'bootstrapping'
@@ -490,6 +485,39 @@ App.prototype.buildIndexHTML = function (callback, _frameworkNamesForIndexHtml, 
     }, ''));
   });
 
+    if (this.supportedLanguages.length > 0) {
+        this.supportedLanguages.forEach(function (lang) {
+            _indexHtml.push(HTML('script', {
+                type: 'application/javascript',
+                src: lang + '.js'
+            }, ''));
+        });
+    };
+
+    var addApplicationConfig = function(appConfig){
+        var applicationConfig = [];
+        if(!appConfig){return}
+        Object.keys(appConfig).forEach(function(ind){
+            applicationConfig.push('M.Application.config["' + ind + '"] = ' + JSON.stringify(appConfig[ind]) + ';');
+        });
+        return applicationConfig.join('');
+    };
+
+    _indexHtml.push(HTML('script', {
+            type: 'application/javascript'
+        }, 'var ' + this.name + ' = ' + this.name + ' || {};'
+        +  'M.Application.name = ' + JSON.stringify(this.name) + ';'
+        +  (typeof this.defaultLanguage !== 'undefined'
+        ? 'M.Application.defaultLanguage = ' + JSON.stringify(this.defaultLanguage) + ';'
+        : '')
+        +  (typeof this.application !== 'undefined'
+        ? addApplicationConfig(this.application)
+        : '')
+        +  (typeof this.targetQuery !== 'undefined'
+        ? addApplicationConfig(this.targetQuery)
+        : '')
+    ));
+
     /*preload*/
   if(that.preloadImages){
       _indexHtml.push(HTML('script', {
@@ -519,38 +547,7 @@ App.prototype.buildIndexHTML = function (callback, _frameworkNamesForIndexHtml, 
     };
   });
 
-  if (this.supportedLanguages.length > 0) {
-    this.supportedLanguages.forEach(function (lang) {
-      _indexHtml.push(HTML('script', {
-        type: 'application/javascript',
-        src: lang + '.js'
-      }, ''));
-    });
-  };
 
-  var addApplicationConfig = function(appConfig){
-      var applicationConfig = [];
-      if(!appConfig){return}
-      Object.keys(appConfig).forEach(function(ind){
-          applicationConfig.push('M.Application.config["' + ind + '"] = ' + JSON.stringify(appConfig[ind]) + ';');
-      });
-      return applicationConfig.join('');
-  };
-
-  _indexHtml.push(HTML('script', {
-    type: 'application/javascript'
-  }, 'var ' + this.name + ' = ' + this.name + ' || {};'
-  +  'M.Application.name = ' + JSON.stringify(this.name) + ';'
-  +  (typeof this.defaultLanguage !== 'undefined'
-      ? 'M.Application.defaultLanguage = ' + JSON.stringify(this.defaultLanguage) + ';'
-      : '')
-  +  (typeof this.application !== 'undefined'
-      ? addApplicationConfig(this.application)
-      : '')
-  +  (typeof this.targetQuery !== 'undefined'
-      ? addApplicationConfig(this.targetQuery)
-      : '')
-  ));
 
   _indexHtml.push(HTML('script', {
     type: 'application/javascript',
