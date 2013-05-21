@@ -153,8 +153,7 @@ App.prototype.addFrameworks = function (frameworks) {
  */
 App.prototype.excludeDeviceSpecificViews = function (excludedFolders, excludedFiles) {
     var that = this;
-    var path = require('path');
-    var exists = path.existsSync((that.applicationDirectory + normalize('/app/views/')));
+    var exists = that._e_.fs.existsSync((that.applicationDirectory + normalize('/app/views/')));
     if(exists){
         var viewDir = that._e_.fs.readdirSync(that.applicationDirectory + normalize('/app/views/'));
         var files = '';
@@ -317,7 +316,7 @@ App.prototype.loadTheMProject = function () {
     'tmp_themes',
     'bootstrapping'
   ].filter(function (module){
-    return require('path').existsSync(_path_to_the_m_project + '/modules/' + module);
+    return that._e_.fs.existsSync(_path_to_the_m_project + '/modules/' + module);
   }).map(function (module) {
     var _frameworkOptions  = {};
     _frameworkOptions.path = _path_to_the_m_project + '/modules/' + module;
