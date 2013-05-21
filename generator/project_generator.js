@@ -251,20 +251,17 @@ var generate = exports.generate = function generate(options) {
 
       var writeStream = Fs.createWriteStream(streamPath);
 
-      Util.pump(Fs.createReadStream(currentFile.path), writeStream, function (err) {
-          if (err) {
-            if (err.code === 'ENOENT') {
-              // TODO maybe we should check if dir(err.path) is a directory
-              //      we didn't create and only then skip this error.
-
-              // ignore files we cannot create due to missing directories:
-              // else we'd create them at "Output dirs" above.
-            } else {
-              throw err;
-            };
-          };
-          copyProject(files);
-        });
+      var readStream = Fs.createReadStream(currentFile.path);
+      readStream.on('end', function() {
+        copyProject(files);
+      });
+      writeStream.on('error', function(err) {
+        if (err && err.code !== 'ENOENT') {
+          throw err;
+        };
+        copyProject(files);
+      });
+      readStream.pipe(writeStream);
     }
   };
 
@@ -341,9 +338,20 @@ var generate = exports.generate = function generate(options) {
 
 // the optional callback gets an err argument
 function copyFile(oldPath, newPath, callback) {
-  var oldFile = Fs.createReadStream(oldPath);
-  var newFile = Fs.createWriteStream(newPath);
-  newFile.once('open', function () {
-    Util.pump(oldFile, newFile, callback);
+  var readStream = Fs.createReadStream(oldPath);
+  var writeStream = Fs.createWriteStream(newPath);
+
+  writeStream.once('open', function () {
+      readStream.on('end', function() {
+        if(callback) callback();
+      });
+      writeStream.on('error', function(err) {
+        if(callback) {
+            callback(err);
+        } else {
+            throw err;
+        }
+      });
+      readStream.pipe(writeStream);
   });
 };
