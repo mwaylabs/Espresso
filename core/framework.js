@@ -333,15 +333,22 @@ Framework.prototype.save = function (callback) {
     };
 
     that.copyFile = function (files, filePath, fileOutputPath) {
-      self._e_.sys.pump(self._e_.fs.createReadStream(filePath),
-        self._e_.fs.createWriteStream(fileOutputPath),
-        function (err) {
-          if (err) {
-            throw err;
-          }
-          _fileCounter--;
-          that.callbackIfDone();
-        });
+      var Fs = self._e_.fs;
+      var readStream = Fs.createReadStream(filePath);
+      var writeStream = Fs.createWriteStream(fileOutputPath);
+
+      writeStream.once('open', function () {
+          readStream.on('end', function() {
+            _fileCounter--;
+            that.callbackIfDone();
+          });
+          writeStream.on('error', function(err) {
+            if (err) {
+              throw err;
+            };
+          });
+          readStream.pipe(writeStream);
+      });
       that.save(files);
     };
 
