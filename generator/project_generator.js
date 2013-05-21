@@ -311,6 +311,7 @@ var generate = exports.generate = function generate(options) {
       (function copyFiles () {
         if (files.length === 0) {
           callback();
+          Util.puts('Project successfully generated!');
         } else {
           var file = files.pop();
           var fromPath = templatePath + '/' + file.src;
@@ -325,13 +326,6 @@ var generate = exports.generate = function generate(options) {
           });
         };
       })();
-    },
-
-    function (err) {
-      if (err) {
-        throw err;
-      }
-      Util.puts('Project successfully generated!');
     }
   );
 };
