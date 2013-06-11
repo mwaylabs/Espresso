@@ -439,10 +439,10 @@ App.prototype.buildIndexHTML = function (callback, _frameworkNamesForIndexHtml, 
   }));
   _indexHtml.push(HTML('title', {}, _displayName));
 
-    _indexHtml.push(HTML('script', {
-            type: 'application/javascript'
-        }, 'var ' + this.name + ' = ' + this.name + ' || {};'
-    ));
+  _indexHtml.push(HTML('script', {
+    type: 'application/javascript',
+    src: 'def.js'
+  }, ''));
 
   // Add frameworks in correct order.
   [ 'jquery'
@@ -527,29 +527,11 @@ App.prototype.buildIndexHTML = function (callback, _frameworkNamesForIndexHtml, 
     });
   };
 
-  var addApplicationConfig = function(appConfig){
-      var applicationConfig = [];
-      if(!appConfig){return}
-      Object.keys(appConfig).forEach(function(ind){
-          applicationConfig.push('M.Application.config["' + ind + '"] = ' + JSON.stringify(appConfig[ind]) + ';');
-      });
-      return applicationConfig.join('');
-  };
 
   _indexHtml.push(HTML('script', {
-    type: 'application/javascript'
-  }, 'var ' + this.name + ' = ' + this.name + ' || {};'
-  +  'M.Application.name = ' + JSON.stringify(this.name) + ';'
-  +  (typeof this.defaultLanguage !== 'undefined'
-      ? 'M.Application.defaultLanguage = ' + JSON.stringify(this.defaultLanguage) + ';'
-      : '')
-  +  (typeof this.application !== 'undefined'
-      ? addApplicationConfig(this.application)
-      : '')
-  +  (typeof this.targetQuery !== 'undefined'
-      ? addApplicationConfig(this.targetQuery)
-      : '')
-  ));
+    type: 'application/javascript',
+    src: 'config.js'
+  }, ''));
 
   _indexHtml.push(HTML('script', {
     type: 'application/javascript',
@@ -559,11 +541,10 @@ App.prototype.buildIndexHTML = function (callback, _frameworkNamesForIndexHtml, 
   _indexHtml.push(HTML('/head'));
   _indexHtml.push(HTML('body'));
 
-  var applicationStartScript = 'M.ErrorWhileLoadingApplication = false; try{ ' + this.name + '.app.main(); } catch(e){ M.ErrorWhileLoadingApplication = true; };'
-
   _indexHtml.push(HTML('script', {
-    type: 'application/javascript'
-  }, applicationStartScript));
+    type: 'application/javascript',
+    src: 'exec.js'
+  }, ''));
 
   _indexHtml.push(HTML('/body'));
   _indexHtml.push(HTML('/html'));
@@ -716,6 +697,109 @@ App.prototype.buildPreloadFile = function (callback) {
     };
 };
 
+App.prototype.buildDefFile = function (callback) {
+    var self = this;
+
+    var _frameworkOptions  = {};
+    _frameworkOptions.path = this.applicationDirectory;
+    _frameworkOptions.name = 'def';
+    _frameworkOptions.app = this;
+    _frameworkOptions.virtual = true;
+    _frameworkOptions.frDelimiter = '/';
+    _frameworkOptions.taskChain = new TaskManager([
+        "contentType",
+        "manifest"
+    ]).getTaskChain();
+    var fr = new Framework(_frameworkOptions);
+    fr.files.push(new File({
+        frDelimiter: fr.frDelimiter,
+        virtual: true,
+        name:'/def.js',
+        path:'/def.js',
+        contentType : 'application/javascript',
+        requestPath :'def.js',
+        framework: fr, /* the framework, this file belongs to.*/
+        content: 'var ' + this.name + ' = ' + this.name + ' || {};'
+    }));
+    this.addFrameworks([fr]);
+    callback(null,this.frameworks);
+};
+
+App.prototype.buildConfigFile = function (callback) {
+    var self = this;
+    var addApplicationConfig = function(appConfig){
+        var applicationConfig = [];
+        if(!appConfig){return ''}
+        Object.keys(appConfig).forEach(function(ind){
+            applicationConfig.push('M.Application.config["' + ind + '"] = ' + JSON.stringify(appConfig[ind]) + ';');
+        });
+        return applicationConfig.join('\n') + '\n';
+    };
+
+    var content = 'var ' + this.name + ' = ' + this.name + ' || {};\n'
+    +  'M.Application.name = ' + JSON.stringify(this.name) + ';\n'
+    +  (typeof this.defaultLanguage !== 'undefined'
+        ? 'M.Application.defaultLanguage = ' + JSON.stringify(this.defaultLanguage) + ';'
+        : '')
+    +  (typeof this.application !== 'undefined'
+        ? addApplicationConfig(this.application)
+        : '')
+    +  (typeof this.targetQuery !== 'undefined'
+        ? addApplicationConfig(this.targetQuery)
+        : '');
+
+    var _frameworkOptions  = {};
+    _frameworkOptions.path = this.applicationDirectory;
+    _frameworkOptions.name = 'config';
+    _frameworkOptions.app = this;
+    _frameworkOptions.virtual = true;
+    _frameworkOptions.frDelimiter = '/';
+    _frameworkOptions.taskChain = new TaskManager([
+        "contentType",
+        "manifest"
+    ]).getTaskChain();
+    var fr = new Framework(_frameworkOptions);
+    fr.files.push(new File({
+        frDelimiter: fr.frDelimiter,
+        virtual: true,
+        name:'/config.js',
+        path:'/config.js',
+        contentType : 'application/javascript',
+        requestPath :'config.js',
+        framework: fr, /* the framework, this file belongs to.*/
+        content: content
+    }));
+    this.addFrameworks([fr]);
+    callback(null,this.frameworks);
+};
+
+App.prototype.buildExecFile = function (callback) {
+    var self = this;
+
+    var _frameworkOptions  = {};
+    _frameworkOptions.path = this.applicationDirectory;
+    _frameworkOptions.name = 'exec';
+    _frameworkOptions.app = this;
+    _frameworkOptions.virtual = true;
+    _frameworkOptions.frDelimiter = '/';
+    _frameworkOptions.taskChain = new TaskManager([
+        "contentType",
+        "manifest"
+    ]).getTaskChain();
+    var fr = new Framework(_frameworkOptions);
+    fr.files.push(new File({
+        frDelimiter: fr.frDelimiter,
+        virtual: true,
+        name:'/exec.js',
+        path:'/exec.js',
+        contentType : 'application/javascript',
+        requestPath :'exec.js',
+        framework: fr, /* the framework, this file belongs to.*/
+        content: 'M.ErrorWhileLoadingApplication = false; try{ ' + this.name + '.app.main(); } catch(e){ M.ErrorWhileLoadingApplication = true; };'
+    }));
+    this.addFrameworks([fr]);
+    callback(null,this.frameworks);
+};
 
 /**
  * @description
@@ -896,14 +980,27 @@ App.prototype.build = function (callback) {
 
   /*
    *  Build stack:
-   *  1) Build the application
-   *   11) Build each framework
-   *  2) Build the index.html
-   *  3) Build the cache manifest, after all frameworks had been built.
-   *  4) Call callback, which leads to the next step of the build OR server
+   *  1) Build def.js, config.js and exec.js
+   *  2) Build the application
+   *   21) Build each framework
+   *  3) Build the index.html
+   *  4) Build the cache manifest, after all frameworks had been built.
+   *  5) Call callback, which leads to the next step of the build OR server
    *     process.
    */
   self.sequencer(
+      function (err, frameworks) {
+          if (err) { throw err; }
+          self.buildDefFile(this);
+      },
+      function (err, frameworks) {
+          if (err) { throw err; }
+          self.buildConfigFile(this);
+      },
+      function (err, frameworks) {
+          if (err) { throw err; }
+          self.buildExecFile(this);
+      },
       function () {
         console.log(self.style.green('Building application: "')
           + self.style.magenta(self.name)
