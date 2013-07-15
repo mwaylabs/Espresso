@@ -28,12 +28,13 @@ exports.options = {
 };
 
 exports.run = function run(params) {
+  var params = params || {};
   var App = require('../app').App;
   var app = new App(params);
   app.loadTheApplication();
   app.loadTheMProject();
 
   app.build(function (options) {
-      app.saveLocal(options);
+      app.saveLocal(params.onFinish);
     });
 };
