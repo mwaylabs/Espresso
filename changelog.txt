@@ -1,5 +1,6 @@
-** Version 1.4.2 - Date 08.05.2013 **
+** Version 1.4.2 - Date 15.07.2013 **
   * Change load sequence of M.Application
+  * Add callback methode to delegate finish call
 
 ** Version 1.4.1 - Date 07.05.2013 **
   * Set package command deprecated
