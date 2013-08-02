@@ -760,6 +760,28 @@ App.prototype.makeOutputFolder = function (callback) {
   new _OutputDirMaker(callback).makeOutputDir(self._outP.shift());
 };
 
+App.prototype.removeUnwantedLibs = function () {
+   var self = this;
+    if (self.libraries) {
+        var libs = [];
+        if(self.targets){
+            var targets = Object.keys(self.targets);
+            var libs = [];
+            self.libraries.forEach(function (fr) {
+                if(targets.indexOf(fr.name) < 0){
+                    libs.push(fr);
+                } else {
+                    if(fr.name === self.targetQuery.group){
+                        fr.name = fr.name + '/' + self.targetQuery.subGroup;
+                        libs.push(fr);
+                    }
+                }
+            });
+        }
+        self.libraries = libs;
+    };
+};
+
 App.prototype.readTargetConfig = function (tar) {
   var that = this,
       _targetsJSON =
@@ -772,6 +794,7 @@ App.prototype.readTargetConfig = function (tar) {
       if (targets[tar.group]) {
         var _group = targets[tar.group];
         that.target.group = tar.group;
+        that.targets= targets;
         if (_group[tar.subGroup]) {
           var _subGroup = _group[tar.subGroup];
 
@@ -850,6 +873,7 @@ App.prototype.build = function (callback) {
 
   if (self.targetQuery) {
     this.readTargetConfig(self.targetQuery);
+    this.removeUnwantedLibs();
   };
 
   if (self.libraries) {
