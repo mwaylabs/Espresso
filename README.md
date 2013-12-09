@@ -1,7 +1,7 @@
 Espresso README
 ===============
 
-Espresso: The-M-Projects build tools using node.js
+Espresso: The-M-Project 1.x build tools using node.js
 
 
 Installation
