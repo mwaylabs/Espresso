@@ -437,6 +437,17 @@ App.prototype.buildIndexHTML = function (callback, _frameworkNamesForIndexHtml, 
              , 'width=device-width'
              ].join(',')
   }));
+
+  _indexHtml.push(HTML('meta', {
+    name: 'viewport',
+    content: [ 'initial-scale=1.0'
+             , 'minimum-scale=1.0'
+             , 'maximum-scale=1.0'
+             , 'user-scalable=no'
+             ].join(','),
+    media: '(device-height: 568px)'
+  }));
+
   _indexHtml.push(HTML('title', {}, _displayName));
 
   // Add frameworks in correct order.
