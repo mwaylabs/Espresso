@@ -239,9 +239,9 @@ Resource.prototype.browseFiles = function (path, should_run, allow_sub_folders, 
                   });
 
                 //  if (!newResource.isSASS_Stylesheet()) {
-                if (self.markedResources.indexOf(newResource.getBaseName()) === -1) {
+                if (self.markedResources.indexOf(newResource.path) === -1) {
                   self.files.push(newResource);
-                  self.markedResources.push(newResource.getBaseName());
+                  self.markedResources.push(newResource.path);
                 }
                 //  }else{
                 //     self.sassStyleSheets.push(newResource);
